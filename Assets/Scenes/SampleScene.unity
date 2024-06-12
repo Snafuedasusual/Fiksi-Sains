@@ -436,7 +436,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2722886142938273308, guid: 8609d95e60c87134c85682a76989bffe, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5195479670375469429, guid: 8609d95e60c87134c85682a76989bffe, type: 3}
       propertyPath: m_Enabled
@@ -544,6 +544,7 @@ MonoBehaviour:
   plrSprintApplied: 0
   plrStamina: 100
   rb: {fileID: 865028777}
+  mousPosTrans: {fileID: 1911226065}
 --- !u!54 &865028777
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -593,7 +594,7 @@ CapsuleCollider:
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 1.001, z: 0}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -1099,7 +1100,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9159220565390163804, guid: 59f8e111f60d60f4a8c517b1e5516e11, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -18,18 +18,22 @@ public class PlayerInput : MonoBehaviour
         if (Input.GetKey(KeyCode.W))
         {
             inputVector.y = Input.GetAxisRaw("Vertical");
+
         }
         if (Input.GetKey(KeyCode.S))
         {
             inputVector.y = Input.GetAxisRaw("Vertical");
+
         }
         if (Input.GetKey(KeyCode.D))
         {
             inputVector.x = Input.GetAxisRaw("Horizontal");
+
         }
         if (Input.GetKey(KeyCode.A))
         {
             inputVector.x = Input.GetAxisRaw("Horizontal");
+
         }
         
         //inputVector.y = Input.GetAxisRaw("Vertical");
