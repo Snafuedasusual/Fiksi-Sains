@@ -98,24 +98,24 @@ public class PlayerInput : MonoBehaviour
         return SwitchInventory();
     }
 
-    private bool SpaceToSprint()
+    private bool HoldToSprint()
     {
-        bool spaceisPress = false;
-        if (Input.GetKey(KeyCode.Space))
+        bool keyisPress = false;
+        if (Input.GetKey(KeyCode.LeftShift))
         {
-            spaceisPress = true;
-            return spaceisPress;
+            keyisPress = true;
+            return keyisPress;
         }
         else
         {
-            spaceisPress = false;
-            return spaceisPress;
+            keyisPress = false;
+            return keyisPress;
         }
     }
 
-    public bool GetSpacePressed()
+    public bool SprintIsPressed()
     {
-        return SpaceToSprint();
+        return HoldToSprint();
     }
 
     private void Update()
@@ -124,7 +124,7 @@ public class PlayerInput : MonoBehaviour
         GetMousePosition();
         GetMouse1Press();
         SwitchInventory();
-        SpaceToSprint();
+        HoldToSprint();
     }
 
 }

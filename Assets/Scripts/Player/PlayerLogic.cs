@@ -13,7 +13,7 @@ public class PlayerLogic : MonoBehaviour
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Transform mousPosTrans;
 
-    Vector3 mousPosSimple;
+    float playerDirection;
 
     private float staminaTime = 0f;
     private void PlayerMovement()
@@ -22,11 +22,10 @@ public class PlayerLogic : MonoBehaviour
 
         Vector3 plrMoveDir = new Vector3(plrInp.GetMoveDir().x, 0f, plrInp.GetMoveDir().y);
 
-        Vector3 plrMoveDirTwo = new Vector3(plrInp.GetMoveDir().x, 0f, plrInp.GetMoveDir().y) * 2;
-
         rb.MovePosition(rb.position + plrMoveDir * plrSpd * Time.fixedDeltaTime);
 
-        Debug.Log(Vector3.Angle(rb.position + (plrMoveDir * 10), transform.forward));
+
+        playerDirection = Vector3.Dot(transform.forward, plrMoveDir);
 
         //transform.position += transform.forward  * PlrMoveDir.z * Time.deltaTime * plrSpd;
         //transform.position += transform.right * PlrMoveDir.x * Time.deltaTime * plrSpd;
@@ -35,7 +34,7 @@ public class PlayerLogic : MonoBehaviour
     private void PlayerSprintController(bool spaceIsPressed)
     {
 
-        if (spaceIsPressed && plrStamina > 0)
+        if (spaceIsPressed && plrStamina > 0 && playerDirection >= 0.3f)
         {
             plrSprintApplied = plrSprintBase;
         }
@@ -49,30 +48,33 @@ public class PlayerLogic : MonoBehaviour
     private void StaminaBar(bool spaceIsPressed)
     {
         float drainRate = 0.4f;
-        if (spaceIsPressed && plrStamina > 0)
+        if (spaceIsPressed && plrStamina > 0 && playerDirection >= 0.3f)
         {
             if (staminaTime < drainRate)
             {
-                staminaTime = staminaTime + Time.deltaTime;
+                staminaTime = staminaTime + Time.deltaTime * 15f;
                 
             }
             else
             {
-                plrStamina-= 10;
+                plrStamina-= 1;
                 staminaTime = 0f;
+                Debug.Log(plrStamina);
+
             }
         }
-        if(!spaceIsPressed && plrStamina < 100)
+        if(!spaceIsPressed && plrStamina < 100 || spaceIsPressed && plrStamina < 100 && playerDirection < 0.3f)
         {
             if (staminaTime < drainRate)
             {
-                staminaTime = staminaTime + Time.deltaTime;
+                staminaTime = staminaTime + Time.deltaTime * 2.5f;
 
             }
             else
             {
-                plrStamina += 2.5f;
+                plrStamina += 1f;
                 staminaTime = 0f;
+                Debug.Log(plrStamina);
             }
         }
         else
@@ -88,10 +90,8 @@ public class PlayerLogic : MonoBehaviour
     void Update()
     {
         PlayerRotate();
-        PlayerSprintController(plrInp.GetSpacePressed());
-        StaminaBar(plrInp.GetSpacePressed());
-
-        mousPosSimple = new Vector3(mousPosTrans.position.x, transform.position.y, mousPosTrans.position.z);
+        PlayerSprintController(plrInp.SprintIsPressed());
+        StaminaBar(plrInp.SprintIsPressed());
     }
 
     private void FixedUpdate()

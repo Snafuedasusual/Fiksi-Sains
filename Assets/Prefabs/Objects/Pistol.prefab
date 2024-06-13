@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4602651984972536621}
   - component: {fileID: 1551595413563952492}
   - component: {fileID: 1457217124316701529}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4727129319920660000}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -127,7 +127,7 @@ GameObject:
   - component: {fileID: 2647703703045426074}
   - component: {fileID: 2071150586139285824}
   - component: {fileID: 5195479670375469429}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Pistol
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -162,6 +162,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da69f079ad08e4943a55a40833ae795e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inventoryPrefab: {fileID: 0}
 --- !u!65 &5195479670375469429
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -194,7 +195,7 @@ GameObject:
   - component: {fileID: 3126213734670188065}
   - component: {fileID: 762291488970745502}
   - component: {fileID: 4101856272185564678}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Handle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
