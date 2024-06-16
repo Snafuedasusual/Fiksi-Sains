@@ -58,12 +58,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2722886142938273308, guid: 8609d95e60c87134c85682a76989bffe, type: 3}
       propertyPath: m_Name
-      value: Pistol Variant
+      value: I_Pistol
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5195479670375469429, guid: 8609d95e60c87134c85682a76989bffe, type: 3}
     - {fileID: 2071150586139285824, guid: 8609d95e60c87134c85682a76989bffe, type: 3}
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 3178931437415228221, guid: 8609d95e60c87134c85682a76989bffe, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2722886142938273308, guid: 8609d95e60c87134c85682a76989bffe, type: 3}
@@ -87,4 +88,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b74a986a037f6024882e393d933c789f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  name: Pistol
+  itemName: Pistol
+  fireCooldown: 0.45
+  knockBackPwr: 5
+  damage: 9.5

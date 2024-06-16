@@ -34,13 +34,11 @@ public class PlayerInput : MonoBehaviour
         {
             inputVector.x = Input.GetAxisRaw("Horizontal");
 
-        }
+        }  
+
+
+        moveDir = inputVector;   
         
-        //inputVector.y = Input.GetAxisRaw("Vertical");
-        //inputVector.x = Input.GetAxisRaw("Horizontal");
-
-
-        moveDir = inputVector;    
     }
 
     public Vector3 GetMousePosition()

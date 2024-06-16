@@ -1,55 +1,54 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class ItemScript : MonoBehaviour
+public class ItemScript : MonoBehaviour, F_Interaction
 {
     [SerializeField] GameObject inventoryPrefab;
     [SerializeField] private string itemName;
-    private void OnCollisionEnter(Collision collision)
+    [SerializeField] private int siblingOrder;
+    public void OnInteract(Transform plr)
     {
-        if (collision.gameObject.TryGetComponent<PlayerLogic>(out PlayerLogic plrLogic))
+        for(int i = 0;  i < plr.childCount; i++)
         {
-            //Debug.Log(collision.transform.name);
-            for (int i = 0; i < collision.transform.childCount; i++)
+            if (plr.GetChild(i).CompareTag("Inventory"))
             {
-                if (collision.transform.GetChild(i).CompareTag("Inventory"))
+                if(plr.GetChild(i).childCount > 0)
                 {
-                    if (collision.transform.GetChild(i).childCount > 0)
+                    for(int j = 0; j < plr.GetChild(i).childCount; j++)
                     {
-                        for (int j = 0; j < collision.transform.GetChild(i).childCount; j++)
+                        if(plr.GetChild(i).GetChild(j).TryGetComponent<ItemUses>(out ItemUses item))
                         {
-                            if (collision.transform.GetChild(i).GetChild(j).TryGetComponent<ItemUses>(out ItemUses item))
+                            if(item.GetName() == itemName)
                             {
-                                if (item.GetName() == itemName)
-                                {
-                                    Debug.Log("Same Name!");
-                                }
-                                else
-                                {
-                                    Instantiate(inventoryPrefab.transform, collision.transform.GetChild(i).transform);
-                                    Destroy(transform.gameObject);
-                                    break;
-                                }
+                                Debug.Log("Its the same!");
+                            }
+                            else
+                            {
+                                Transform itemAdded = Instantiate(inventoryPrefab.transform, plr.GetChild(i).transform);
+                                itemAdded.SetSiblingIndex(siblingOrder - 1);
+                                Destroy(transform.gameObject);
+                                break;
                             }
                         }
-                    }
-                    else
-                    {
-                        Instantiate(inventoryPrefab.transform, collision.transform.GetChild(i).transform);
-                        Destroy(transform.gameObject);
-                        break;
+                        else
+                        {
+
+                        }
                     }
                 }
                 else
                 {
-                    //Do Nothing
+                    Instantiate(inventoryPrefab.transform, plr.GetChild(i).transform);
+                    Destroy(transform.gameObject);
+                    break;
                 }
             }
-        }
-        else
-        {
-            //Do nothing
+            else
+            {
+                //Do Nothing.
+            }
         }
     }
 }

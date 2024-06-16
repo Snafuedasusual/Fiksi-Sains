@@ -5,12 +5,7 @@ using UnityEngine;
 public class ItemUses : MonoBehaviour
 {
     private string thisName;
-    public virtual void OnLClick()
-    {
-
-    }
-
-    public virtual void OnEPress()
+    public virtual void MainUse(bool isClicked, Transform source, Transform plr)
     {
 
     }

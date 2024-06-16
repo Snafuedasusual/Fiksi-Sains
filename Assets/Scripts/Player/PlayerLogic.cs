@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ public class PlayerLogic : MonoBehaviour
     float playerDirection;
 
     private float staminaTime = 0f;
-    private void PlayerMovement()
+    public void PlayerMovement()
     {
         float plrSpd = plrSpdBase + plrSprintApplied;
 
@@ -82,21 +83,28 @@ public class PlayerLogic : MonoBehaviour
 
         }
     }
+
     private void PlayerRotate()
     {
         transform.LookAt(new Vector3(plrInp.GetMousePosition().x, transform.position.y, plrInp.GetMousePosition().z));
     }
 
+    private void MouseOneClick()
+    {
+
+    }
+
+
     void Update()
     {
         PlayerRotate();
-        PlayerSprintController(plrInp.SprintIsPressed());
         StaminaBar(plrInp.SprintIsPressed());
     }
 
     private void FixedUpdate()
     {
         PlayerMovement();
+        PlayerSprintController(plrInp.SprintIsPressed());
     }
 
 }

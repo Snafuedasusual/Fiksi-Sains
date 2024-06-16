@@ -8,6 +8,7 @@ public class InventorySystem : MonoBehaviour
     [SerializeField] private GameObject inventory;
     [SerializeField] private PlayerInput plrInpt;
     [SerializeField] private Transform Handle;
+    [SerializeField] private Handle handleSc;
 
     private int Selectedinventory;
     private bool canSelect;
@@ -27,18 +28,19 @@ public class InventorySystem : MonoBehaviour
 
     private void ScrollInventory()
     {
+        InventoryChecker();
         if (plrInpt.GetSwitchInventoryCode() > 0f && canSelect)
         {
 
             if (Selectedinventory >= inventory.transform.childCount - 1)
             {
                 Selectedinventory = 0;
-                TestEquip();
+                Equip();
             }
             else
             {
                 Selectedinventory++;
-                TestEquip();
+                Equip();
             }
         }
         if (plrInpt.GetSwitchInventoryCode() < 0f && canSelect)
@@ -46,18 +48,17 @@ public class InventorySystem : MonoBehaviour
             if (Selectedinventory <= 0)
             {
                 Selectedinventory = inventory.transform.childCount - 1;
-                TestEquip();
+                Equip();
             }
             else
             {
                 Selectedinventory--;
-                TestEquip();
+                Equip();
             }
         }
-        //Debug.Log(Selectedinventory);
     }
 
-    private Transform TestEquip()
+    private Transform Equip()
     {
         Transform currentItem = null;
         Transform currentItemVisual = null;
@@ -72,15 +73,19 @@ public class InventorySystem : MonoBehaviour
                     currentItemVisual = currentItem.transform.GetChild(j);
                     currentItemVisual.gameObject.SetActive(true);
                 }
+                handleSc.selectedItem = currentItem;
+                handleSc.currentItemUses = currentItem.GetComponent<ItemUses>();
+                break;
             }
             else
             {
                 inventory.transform.GetChild(i).transform.position = inventory.transform.position;
-                //inventory.transform.GetChild(i).transform.GetChild(0).gameObject.SetActive(false);
                 for(int j = 0; j < inventory.transform.GetChild(i).transform.childCount; j++)
                 {
                     inventory.transform.GetChild(i).transform.GetChild(j).gameObject.SetActive(false);
                 }
+                handleSc.selectedItem = null;
+                handleSc.currentItemUses = null;
             }
 
         }
@@ -89,18 +94,17 @@ public class InventorySystem : MonoBehaviour
 
     public Transform GetCurrentItem()
     {
-        return TestEquip();
+        return Equip();
     }
 
     private void Update()
     {
-        InventoryChecker();
         ScrollInventory();
     }
 
     private void Start()
     {
-        TestEquip();
+        Equip();
     }
 
 
