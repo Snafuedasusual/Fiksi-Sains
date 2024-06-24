@@ -8,6 +8,7 @@ public class PlayerInput : MonoBehaviour
 {
     [SerializeField] private Camera cam;
     [SerializeField] private Transform posMous;
+    [SerializeField] private PlayerLogic playerLogic;
     private bool SI_debounce = true;
 
     private Vector2 moveDir;
@@ -34,20 +35,20 @@ public class PlayerInput : MonoBehaviour
         {
             inputVector.x = Input.GetAxisRaw("Horizontal");
 
-        }  
+        }
 
-
+        playerLogic.PlayerMovement();
         moveDir = inputVector;   
         
     }
 
-    public Vector3 GetMousePosition()
+    public void GetMousePosition()
     {
         Vector3 screenPosition = Input.mousePosition;
         screenPosition.z = cam.nearClipPlane + 12.5f;
         Vector3 mousePos = cam.ScreenToWorldPoint(screenPosition);
         posMous.position = mousePos;
-        return mousePos;
+        playerLogic.PlayerRotate(mousePos);
     }
     
     public Vector2 GetMoveDir()
@@ -102,13 +103,16 @@ public class PlayerInput : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftShift))
         {
             keyisPress = true;
+            playerLogic.PlayerSprintController(keyisPress);
             return keyisPress;
         }
         else
         {
             keyisPress = false;
+            playerLogic.PlayerSprintController(keyisPress);
             return keyisPress;
         }
+
     }
 
     public bool SprintIsPressed()

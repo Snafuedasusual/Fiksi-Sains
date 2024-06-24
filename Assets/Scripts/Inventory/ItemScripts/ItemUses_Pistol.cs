@@ -26,7 +26,7 @@ public class ItemUses_Pistol : ItemUses
             if (Physics.Raycast(source.position, source.forward, out RaycastHit hit, 30f))
             {
 
-                if(hit.transform.gameObject.TryGetComponent<TestEnemy>(out TestEnemy Enemy))
+                if(hit.transform.gameObject.TryGetComponent<EnemyScriptBase>(out EnemyScriptBase Enemy))
                 {
                     Enemy.InflictDamage(plr, knockBackPwr, damage);
                 }

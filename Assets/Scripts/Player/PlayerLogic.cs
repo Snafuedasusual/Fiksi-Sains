@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class PlayerLogic : MonoBehaviour
 {
+    [Header("Variables")]
     [SerializeField] PlayerInput plrInp;
     [SerializeField] float plrSpdBase = 5f;
     [SerializeField] float plrSprintBase = 10f;
@@ -14,25 +15,61 @@ public class PlayerLogic : MonoBehaviour
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Transform mousPosTrans;
 
-    float playerDirection;
+    public bool isSeen = false;
+    public bool inShadow = false;
 
+    float playerDirection;
+    [SerializeField]private Vector3[] plrTrails = new Vector3[5];
     private float staminaTime = 0f;
+    private float trailDropTime = 1.5f;
+
+    int indexAdd = 0;
+    int indexRemove = 0;
+
+
     public void PlayerMovement()
     {
         float plrSpd = plrSpdBase + plrSprintApplied;
 
         Vector3 plrMoveDir = new Vector3(plrInp.GetMoveDir().x, 0f, plrInp.GetMoveDir().y);
 
-        rb.MovePosition(rb.position + plrMoveDir * plrSpd * Time.fixedDeltaTime);
+        rb.MovePosition(rb.position + plrMoveDir * plrSpd * Time.deltaTime);
 
 
         playerDirection = Vector3.Dot(transform.forward, plrMoveDir);
+
+
+        if(plrMoveDir != Vector3.zero && isSeen)
+        {
+            float dropRate = 1.5f;
+            if (trailDropTime < dropRate)
+            {
+                trailDropTime = trailDropTime + Time.deltaTime;
+            }
+            else
+            {
+                if (indexAdd < plrTrails.Length)
+                {
+                    plrTrails[indexAdd] = transform.position;
+                    indexAdd++;
+                    Debug.Log(indexAdd);
+                }
+                else
+                {
+                    indexAdd = 0;
+                    plrTrails[indexAdd] = transform.position;
+                    Debug.Log(indexAdd);
+                }
+                trailDropTime = 0f;
+            }
+        }
 
         //transform.position += transform.forward  * PlrMoveDir.z * Time.deltaTime * plrSpd;
         //transform.position += transform.right * PlrMoveDir.x * Time.deltaTime * plrSpd;
     }
 
-    private void PlayerSprintController(bool spaceIsPressed)
+
+    public void PlayerSprintController(bool spaceIsPressed)
     {
 
         if (spaceIsPressed && plrStamina > 0 && playerDirection >= 0.3f)
@@ -60,7 +97,6 @@ public class PlayerLogic : MonoBehaviour
             {
                 plrStamina-= 1;
                 staminaTime = 0f;
-                Debug.Log(plrStamina);
 
             }
         }
@@ -75,7 +111,6 @@ public class PlayerLogic : MonoBehaviour
             {
                 plrStamina += 1f;
                 staminaTime = 0f;
-                Debug.Log(plrStamina);
             }
         }
         else
@@ -84,27 +119,15 @@ public class PlayerLogic : MonoBehaviour
         }
     }
 
-    private void PlayerRotate()
+    public void PlayerRotate(Vector3 mousPos)
     {
-        transform.LookAt(new Vector3(plrInp.GetMousePosition().x, transform.position.y, plrInp.GetMousePosition().z));
-    }
-
-    private void MouseOneClick()
-    {
-
+        transform.LookAt(new Vector3(mousPos.x, transform.position.y, mousPos.z));
     }
 
 
     void Update()
     {
-        PlayerRotate();
         StaminaBar(plrInp.SprintIsPressed());
-    }
-
-    private void FixedUpdate()
-    {
-        PlayerMovement();
-        PlayerSprintController(plrInp.SprintIsPressed());
     }
 
 }
