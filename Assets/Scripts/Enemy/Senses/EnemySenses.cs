@@ -40,7 +40,11 @@ public class EnemySenses : MonoBehaviour
                         {
                             enemyScript.state = EnemyScriptBase.EnemyState.LookAroundChase;
                             enemyScript.seenPlayer = null;
-                            Debug.Log("Player Lost!");
+                            knowsTarget = false;
+                        }
+                        if(enemyScript.state == EnemyScriptBase.EnemyState.Patroling)
+                        {
+                            knowsTarget = false;
                         }
                         else
                         {

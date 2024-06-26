@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using Unity.Burst.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerInput : MonoBehaviour
@@ -45,12 +47,11 @@ public class PlayerInput : MonoBehaviour
     public void GetMousePosition()
     {
         Vector3 screenPosition = Input.mousePosition;
-        screenPosition.z = cam.nearClipPlane + 12.5f;
+        screenPosition.z = cam.nearClipPlane + (cam.transform.position.y - transform.position.y);
         Vector3 mousePos = cam.ScreenToWorldPoint(screenPosition);
-        posMous.position = mousePos;
-        playerLogic.PlayerRotate(mousePos);
+        posMous.position = new Vector3(Mathf.Clamp(mousePos.x, transform.position.x - 16f, transform.position.x + 16f), 0, Mathf.Clamp(mousePos.z, transform.position.z - 16f, transform.position.z + 16f)); ;
+        playerLogic.PlayerRotate(posMous.transform.position);
     }
-    
     public Vector2 GetMoveDir()
     {
         return moveDir.normalized;
@@ -65,11 +66,6 @@ public class PlayerInput : MonoBehaviour
         }
 
         return mouse1press;
-    }
-
-    public int GetMouse1Press()
-    {
-        return Mouse1Press();
     }
 
     private float SwitchInventory()
@@ -87,7 +83,6 @@ public class PlayerInput : MonoBehaviour
             SI_debounce = false;
             switchInventory = -1f;   
         }
-        //Debug.Log(SI_debounce);
         return switchInventory;
     }
 
@@ -124,7 +119,6 @@ public class PlayerInput : MonoBehaviour
     {
         PlayerInputMove();
         GetMousePosition();
-        GetMouse1Press();
         SwitchInventory();
         HoldToSprint();
     }

@@ -22,7 +22,7 @@ public class EnemyScriptBase : MonoBehaviour
     {
         Idle,
         Patroling,
-        Searching,
+        Wandering,
         Chasing,
         ChasingLastKnown,
         LookAroundChase,
@@ -42,6 +42,7 @@ public class EnemyScriptBase : MonoBehaviour
             agent.isStopped = true;
             agent.velocity = Vector3.zero;
             m_Material.color = Color.green;
+            transform.LookAt(sender);
             KnockBack(sender, knockBackPwr);
             StartCoroutine(Cooldown());
         }
@@ -49,7 +50,6 @@ public class EnemyScriptBase : MonoBehaviour
     }
 
     IEnumerator HitCooldown;
-
     private IEnumerator Cooldown()
     {
         HitCooldown = Cooldown();
@@ -58,7 +58,6 @@ public class EnemyScriptBase : MonoBehaviour
         m_Material.color = Color.red;
         HitCooldown = null;
     }
-    
     private void KnockBack(Transform sender, float knockBackPwr)
     {
         Vector3 direction = (transform.position - sender.position).normalized;
@@ -84,12 +83,19 @@ public class EnemyScriptBase : MonoBehaviour
         {
             LookAroundChase();
         }
+        if(state == EnemyState.Wandering)
+        {
+            Wandering();
+        }
     }
-
+    
     public void ChasePlayer(Transform plrPos)
     {
         if(plrPos != null)
         {
+            looking = 0;
+            delayLook = 0;
+            delayLookChase = 0;
             agent.isStopped = false;
             agent.destination = plrPos.position;
             agent.speed = chaseSpeed;
@@ -103,9 +109,13 @@ public class EnemyScriptBase : MonoBehaviour
             }
             else
             {
-            agent.isStopped = false;
-            agent.destination = plrPos.position;
+                agent.isStopped = false;
+                agent.destination = plrPos.position;
             }
+        }
+        else
+        {
+
         }
     }
 
@@ -131,32 +141,43 @@ public class EnemyScriptBase : MonoBehaviour
     int looking = 0;
     private void LookAroundChase()
     {
-        int lookAmounts = 3;
+        int lookAmounts = 7;
         float lookRate = 2f;
-        if (lookRate < delayLookChase && looking < lookAmounts)
+        if (lookRate < delayLookChase && looking < lookAmounts && lerpRotateChaseRunning == null)
         {
             Vector3 direction = new Vector3(transform.position.x + Random.Range(-1f, 1f), transform.position.y, transform.position.z + Random.Range(-1f, 1f));
             Quaternion lookDir = Quaternion.LookRotation(transform.position - direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookDir, 1);
-            delayLookChase = 0;
-            looking++;
+            lerpRotateChaseRunning = lerpRotateChasing(lookDir);
+            StartCoroutine(lerpRotateChaseRunning);
         }
-        if (lookRate < delayLookChase && looking > lookAmounts)
+        if (looking >= lookAmounts && lerpRotateChaseRunning == null)
         {
             state = EnemyState.Patroling;
             looking = 0;
             delayLookChase = 0;
         }
-        if(lookRate > delayLookChase && looking < lookAmounts)
+        if(lookRate > delayLookChase && looking < lookAmounts && lerpRotateChaseRunning == null)
         {
             delayLookChase += Time.deltaTime;
         }
-        else
+    }
+
+    IEnumerator lerpRotateChaseRunning = null;
+    float IE_moveTime = 0;
+    IEnumerator lerpRotateChasing(Quaternion lookDir)
+    {
+        float maxTime = 1f;
+        while (IE_moveTime < maxTime && state == EnemyState.LookAroundChase && lerpRotateChaseRunning != null)
         {
-            state = EnemyState.Patroling;
-            looking = 0;
-            delayLookChase = 0;
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookDir, 10f * Time.deltaTime);
+            IE_moveTime += Time.deltaTime;
+            yield return 0;
         }
+        lerpRotateChaseRunning = null;
+        looking++;
+        delayLookChase = 0;
+        IE_moveTime = 0;
+        yield return null;
     }
 
 
@@ -168,6 +189,7 @@ public class EnemyScriptBase : MonoBehaviour
     int indexPatrol = 0;
     private void Patrolling()
     {
+        agent.enabled = true;
         agent.speed = defaultSpeed;
         agent.acceleration = defaultAcc;
         agent.isStopped = false;
@@ -180,6 +202,41 @@ public class EnemyScriptBase : MonoBehaviour
         if (indexPatrol == patrolRoute.Length)
         {
             indexPatrol = 0;
+        }
+    }
+
+    IEnumerator IsWandering = null;
+    float IE_wanderTime = 0;
+    IEnumerator WanderToPos(float value1, float value2)
+    {
+        float wanderRate = 3f;
+        while(IE_wanderTime < wanderRate && state == EnemyState.Wandering && IsWandering != null)
+        {
+            Vector3 direction = new Vector3(value1, transform.position.y , value2);
+            transform.LookAt(transform.position + direction);
+            rb.MovePosition(rb.position + direction * (defaultSpeed - 2.5f) * Time.deltaTime);
+            IE_wanderTime += Time.deltaTime;
+            yield return 0;
+        }
+        IE_wanderTime = 0f;
+        IsWandering = null;
+        yield return null;
+    }
+    private void Wandering()
+    {
+        if(IsWandering == null)
+        { 
+            agent.isStopped = true;
+            agent.speed = defaultSpeed;
+            agent.acceleration = defaultAcc;
+            float val1 = Random.Range(-5f, 5f);
+            float val2 = Random.Range(-5f, 5f);
+            IsWandering = WanderToPos(val1, val2);
+            StartCoroutine(IsWandering);
+        }
+        else
+        {
+
         }
     }
 
