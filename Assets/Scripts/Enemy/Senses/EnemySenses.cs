@@ -14,6 +14,7 @@ public class EnemySenses : MonoBehaviour
     RaycastHit secondCheck;
 
     private bool knowsTarget = false;
+    Transform targetSpotted;
 
     private void EnemySight()
     {
@@ -26,21 +27,26 @@ public class EnemySenses : MonoBehaviour
             {
                 if (RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position, direction + Vector3.up * 0.01f, out secondCheck))
                 {
+                    
                     float distance = Vector3.Distance(secondCheck.transform.position, transform.position);
                     if(secondCheck.transform == hitInfo.transform && distance <= maxVision)
                     {
                         //Debug.Log("Player Seen!");
                         enemyScript.state = EnemyScriptBase.EnemyState.Chasing;
                         enemyScript.seenPlayer = secondCheck.transform;
+                        enemyScript.targetPlayer = secondCheck.transform;
                         knowsTarget = true;
+                        targetSpotted = secondCheck.transform;
+                        targetSpotted.GetComponent<PlayerLogic>().isSeen = true;
                     }
                     else
                     {
-                        if(knowsTarget == true)
+                        if (knowsTarget == true && targetSpotted != null)
                         {
-                            enemyScript.state = EnemyScriptBase.EnemyState.LookAroundChase;
+                            enemyScript.state = EnemyScriptBase.EnemyState.ChasingLastKnown;
                             enemyScript.seenPlayer = null;
                             knowsTarget = false;
+                            targetSpotted.GetComponent<PlayerLogic>().isSeen = false;
                         }
                         if(enemyScript.state == EnemyScriptBase.EnemyState.Patroling)
                         {

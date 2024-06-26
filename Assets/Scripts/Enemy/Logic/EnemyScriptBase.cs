@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
@@ -34,6 +35,7 @@ public class EnemyScriptBase : MonoBehaviour
 
     public Transform targetPlayer;
     public Transform seenPlayer;
+    public Vector3[] plrTrails;
 
     public void InflictDamage(Transform sender, float knockBackPwr, float damage)
     {
@@ -87,6 +89,10 @@ public class EnemyScriptBase : MonoBehaviour
         {
             Wandering();
         }
+        if(state == EnemyState.ChasingLastKnown)
+        {
+            ChaseLastKnownPos(GetLastSeenPos(targetPlayer));
+        }
     }
     
     public void ChasePlayer(Transform plrPos)
@@ -101,6 +107,7 @@ public class EnemyScriptBase : MonoBehaviour
             agent.speed = chaseSpeed;
             agent.acceleration = chaseAcc;
             transform.LookAt(plrPos);
+            plrTrails = plrPos.GetComponent<PlayerLogic>().GetPlayerTrail();
             float distance = Vector3.Distance(plrPos.position, transform.position);
             if (distance < stopDistance)
             {
@@ -152,7 +159,7 @@ public class EnemyScriptBase : MonoBehaviour
         }
         if (looking >= lookAmounts && lerpRotateChaseRunning == null)
         {
-            state = EnemyState.Patroling;
+            state = EnemyState.Wandering;
             looking = 0;
             delayLookChase = 0;
         }
@@ -210,14 +217,29 @@ public class EnemyScriptBase : MonoBehaviour
     IEnumerator WanderToPos(float value1, float value2)
     {
         float wanderRate = 3f;
-        while(IE_wanderTime < wanderRate && state == EnemyState.Wandering && IsWandering != null)
+        while (IE_wanderTime < wanderRate && state == EnemyState.Wandering && IsWandering != null)
         {
-            Vector3 direction = new Vector3(value1, transform.position.y , value2);
+            Vector3 direction = new Vector3(value1, 0 , value2);
             transform.LookAt(transform.position + direction);
+            bool canMove = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position + Vector3.up * 0.5f, transform.forward, out RaycastHit hit, 1.5f, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Both);
             rb.MovePosition(rb.position + direction * (defaultSpeed - 2.5f) * Time.deltaTime);
             IE_wanderTime += Time.deltaTime;
+            if (canMove)
+            {
+
+                IE_wanderTime = 0f;
+                StopCoroutine(IsWandering);
+                IsWandering = null;
+                break;
+            }
+            else
+            {
+
+            }
+            Debug.Log(canMove);
             yield return 0;
         }
+        state = EnemyState.LookAroundChase;
         IE_wanderTime = 0f;
         IsWandering = null;
         yield return null;
@@ -233,6 +255,45 @@ public class EnemyScriptBase : MonoBehaviour
             float val2 = Random.Range(-5f, 5f);
             IsWandering = WanderToPos(val1, val2);
             StartCoroutine(IsWandering);
+
+        }
+        else
+        {
+
+        }
+    }
+
+    int countingTrails = 0;
+    Vector3 lastSeenPos;
+    private Vector3 GetLastSeenPos(Transform targetPlr)
+    {
+        float nearestDistance = 15f;
+        int maxCount = plrTrails.Length;
+        for (int i = 0; i < plrTrails.Length; i++)
+        {
+            float distance = Vector3.Distance(plrTrails[i], targetPlr.position);
+            if (distance < nearestDistance)
+            {
+                nearestDistance = distance;
+                ChaseLastKnownPos(plrTrails[i]);
+                lastSeenPos = plrTrails[i];
+            }
+            else
+            {
+                countingTrails++;
+            }
+        }
+        return lastSeenPos;
+
+    }
+
+    private void ChaseLastKnownPos(Vector3 lastKnownPos)
+    {
+        agent.destination = lastKnownPos;
+        float distance = Vector3.Distance(lastKnownPos, transform.position);
+        if(distance < 1)
+        {
+            state = EnemyState.LookAroundChase;
         }
         else
         {

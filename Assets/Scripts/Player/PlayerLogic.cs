@@ -41,7 +41,7 @@ public class PlayerLogic : MonoBehaviour
 
         if(plrMoveDir != Vector3.zero && isSeen)
         {
-            float dropRate = 1.5f;
+            float dropRate = 0.01f;
             if (trailDropTime < dropRate)
             {
                 trailDropTime = trailDropTime + Time.deltaTime;
@@ -52,13 +52,11 @@ public class PlayerLogic : MonoBehaviour
                 {
                     plrTrails[indexAdd] = transform.position;
                     indexAdd++;
-                    Debug.Log(indexAdd);
                 }
                 else
                 {
                     indexAdd = 0;
                     plrTrails[indexAdd] = transform.position;
-                    Debug.Log(indexAdd);
                 }
                 trailDropTime = 0f;
             }
@@ -124,6 +122,10 @@ public class PlayerLogic : MonoBehaviour
         transform.LookAt(new Vector3(mousPos.x, transform.position.y, mousPos.z));
     }
 
+    public Vector3[] GetPlayerTrail()
+    {
+        return plrTrails;
+    }
 
     void Update()
     {
