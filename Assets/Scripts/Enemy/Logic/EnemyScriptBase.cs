@@ -149,7 +149,7 @@ public class EnemyScriptBase : MonoBehaviour
     int looking = 0;
     private void LookAroundChase()
     {
-        int lookAmounts = 7;
+        int lookAmounts = 4;
         float lookRate = 2f;
         if (lookRate < delayLookChase && looking < lookAmounts && lerpRotateChaseRunning == null)
         {
@@ -222,22 +222,24 @@ public class EnemyScriptBase : MonoBehaviour
         {
             Vector3 direction = new Vector3(value1, 0 , value2);
             transform.LookAt(transform.position + direction);
-            bool canMove = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position + Vector3.up * 0.5f, transform.forward, out RaycastHit hit, 1.5f);
+            bool canMove = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position + Vector3.up * 0.5f, transform.forward, out RaycastHit hit, 1.5f, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Game);
             rb.MovePosition(rb.position + direction * (defaultSpeed - 2.5f) * Time.deltaTime);
             IE_wanderTime += Time.deltaTime;
             if (canMove)
             {
-
+                Vector3 newDir = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
+                direction = newDir;
+                /*
                 IE_wanderTime = 0f;
                 StopCoroutine(IsWandering);
                 IsWandering = null;
                 break;
+                */
             }
             else
             {
 
             }
-            Debug.Log(canMove);
             yield return 0;
         }
         state = EnemyState.LookAroundChase;
