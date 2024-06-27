@@ -18,6 +18,7 @@ public class EnemyScriptBase : MonoBehaviour
     [SerializeField] float defaultAcc;
     [SerializeField] float chaseSpeed;
     [SerializeField] float chaseAcc;
+    [SerializeField] Transform cube;
 
     public enum EnemyState
     {
@@ -221,7 +222,7 @@ public class EnemyScriptBase : MonoBehaviour
         {
             Vector3 direction = new Vector3(value1, 0 , value2);
             transform.LookAt(transform.position + direction);
-            bool canMove = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position + Vector3.up * 0.5f, transform.forward, out RaycastHit hit, 1.5f, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Both);
+            bool canMove = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position + Vector3.up * 0.5f, transform.forward, out RaycastHit hit, 1.5f);
             rb.MovePosition(rb.position + direction * (defaultSpeed - 2.5f) * Time.deltaTime);
             IE_wanderTime += Time.deltaTime;
             if (canMove)
@@ -289,6 +290,7 @@ public class EnemyScriptBase : MonoBehaviour
 
     private void ChaseLastKnownPos(Vector3 lastKnownPos)
     {
+        cube.transform.position = lastKnownPos;
         agent.destination = lastKnownPos;
         float distance = Vector3.Distance(lastKnownPos, transform.position);
         if(distance < 1)

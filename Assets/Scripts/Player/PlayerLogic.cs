@@ -19,7 +19,7 @@ public class PlayerLogic : MonoBehaviour
     public bool inShadow = false;
 
     float playerDirection;
-    [SerializeField]private Vector3[] plrTrails = new Vector3[5];
+    [SerializeField]private Vector3[] plrTrails = new Vector3[10];
     private float staminaTime = 0f;
     private float trailDropTime = 1.5f;
 

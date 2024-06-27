@@ -32,6 +32,8 @@ public class EnemySenses : MonoBehaviour
                     if(secondCheck.transform == hitInfo.transform && distance <= maxVision)
                     {
                         //Debug.Log("Player Seen!");
+                        StopAllCoroutines();
+                        IE_time = 0f;
                         enemyScript.state = EnemyScriptBase.EnemyState.Chasing;
                         enemyScript.seenPlayer = secondCheck.transform;
                         enemyScript.targetPlayer = secondCheck.transform;
@@ -46,7 +48,7 @@ public class EnemySenses : MonoBehaviour
                             enemyScript.state = EnemyScriptBase.EnemyState.ChasingLastKnown;
                             enemyScript.seenPlayer = null;
                             knowsTarget = false;
-                            targetSpotted.GetComponent<PlayerLogic>().isSeen = false;
+                            StartCoroutine(TimeBeforeLostPlayer(targetSpotted));
                         }
                         if(enemyScript.state == EnemyScriptBase.EnemyState.Patroling)
                         {
@@ -55,6 +57,7 @@ public class EnemySenses : MonoBehaviour
                         else
                         {
                             enemyScript.seenPlayer = null;
+
                         }
                     }
                 }
@@ -64,6 +67,30 @@ public class EnemySenses : MonoBehaviour
                 
             }
         }
+    }
+
+    float IE_time = 0;
+    IEnumerator TimeBeforeLostPlayer(Transform plr)
+    {
+        float timeRate = 1f;
+        while (timeRate > IE_time)
+        {
+            if(timeRate > IE_time)
+            {
+                IE_time += Time.deltaTime;
+            }
+            else
+            {
+            }
+            yield return 0;
+        }
+        targetSpotted.GetComponent <PlayerLogic>().isSeen = false;
+        yield return null;
+    }
+
+    private void TurnOffPlayerSeen(Transform plr)
+    {
+
     }
 
     private void Update()
