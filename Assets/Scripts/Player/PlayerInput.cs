@@ -49,7 +49,7 @@ public class PlayerInput : MonoBehaviour
         Vector3 screenPosition = Input.mousePosition;
         screenPosition.z = cam.nearClipPlane + (cam.transform.position.y - transform.position.y);
         Vector3 mousePos = cam.ScreenToWorldPoint(screenPosition);
-        posMous.position = new Vector3(Mathf.Clamp(mousePos.x, transform.position.x - 16f, transform.position.x + 16f), 0, Mathf.Clamp(mousePos.z, transform.position.z - 16f, transform.position.z + 16f)); ;
+        posMous.position = new Vector3(Mathf.Clamp(mousePos.x, transform.position.x - 10f, transform.position.x + 10f), 0, Mathf.Clamp(mousePos.z, transform.position.z - 10f, transform.position.z + 10f)); ;
         playerLogic.PlayerRotate(posMous.transform.position);
     }
     public Vector2 GetMoveDir()

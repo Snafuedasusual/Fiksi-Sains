@@ -14,9 +14,10 @@ public class PlayerLogic : MonoBehaviour
     [SerializeField] float plrStamina = 100f;
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Transform mousPosTrans;
+    [SerializeField] private float soundBar = 0;
 
     public bool isSeen = false;
-    public bool inShadow = false;
+    private bool inShadow = false;
 
     float playerDirection;
     [SerializeField]private Vector3[] plrTrails = new Vector3[10];
@@ -123,9 +124,9 @@ public class PlayerLogic : MonoBehaviour
         transform.LookAt(new Vector3(mousPos.x, transform.position.y, mousPos.z));
     }
 
-    public Vector3[] GetPlayerTrail()
+    public void MakeSound(float soundBarAdder)
     {
-        return plrTrails;
+        soundBar += soundBarAdder;
     }
 
     void Update()
