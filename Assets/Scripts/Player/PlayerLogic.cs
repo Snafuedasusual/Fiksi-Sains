@@ -16,16 +16,12 @@ public class PlayerLogic : MonoBehaviour
     [SerializeField] private Transform mousPosTrans;
     [SerializeField] private float soundBar = 0;
 
-    public bool isSeen = false;
     private bool inShadow = false;
 
     float playerDirection;
     [SerializeField]private Vector3[] plrTrails = new Vector3[10];
     private float staminaTime = 0f;
     private float trailDropTime = 1.5f;
-
-    int indexAdd = 0;
-    int indexRemove = 0;
 
 
     public void PlayerMovement()
@@ -38,31 +34,6 @@ public class PlayerLogic : MonoBehaviour
 
 
         playerDirection = Vector3.Dot(transform.forward, plrMoveDir);
-
-        /*
-        if(plrMoveDir != Vector3.zero)
-        {
-            float dropRate = 0.01f;
-            if (trailDropTime < dropRate)
-            {
-                trailDropTime = trailDropTime + Time.deltaTime;
-            }
-            else
-            {
-                if (indexAdd < plrTrails.Length)
-                {
-                    plrTrails[indexAdd] = transform.position;
-                    indexAdd++;
-                }
-                else
-                {
-                    indexAdd = 0;
-                    plrTrails[indexAdd] = transform.position;
-                }
-                trailDropTime = 0f;
-            }
-        }
-        */
 
         //transform.position += transform.forward  * PlrMoveDir.z * Time.deltaTime * plrSpd;
         //transform.position += transform.right * PlrMoveDir.x * Time.deltaTime * plrSpd;

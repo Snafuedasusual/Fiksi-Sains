@@ -149,7 +149,7 @@ public class EnemyScriptBase : MonoBehaviour
     private void LookAroundChase()
     {
         int lookAmounts = 4;
-        float lookRate = 2f;
+        float lookRate = 1.3f;
         if (lookRate < delayLookChase && looking < lookAmounts && lerpRotateChaseRunning == null)
         {
             Vector3 direction = new Vector3(transform.position.x + Random.Range(-1f, 1f), transform.position.y, transform.position.z + Random.Range(-1f, 1f));
@@ -212,6 +212,8 @@ public class EnemyScriptBase : MonoBehaviour
         }
     }
 
+    public Vector3 direction;
+    public Vector3 newDir;
     IEnumerator IsWandering = null;
     float IE_wanderTime = 0;
     IEnumerator WanderToPos(float value1, float value2)
@@ -219,21 +221,15 @@ public class EnemyScriptBase : MonoBehaviour
         float wanderRate = 3f;
         while (IE_wanderTime < wanderRate && state == EnemyState.Wandering && IsWandering != null)
         {
-            Vector3 direction = new Vector3(value1, 0 , value2);
+            direction = new Vector3(value1, 0, value2);
             transform.LookAt(transform.position + direction);
             bool canMove = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position + Vector3.up * 0.5f, transform.forward, out RaycastHit hit, 2.5f, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Game);
             IE_wanderTime += Time.deltaTime;
             if (canMove)
             {
-                Vector3 newDir = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
-                direction = newDir;
-                rb.MovePosition(rb.position + direction * (defaultSpeed - 2.5f) * Time.deltaTime);
-                /*
-                IE_wanderTime = 0f;
                 StopCoroutine(IsWandering);
                 IsWandering = null;
-                break;
-                */
+                Wandering();
             }
             else
             {
@@ -253,9 +249,10 @@ public class EnemyScriptBase : MonoBehaviour
             agent.isStopped = true;
             agent.speed = defaultSpeed;
             agent.acceleration = defaultAcc;
-            float val1 = Random.Range(-5f, 5f);
-            float val2 = Random.Range(-5f, 5f);
+            float val1 = Random.Range(-7, 7);
+            float val2 = Random.Range(-7, 7);
             IsWandering = WanderToPos(val1, val2);
+            Debug.Log($"{val1}, {val2}");
             StartCoroutine(IsWandering);
 
         }

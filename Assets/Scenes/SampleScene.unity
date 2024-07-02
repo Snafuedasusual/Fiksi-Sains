@@ -5513,7 +5513,7 @@ Transform:
   m_GameObject: {fileID: 426737000}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.125, z: 0.63000107}
+  m_LocalPosition: {x: 0, y: 0.125, z: 0.62999725}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9998,7 +9998,7 @@ Transform:
   m_GameObject: {fileID: 865028773}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -82, y: 0.298, z: 61.8}
+  m_LocalPosition: {x: -82.32, y: 0.298, z: 62.16}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -10048,7 +10048,6 @@ MonoBehaviour:
   rb: {fileID: 865028777}
   mousPosTrans: {fileID: 1911226065}
   soundBar: 0
-  isSeen: 0
   plrTrails:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
@@ -12869,7 +12868,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: 0.69159085, y: 0, z: 0, w: 0.7222895}
-  m_LocalPosition: {x: -82, y: 20.413576, z: 61.995956}
+  m_LocalPosition: {x: -82.32, y: 20.413576, z: 62.355953}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -15626,7 +15625,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1123627205}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -16071,7 +16070,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 889576248}
+  m_Mesh: {fileID: 257135991}
 --- !u!33 &1148292655
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -17945,7 +17944,7 @@ MonoBehaviour:
   player:
     serializedVersion: 2
     m_Bits: 8
-  maxVision: 25
+  maxVision: 20
   maxRayDist: 40
   minDotProduct: 0.11
 --- !u!195 &1254039027
@@ -18012,6 +18011,8 @@ MonoBehaviour:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
+  direction: {x: 0, y: 0, z: 0}
+  newDir: {x: 0, y: 0, z: 0}
 --- !u!43 &1254710265
 Mesh:
   m_ObjectHideFlags: 0
@@ -30418,7 +30419,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: aa0fcd4d3bbc99c40a956b9d06f5912f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: aa0fcd4d3bbc99c40a956b9d06f5912f, type: 3}
       propertyPath: m_LocalRotation.w
@@ -30454,7 +30455,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: aa0fcd4d3bbc99c40a956b9d06f5912f, type: 3}
       propertyPath: m_Name
-      value: MP_Character_Texture
+      value: VisualPlayer
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
