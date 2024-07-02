@@ -38,8 +38,8 @@ public class PlayerLogic : MonoBehaviour
 
         playerDirection = Vector3.Dot(transform.forward, plrMoveDir);
 
-
-        if(plrMoveDir != Vector3.zero && isSeen)
+        /*
+        if(plrMoveDir != Vector3.zero)
         {
             float dropRate = 0.01f;
             if (trailDropTime < dropRate)
@@ -61,6 +61,7 @@ public class PlayerLogic : MonoBehaviour
                 trailDropTime = 0f;
             }
         }
+        */
 
         //transform.position += transform.forward  * PlrMoveDir.z * Time.deltaTime * plrSpd;
         //transform.position += transform.right * PlrMoveDir.x * Time.deltaTime * plrSpd;

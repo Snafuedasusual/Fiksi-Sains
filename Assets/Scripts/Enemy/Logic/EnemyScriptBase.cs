@@ -36,7 +36,7 @@ public class EnemyScriptBase : MonoBehaviour
 
     public Transform targetPlayer;
     public Transform seenPlayer;
-    public Vector3[] plrTrails;
+    public Vector3[] plrTrails = new Vector3[10];
 
     public void InflictDamage(Transform sender, float knockBackPwr, float damage)
     {
@@ -108,7 +108,6 @@ public class EnemyScriptBase : MonoBehaviour
             agent.speed = chaseSpeed;
             agent.acceleration = chaseAcc;
             transform.LookAt(plrPos);
-            plrTrails = plrPos.GetComponent<PlayerLogic>().GetPlayerTrail();
             float distance = Vector3.Distance(plrPos.position, transform.position);
             if (distance < stopDistance)
             {
@@ -222,13 +221,13 @@ public class EnemyScriptBase : MonoBehaviour
         {
             Vector3 direction = new Vector3(value1, 0 , value2);
             transform.LookAt(transform.position + direction);
-            bool canMove = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position + Vector3.up * 0.5f, transform.forward, out RaycastHit hit, 1.5f, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Game);
-            rb.MovePosition(rb.position + direction * (defaultSpeed - 2.5f) * Time.deltaTime);
+            bool canMove = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position + Vector3.up * 0.5f, transform.forward, out RaycastHit hit, 2.5f, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Game);
             IE_wanderTime += Time.deltaTime;
             if (canMove)
             {
                 Vector3 newDir = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
                 direction = newDir;
+                rb.MovePosition(rb.position + direction * (defaultSpeed - 2.5f) * Time.deltaTime);
                 /*
                 IE_wanderTime = 0f;
                 StopCoroutine(IsWandering);
@@ -238,7 +237,7 @@ public class EnemyScriptBase : MonoBehaviour
             }
             else
             {
-
+                rb.MovePosition(rb.position + direction * (defaultSpeed - 2.5f) * Time.deltaTime);
             }
             yield return 0;
         }

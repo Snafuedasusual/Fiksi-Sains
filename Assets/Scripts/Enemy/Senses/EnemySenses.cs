@@ -35,19 +35,19 @@ public class EnemySenses : MonoBehaviour
                         StopAllCoroutines();
                         IE_time = 0f;
                         enemyScript.state = EnemyScriptBase.EnemyState.Chasing;
-                        enemyScript.seenPlayer = secondCheck.transform;
                         enemyScript.targetPlayer = secondCheck.transform;
+                        enemyScript.seenPlayer = secondCheck.transform;
                         knowsTarget = true;
                         targetSpotted = secondCheck.transform;
-                        targetSpotted.GetComponent<PlayerLogic>().isSeen = true;
+                        GetPlayerTrails();
                     }
                     else
                     {
                         if (knowsTarget == true && targetSpotted != null)
                         {
                             enemyScript.state = EnemyScriptBase.EnemyState.ChasingLastKnown;
-                            enemyScript.seenPlayer = null;
                             knowsTarget = false;
+                            enemyScript.seenPlayer = secondCheck.transform;
                             StartCoroutine(TimeBeforeLostPlayer(targetSpotted));
                         }
                         if(enemyScript.state == EnemyScriptBase.EnemyState.Patroling)
@@ -81,17 +81,44 @@ public class EnemySenses : MonoBehaviour
             }
             else
             {
+
             }
+            GetPlayerTrails();
             yield return 0;
+
         }
-        targetSpotted.GetComponent <PlayerLogic>().isSeen = false;
+        targetSpotted = null;
         yield return null;
     }
 
-    private void TurnOffPlayerSeen(Transform plr)
+    float IE_trailDelay;
+    int IE_trailIndex;
+    private void GetPlayerTrails()
     {
-
+        if (targetSpotted != null)
+        {
+            float dropRate = 0.01f;
+            if (IE_trailDelay < dropRate)
+            {
+                IE_trailDelay = IE_trailDelay + Time.deltaTime;
+            }
+            else
+            {
+                if (IE_trailIndex < enemyScript.plrTrails.Length)
+                {
+                    enemyScript.plrTrails[IE_trailIndex] = targetSpotted.transform.position;
+                    IE_trailIndex++;
+                }
+                else
+                {
+                    IE_trailIndex = 0;
+                    enemyScript.plrTrails[IE_trailIndex] = targetSpotted.transform.position;
+                }
+                IE_trailDelay = 0f;
+            }
+        }
     }
+
 
     private void Update()
     {
