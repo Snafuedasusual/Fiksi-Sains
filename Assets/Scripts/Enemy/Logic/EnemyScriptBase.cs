@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
 
-public class EnemyScriptBase : MonoBehaviour
+public class EnemyScriptBase : MonoBehaviour, IInflictDamage, IMakeSound
 {
     [SerializeField] Material m_Material;
     [SerializeField] Rigidbody rb;
@@ -38,15 +38,18 @@ public class EnemyScriptBase : MonoBehaviour
     public Transform seenPlayer;
     public Vector3[] plrTrails = new Vector3[10];
 
-    public void InflictDamage(Transform sender, float knockBackPwr, float damage)
+    public void DealDamage(float damage, Transform dmgSender, float knckBckPwr)
     {
         if(HitCooldown == null)
         {
             agent.isStopped = true;
             agent.velocity = Vector3.zero;
+            agent.enabled = false;
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
             m_Material.color = Color.green;
-            transform.LookAt(sender);
-            KnockBack(sender, knockBackPwr);
+            transform.LookAt(dmgSender);
+            KnockBack(dmgSender, knckBckPwr);
             StartCoroutine(Cooldown());
         }
         
@@ -56,7 +59,12 @@ public class EnemyScriptBase : MonoBehaviour
     private IEnumerator Cooldown()
     {
         HitCooldown = Cooldown();
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(0.5f);
+        rb.isKinematic = true;
+        rb.isKinematic = false;
+        agent.enabled = true;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
         agent.isStopped = false;
         m_Material.color = Color.red;
         HitCooldown = null;
@@ -98,7 +106,7 @@ public class EnemyScriptBase : MonoBehaviour
     
     public void ChasePlayer(Transform plrPos)
     {
-        if(plrPos != null)
+        if(plrPos != null && HitCooldown == null)
         {
             looking = 0;
             delayLook = 0;
@@ -150,20 +158,20 @@ public class EnemyScriptBase : MonoBehaviour
     {
         int lookAmounts = 4;
         float lookRate = 1.3f;
-        if (lookRate < delayLookChase && looking < lookAmounts && lerpRotateChaseRunning == null)
+        if (lookRate < delayLookChase && looking < lookAmounts && lerpRotateChaseRunning == null && HitCooldown == null)
         {
             Vector3 direction = new Vector3(transform.position.x + Random.Range(-1f, 1f), transform.position.y, transform.position.z + Random.Range(-1f, 1f));
             Quaternion lookDir = Quaternion.LookRotation(transform.position - direction);
             lerpRotateChaseRunning = lerpRotateChasing(lookDir);
             StartCoroutine(lerpRotateChaseRunning);
         }
-        if (looking >= lookAmounts && lerpRotateChaseRunning == null)
+        if (looking >= lookAmounts && lerpRotateChaseRunning == null && HitCooldown == null)
         {
             state = EnemyState.Wandering;
             looking = 0;
             delayLookChase = 0;
         }
-        if(lookRate > delayLookChase && looking < lookAmounts && lerpRotateChaseRunning == null)
+        if(lookRate > delayLookChase && looking < lookAmounts && lerpRotateChaseRunning == null && HitCooldown == null)
         {
             delayLookChase += Time.deltaTime;
         }
@@ -219,7 +227,7 @@ public class EnemyScriptBase : MonoBehaviour
     IEnumerator WanderToPos(float value1, float value2)
     {
         float wanderRate = 3f;
-        while (IE_wanderTime < wanderRate && state == EnemyState.Wandering && IsWandering != null)
+        while (IE_wanderTime < wanderRate && state == EnemyState.Wandering && IsWandering != null && HitCooldown == null)
         {
             direction = new Vector3(value1, 0, value2);
             transform.LookAt(transform.position + direction);
@@ -244,7 +252,7 @@ public class EnemyScriptBase : MonoBehaviour
     }
     private void Wandering()
     {
-        if(IsWandering == null)
+        if(IsWandering == null && HitCooldown == null)
         { 
             agent.isStopped = true;
             agent.speed = defaultSpeed;
@@ -288,16 +296,19 @@ public class EnemyScriptBase : MonoBehaviour
 
     private void ChaseLastKnownPos(Vector3 lastKnownPos)
     {
-        cube.transform.position = lastKnownPos;
-        agent.destination = lastKnownPos;
-        float distance = Vector3.Distance(lastKnownPos, transform.position);
-        if(distance < 1)
+        if(HitCooldown == null)
         {
-            state = EnemyState.LookAroundChase;
-        }
-        else
-        {
+            cube.transform.position = lastKnownPos;
+            agent.destination = lastKnownPos;
+            float distance = Vector3.Distance(lastKnownPos, transform.position);
+            if (distance < 1)
+            {
+                state = EnemyState.LookAroundChase;
+            }
+            else
+            {
 
+            }
         }
     }
 

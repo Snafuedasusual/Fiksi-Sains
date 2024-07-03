@@ -4,9 +4,10 @@ using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerLogic : MonoBehaviour
+public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
 {
     [Header("Variables")]
+    [SerializeField] float plrHealth = 100;
     [SerializeField] PlayerInput plrInp;
     [SerializeField] float plrSpdBase = 5f;
     [SerializeField] float plrSprintBase = 10f;
@@ -95,9 +96,18 @@ public class PlayerLogic : MonoBehaviour
         transform.LookAt(new Vector3(mousPos.x, transform.position.y, mousPos.z));
     }
 
-    public void MakeSound(float soundBarAdder)
+    public void SoundProducer(float soundAdder)
     {
-        soundBar += soundBarAdder;
+
+    }
+
+    public void DealDamage(float dmgVal, Transform dmgSender)
+    {
+        plrHealth -= dmgVal;
+        if(plrHealth < 1)
+        {
+            transform.gameObject.SetActive(false);
+        }
     }
 
     void Update()

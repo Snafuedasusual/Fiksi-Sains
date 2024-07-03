@@ -8495,7 +8495,7 @@ Transform:
   m_GameObject: {fileID: 426737000}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.125, z: 0.62999725}
+  m_LocalPosition: {x: 0, y: 0.125, z: 0.63000107}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9114,7 +9114,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 1630873143}
+  m_Mesh: {fileID: 1965843407}
 --- !u!33 &501800062
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -17699,10 +17699,11 @@ Transform:
   m_GameObject: {fileID: 865028773}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -82.32, y: 0.298, z: 62.16}
+  m_LocalPosition: {x: -82.4, y: 0.298, z: 62.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
+  - {fileID: 1760465056}
   - {fileID: 1405418983}
   - {fileID: 1109383604}
   - {fileID: 1911226065}
@@ -17711,7 +17712,6 @@ Transform:
   - {fileID: 756986154}
   - {fileID: 426737001}
   - {fileID: 383145914}
-  - {fileID: 1760465056}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &865028775
@@ -17741,6 +17741,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0ba4ac5faf75754fabe8ac4da965c24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  plrHealth: 100
   plrInp: {fileID: 865028775}
   plrSpdBase: 5
   plrSprintBase: 10
@@ -21231,7 +21232,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: 0.69159085, y: 0, z: 0, w: 0.7222895}
-  m_LocalPosition: {x: -82.32, y: 20.413576, z: 62.355953}
+  m_LocalPosition: {x: -82.4, y: 20.413574, z: 62.295956}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -45468,7 +45469,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: aa0fcd4d3bbc99c40a956b9d06f5912f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.25
+      value: 2.2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: aa0fcd4d3bbc99c40a956b9d06f5912f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -56269,7 +56270,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
+  m_Mesh: {fileID: 1630873143}
 --- !u!33 &2082294874
 MeshFilter:
   m_ObjectHideFlags: 10
