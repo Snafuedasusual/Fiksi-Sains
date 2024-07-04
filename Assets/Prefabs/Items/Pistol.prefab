@@ -166,6 +166,8 @@ MonoBehaviour:
   inventoryPrefab: {fileID: 5843989249240467888, guid: 627967fc4d63f8d4798e9dadf2668f8a, type: 3}
   itemName: Pistol
   siblingOrder: 2
+  isFirearm: 1
+  ammo: 12
 --- !u!65 &5195479670375469429
 BoxCollider:
   m_ObjectHideFlags: 0

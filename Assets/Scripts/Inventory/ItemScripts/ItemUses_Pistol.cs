@@ -9,6 +9,8 @@ public class ItemUses_Pistol : ItemUses
     [SerializeField] private float knockBackPwr;
     [SerializeField] private float damage;
 
+    public float crrntAmmo;
+
     bool click_debounce = false;
 
     public override string GetName()
@@ -19,10 +21,11 @@ public class ItemUses_Pistol : ItemUses
     IEnumerator HasFired = null;
     public override void MainUse(bool isClicked, Transform source, Transform plr)
     {
-        if (isClicked == true && click_debounce == false && HasFired == null)
+        if (isClicked == true && click_debounce == false && HasFired == null && crrntAmmo > 0)
         {
             StartCoroutine(Cooldown());
             click_debounce = true;
+            crrntAmmo--;
             if (Physics.Raycast(source.position, source.forward, out RaycastHit hit, 30f))
             {
 

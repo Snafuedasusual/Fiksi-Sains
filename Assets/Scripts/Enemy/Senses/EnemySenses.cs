@@ -7,6 +7,7 @@ public class EnemySenses : MonoBehaviour
 {
     [SerializeField] private EnemyScriptBase enemyScript;
     [SerializeField] private LayerMask player;
+    [SerializeField] private LayerMask frienemy;
     [SerializeField] private float maxVision;
     [SerializeField] private float maxRayDist;
     [SerializeField] private float minDotProduct;
@@ -19,6 +20,7 @@ public class EnemySenses : MonoBehaviour
     private void EnemySight()
     {
         bool seePlayer = RotaryHeart.Lib.PhysicsExtension.Physics.BoxCast(transform.position + Vector3.up * 1f, new Vector3(10f, 0.5f, 0.05f), transform.forward, out hitInfo, Quaternion.LookRotation(transform.forward), maxRayDist, player);
+
         if (seePlayer)
         {
             Vector3 direction = hitInfo.transform.position - transform.position;
@@ -36,7 +38,6 @@ public class EnemySenses : MonoBehaviour
                         IE_time = 0f;
                         enemyScript.state = EnemyScriptBase.EnemyState.Chasing;
                         enemyScript.targetPlayer = secondCheck.transform;
-                        enemyScript.seenPlayer = secondCheck.transform;
                         knowsTarget = true;
                         targetSpotted = secondCheck.transform;
                         GetPlayerTrails();
@@ -47,7 +48,6 @@ public class EnemySenses : MonoBehaviour
                         {
                             enemyScript.state = EnemyScriptBase.EnemyState.ChasingLastKnown;
                             knowsTarget = false;
-                            enemyScript.seenPlayer = secondCheck.transform;
                             StartCoroutine(TimeBeforeLostPlayer(targetSpotted));
                         }
                         if(enemyScript.state == EnemyScriptBase.EnemyState.Patroling)
@@ -56,7 +56,6 @@ public class EnemySenses : MonoBehaviour
                         }
                         else
                         {
-                            enemyScript.seenPlayer = null;
 
                         }
                     }
@@ -75,14 +74,8 @@ public class EnemySenses : MonoBehaviour
         float timeRate = 1f;
         while (timeRate > IE_time)
         {
-            if(timeRate > IE_time)
-            {
-                IE_time += Time.deltaTime;
-            }
-            else
-            {
-
-            }
+          
+            IE_time += Time.deltaTime;
             GetPlayerTrails();
             yield return 0;
 

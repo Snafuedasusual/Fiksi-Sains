@@ -20,12 +20,23 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     private bool inShadow = false;
 
     float playerDirection;
-    [SerializeField]private Vector3[] plrTrails = new Vector3[10];
+    [SerializeField] private LayerMask enemyLyr;
     private float staminaTime = 0f;
-    private float trailDropTime = 1.5f;
 
+    public enum PlayerStates
+    {
+        Idle,
+        Walking,
+        Sprinting,
+        Attacking,
+        InteractingToggle,
+        InteractingHold,
+    }
 
-    public void PlayerMovement()
+    [SerializeField] PlayerStates plrState;
+    [SerializeField] PlayerStates defaultPlrState;
+
+    public Vector3 PlayerMovement()
     {
         float plrSpd = plrSpdBase + plrSprintApplied;
 
@@ -36,8 +47,23 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
 
         playerDirection = Vector3.Dot(transform.forward, plrMoveDir);
 
+        
+
+        if(plrMoveDir != Vector3.zero)
+        {
+            plrState = PlayerStates.Walking;
+            MoveSoundChecker();
+        }
+        else
+        {
+            plrState = PlayerStates.Idle;
+            soundBar = 0;
+        }
+
         //transform.position += transform.forward  * PlrMoveDir.z * Time.deltaTime * plrSpd;
         //transform.position += transform.right * PlrMoveDir.x * Time.deltaTime * plrSpd;
+
+        return plrMoveDir;
     }
 
 
@@ -47,6 +73,8 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
         if (spaceIsPressed && plrStamina > 0 && playerDirection >= 0.3f)
         {
             plrSprintApplied = plrSprintBase;
+            plrState = PlayerStates.Sprinting;
+            MoveSoundChecker();
         }
         else
         {
@@ -98,15 +126,69 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
 
     public void SoundProducer(float soundAdder)
     {
-
+        soundBar = soundAdder;
+        Collider[] listColliders = Physics.OverlapSphere(transform.position, 100f, enemyLyr);
+        foreach(var collider in listColliders)
+        {
+            if(collider.TryGetComponent<IMakeSound>(out IMakeSound sound))
+            {
+                sound.SoundReceiver(new Vector3(transform.position.x, transform.position.y, transform.position.z), soundBar);
+            }
+        }
     }
 
-    public void DealDamage(float dmgVal, Transform dmgSender)
+    public void MoveSoundChecker()
+    {
+        if (plrState == PlayerStates.Walking)
+        {
+            SoundProducer(0.3f);
+        }
+        if (plrState == PlayerStates.Sprinting)
+        {
+            SoundProducer(15f);
+        }
+        if(plrState == PlayerStates.Idle)
+        {
+            SoundProducer(0f);
+        }
+    }
+
+    public void DealDamage(float dmgVal, Transform dmgSender, float knckBckPwr)
     {
         plrHealth -= dmgVal;
+
         if(plrHealth < 1)
         {
             transform.gameObject.SetActive(false);
+        }
+        else
+        {
+            KnockBack(dmgSender, knckBckPwr);
+        }
+    }
+
+    float IE_knockTime;
+    IEnumerator HitIsCoolingDown;
+    private IEnumerator HitCooldown()
+    {
+        float draintime = 0.2f;
+        while(IE_knockTime < draintime)
+        {
+            IE_knockTime += Time.deltaTime;
+            yield return 0;
+        }
+        IE_knockTime = 0f;
+        HitIsCoolingDown = null;
+    }
+
+    public void KnockBack(Transform sender, float knockBackPwr)
+    {
+        if (HitIsCoolingDown == null)
+        {
+            HitIsCoolingDown = HitCooldown();
+            Vector3 direction = (transform.position - sender.position).normalized;
+            rb.AddForce(direction * knockBackPwr, ForceMode.Impulse);
+            StartCoroutine(HitIsCoolingDown);
         }
     }
 

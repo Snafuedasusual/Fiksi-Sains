@@ -8,6 +8,11 @@ public class ItemScript : MonoBehaviour, F_Interaction
     [SerializeField] GameObject inventoryPrefab;
     [SerializeField] private string itemName;
     [SerializeField] private int siblingOrder;
+    [SerializeField] private bool isFirearm;
+    
+    public float ammo;
+
+
     public void OnInteract(Transform plr)
     {
         for(int i = 0;  i < plr.childCount; i++)

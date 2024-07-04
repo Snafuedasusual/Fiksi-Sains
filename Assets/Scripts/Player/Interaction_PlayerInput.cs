@@ -6,6 +6,7 @@ public class Interaction_PlayerInput : MonoBehaviour
 {
     private bool e_debounce = false;
     private GameObject target = null;
+    [SerializeField] LayerMask interactable;
 
     private void FPressed()
     {
@@ -37,7 +38,7 @@ public class Interaction_PlayerInput : MonoBehaviour
         int layerMaskObj = 8 << layerNumObj;
 
 
-        if (Physics.CapsuleCast(transform.position + Vector3.down * 2f, transform.position + Vector3.up * 2.5f, capsuleSize, transform.forward, out hit, 2f))
+        if (RotaryHeart.Lib.PhysicsExtension.Physics.CapsuleCast(transform.position + Vector3.down * 2f, transform.position + Vector3.up * 2.5f, capsuleSize, transform.forward, out hit, 2f, interactable, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Both))
         {
             if(hit.transform.gameObject.TryGetComponent<F_Interaction>(out F_Interaction fInteract0) && target == null)
             {
@@ -51,6 +52,7 @@ public class Interaction_PlayerInput : MonoBehaviour
             {
 
             }
+            Debug.Log(target.transform);
         }
         else
         {
