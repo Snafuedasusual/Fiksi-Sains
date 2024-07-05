@@ -13,10 +13,7 @@ public class GameManagers : MonoBehaviour
 
     void OnPlayerDeath()
     {
-        if (sections[currentLevel-1].TryGetComponent<ILogicSection>(out ILogicSection logic))
-        {
-            logic.Restart();
-        }
+        handlers[currentLevel - 1].Restart();
     }
 
     public void OnLevelChange(Transform plr)
@@ -26,8 +23,10 @@ public class GameManagers : MonoBehaviour
             currentLevel++;
            if(IsLoading == null)
            {
-                IsLoading = LoadingLevel(plr);
-                StartCoroutine(IsLoading);
+                handlers[currentLevel - 1].player = plr.gameObject;
+                OnPlayerDeath();
+                //IsLoading = LoadingLevel(plr);
+                //StartCoroutine(IsLoading);
            }
         }
         else
@@ -40,7 +39,7 @@ public class GameManagers : MonoBehaviour
     IEnumerator LoadingLevel(Transform plr)
     {
         float loadTime = 0;
-        float loadRate = 0.5f;
+        float loadRate = 0.2f;
 
         for (int i = 0; i < sections[currentLevel - 1].transform.childCount; i++)
         {
@@ -54,11 +53,8 @@ public class GameManagers : MonoBehaviour
                 sections[currentLevel - 1].transform.GetChild(i).gameObject.SetActive(true);
             }
             loadTime = 0;
+            Debug.Log(i);
 
-        }
-        if(handlers[currentLevel - 1].TryGetComponent<BaseHandler>(out BaseHandler handler))
-        {
-            handler.player = plr.gameObject;
         }
         IsLoading = null;
         OnPlayerDeath();
@@ -67,5 +63,8 @@ public class GameManagers : MonoBehaviour
     private void Start()
     {
         instance = this;
+        GameObject plr = GameObject.FindGameObjectWithTag("Player");
+        handlers[currentLevel - 1].player = plr;
+        OnPlayerDeath();
     }
 }

@@ -92,3 +92,4 @@ MonoBehaviour:
   fireCooldown: 0.45
   knockBackPwr: 5
   damage: 9.5
+  crrntAmmo: 12

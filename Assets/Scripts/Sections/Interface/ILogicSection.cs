@@ -4,8 +4,5 @@ using UnityEngine;
 
 public interface ILogicSection
 {
-    public void Restart()
-    {
-
-    }
+    
 }

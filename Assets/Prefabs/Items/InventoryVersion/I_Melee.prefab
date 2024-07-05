@@ -80,3 +80,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemName: Melee
+  atkRange: 1.5
+  dmg: 5
+  knckBckPwr: 5

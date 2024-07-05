@@ -35,6 +35,10 @@ public class ItemUses_Pistol : ItemUses
                 }
             }
         }
+        if(crrntAmmo <= 0)
+        {
+            Destroy(gameObject);
+        }
         if (click_debounce == true && isClicked == true)
         {
 
@@ -46,6 +50,10 @@ public class ItemUses_Pistol : ItemUses
 
     }
 
+    private void OnDisable()
+    {
+        StopAllCoroutines();
+    }
     private IEnumerator Cooldown()
     {
         HasFired = Cooldown();

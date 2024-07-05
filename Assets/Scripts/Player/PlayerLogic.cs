@@ -31,9 +31,10 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
         Attacking,
         InteractingToggle,
         InteractingHold,
+        Hiding
     }
 
-    [SerializeField] PlayerStates plrState;
+    public PlayerStates plrState;
     [SerializeField] PlayerStates defaultPlrState;
 
     public Vector3 PlayerMovement()
@@ -42,28 +43,36 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
 
         Vector3 plrMoveDir = new Vector3(plrInp.GetMoveDir().x, 0f, plrInp.GetMoveDir().y);
 
-        rb.MovePosition(rb.position + plrMoveDir * plrSpd * Time.deltaTime);
-
-
-        playerDirection = Vector3.Dot(transform.forward, plrMoveDir);
-
-        
-
-        if(plrMoveDir != Vector3.zero)
+        if(plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding)
         {
-            plrState = PlayerStates.Walking;
-            MoveSoundChecker();
+
         }
         else
         {
-            plrState = PlayerStates.Idle;
-            soundBar = 0;
+            rb.MovePosition(rb.position + plrMoveDir * plrSpd * Time.deltaTime);
+
+
+            playerDirection = Vector3.Dot(transform.forward, plrMoveDir);
+
+
+
+            if (plrMoveDir != Vector3.zero)
+            {
+                plrState = PlayerStates.Walking;
+                MoveSoundChecker();
+            }
+            else
+            {
+                plrState = PlayerStates.Idle;
+                soundBar = 0;
+            }
+
+            //transform.position += transform.forward  * PlrMoveDir.z * Time.deltaTime * plrSpd;
+            //transform.position += transform.right * PlrMoveDir.x * Time.deltaTime * plrSpd;
+            
         }
-
-        //transform.position += transform.forward  * PlrMoveDir.z * Time.deltaTime * plrSpd;
-        //transform.position += transform.right * PlrMoveDir.x * Time.deltaTime * plrSpd;
-
         return plrMoveDir;
+
     }
 
 
@@ -121,7 +130,14 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
 
     public void PlayerRotate(Vector3 mousPos)
     {
-        transform.LookAt(new Vector3(mousPos.x, transform.position.y, mousPos.z));
+        if(plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding)
+        {
+
+        }
+        else
+        {
+            transform.LookAt(new Vector3(mousPos.x, transform.position.y, mousPos.z));
+        }
     }
 
     public void SoundProducer(float soundAdder)
@@ -177,13 +193,15 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
             IE_knockTime += Time.deltaTime;
             yield return 0;
         }
+        rb.isKinematic = false;
+        rb.isKinematic = true;
         IE_knockTime = 0f;
         HitIsCoolingDown = null;
     }
 
     public void KnockBack(Transform sender, float knockBackPwr)
     {
-        if (HitIsCoolingDown == null)
+        if (HitIsCoolingDown == null && plrState == PlayerStates.Idle)
         {
             HitIsCoolingDown = HitCooldown();
             Vector3 direction = (transform.position - sender.position).normalized;

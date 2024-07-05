@@ -8,6 +8,12 @@ using UnityEngine.UIElements;
 
 public class EnemyScriptBase : MonoBehaviour, IInflictDamage, IMakeSound
 {
+    [Header("Hearing Settings")]
+    [SerializeField] float hearingMultiplier;
+
+    [Header("AlertBar")]
+    [SerializeField] AlertBarEnemy alertBar;
+
     [Header("Basic Variables")]
     [SerializeField] float enemyHealth;
     [SerializeField] Material m_Material;
@@ -30,7 +36,8 @@ public class EnemyScriptBase : MonoBehaviour, IInflictDamage, IMakeSound
         Idle,
         Patroling,
         ReturnToPatrol,
-        Wandering,
+        WanderingIdle,
+        WanderingAlert,
         Chasing,
         ChasingLastKnown,
         LookAroundChase,
@@ -48,9 +55,7 @@ public class EnemyScriptBase : MonoBehaviour, IInflictDamage, IMakeSound
 
     [Header("Interaction Scripts")]
     [SerializeField] Attack atkScr;
-
-    [Header("Hearing Settings")]
-    [SerializeField] float hearingMultiplier;
+    
 
 
     public void DealDamage(float damage, Transform dmgSender, float knckBckPwr)
@@ -102,6 +107,7 @@ public class EnemyScriptBase : MonoBehaviour, IInflictDamage, IMakeSound
     {
         if (state == EnemyState.Chasing)
         {
+            //alertBar.AddAlertness(50f);
             ChasePlayer(targetPlayer);
         }
         if (state == EnemyState.LookAroundIdle)
@@ -115,12 +121,18 @@ public class EnemyScriptBase : MonoBehaviour, IInflictDamage, IMakeSound
             targetInvestigation = Vector3.zero;
             Patrolling();
         }
+        if(state == EnemyState.ReturnToPatrol)
+        {
+            ReturnToPatrolRoute();
+        }
         if(state == EnemyState.LookAroundChase)
         {
+            //alertBar.AlertBarController();
             LookAroundChase();
         }
-        if(state == EnemyState.Wandering)
+        if(state == EnemyState.WanderingAlert)
         {
+            //alertBar.AlertBarController();
             Wandering();
         }
         if(state == EnemyState.ChasingLastKnown)
@@ -231,7 +243,7 @@ public class EnemyScriptBase : MonoBehaviour, IInflictDamage, IMakeSound
         }
         if (looking >= lookAmounts && lerpRotateChaseRunning == null && HitCooldown == null)
         {
-            state = EnemyState.Wandering;
+            state = EnemyState.WanderingAlert;
             looking = 0;
             delayLookChase = 0;
         }
@@ -266,17 +278,19 @@ public class EnemyScriptBase : MonoBehaviour, IInflictDamage, IMakeSound
 
 
     //Function that controls Enemy patrolling
-    int indexPatrol = 0;
+    [SerializeField] int indexPatrol = 0;
     private void Patrolling()
     {
-        agent.enabled = true;
+        /*agent.enabled = true;
         agent.speed = defaultSpeed;
         agent.acceleration = defaultAcc;
         agent.isStopped = false;
-        agent.destination = patrolRoute[indexPatrol];
-        transform.LookAt(agent.velocity + transform.position);
-        float distance = Vector3.Distance(transform.position, agent.destination);
-        if (distance <= 1)
+        agent.destination = patrolRoute[indexPatrol];*/
+        Vector3 direction = (patrolRoute[indexPatrol] - rb.position).normalized;
+        rb.MovePosition(rb.position + direction * (defaultSpeed) * Time.deltaTime);
+        transform.LookAt(new Vector3(patrolRoute[indexPatrol].x, transform.position.y, patrolRoute[indexPatrol].z));
+        float distance = Vector3.Distance(patrolRoute[indexPatrol], transform.position);
+        if (distance <= 0.5f)
         {
             indexPatrol++;
         }
@@ -284,6 +298,23 @@ public class EnemyScriptBase : MonoBehaviour, IInflictDamage, IMakeSound
         {
             indexPatrol = 0;
         }
+    }
+
+    private void ReturnToPatrolRoute()
+    {
+        agent.enabled = true;
+        agent.speed = defaultSpeed;
+        agent.acceleration = defaultAcc;
+        agent.isStopped = false;
+        agent.destination = patrolRoute[indexPatrol];
+        float distance = Vector3.Distance(patrolRoute[indexPatrol], transform.position);
+        if (distance < 0.5)
+        {
+            state = EnemyState.Patroling;
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
+
     }
 
 
@@ -295,7 +326,7 @@ public class EnemyScriptBase : MonoBehaviour, IInflictDamage, IMakeSound
     IEnumerator WanderToPos(float value1, float value2)
     {
         float wanderRate = 3f;
-        while (IE_wanderTime < wanderRate && state == EnemyState.Wandering && IsWandering != null && HitCooldown == null)
+        while (IE_wanderTime < wanderRate && state == EnemyState.WanderingAlert && IsWandering != null && HitCooldown == null)
         {
             direction = new Vector3(value1, 0, value2);
             transform.LookAt(transform.position + direction);
@@ -480,6 +511,8 @@ public class EnemyScriptBase : MonoBehaviour, IInflictDamage, IMakeSound
             float distance = Vector3.Distance(soundSrc, transform.position);
             if (distance < (soundDist * hearingMultiplier))
             {
+                StopAllCoroutines();
+                //alertBar.AddAlertness(20f);
                 targetInvestigation = soundSrc;
                 state = EnemyState.SuspiciousLook;
                 SuspiciousLook();
@@ -487,6 +520,8 @@ public class EnemyScriptBase : MonoBehaviour, IInflictDamage, IMakeSound
             }
             if (distance < ((soundDist * hearingMultiplier) / 2))
             {
+                StopAllCoroutines();
+                //alertBar.AddAlertness(50f);
                 targetInvestigation = soundSrc;
                 state = EnemyState.SuspiciousApproachAlert;
             }
@@ -508,10 +543,4 @@ public class EnemyScriptBase : MonoBehaviour, IInflictDamage, IMakeSound
         m_Material.color = Color.red;
         state = defaultState;
     }
-
-
-
-
-
-
 }
