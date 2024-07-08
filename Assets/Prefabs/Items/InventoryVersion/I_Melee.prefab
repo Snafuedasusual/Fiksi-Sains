@@ -8,6 +8,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1228971664300127871, guid: 59f8e111f60d60f4a8c517b1e5516e11, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2785596993474952445, guid: 59f8e111f60d60f4a8c517b1e5516e11, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3241322424057257203, guid: 59f8e111f60d60f4a8c517b1e5516e11, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5792373298164958585, guid: 59f8e111f60d60f4a8c517b1e5516e11, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 9109441104643711706, guid: 59f8e111f60d60f4a8c517b1e5516e11, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -52,6 +68,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: I_Melee
       objectReference: {fileID: 0}
+    - target: {fileID: 9159220565390163804, guid: 59f8e111f60d60f4a8c517b1e5516e11, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5074290601291132928, guid: 59f8e111f60d60f4a8c517b1e5516e11, type: 3}
     - {fileID: 1355505617470322741, guid: 59f8e111f60d60f4a8c517b1e5516e11, type: 3}
@@ -83,3 +103,4 @@ MonoBehaviour:
   atkRange: 1.5
   dmg: 5
   knckBckPwr: 5
+  listColliders: []

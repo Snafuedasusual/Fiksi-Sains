@@ -173,10 +173,14 @@ public class EnemyScriptBase : MonoBehaviour, IInflictDamage, IMakeSound
             float distance = Vector3.Distance(plrPos.position, transform.position);
             if (distance < stopDistance)
             {
-                atkScr.MainAttack(plrPos, transform);
+                
                 agent.isStopped = true;
                 agent.velocity = Vector3.zero;
                 rb.angularVelocity = Vector3.zero;
+            }
+            if(distance < 2)
+            {
+                atkScr.MainAttack(plrPos, transform);
             }
             else
             {
@@ -281,11 +285,6 @@ public class EnemyScriptBase : MonoBehaviour, IInflictDamage, IMakeSound
     [SerializeField] int indexPatrol = 0;
     private void Patrolling()
     {
-        /*agent.enabled = true;
-        agent.speed = defaultSpeed;
-        agent.acceleration = defaultAcc;
-        agent.isStopped = false;
-        agent.destination = patrolRoute[indexPatrol];*/
         Vector3 direction = (patrolRoute[indexPatrol] - rb.position).normalized;
         rb.MovePosition(rb.position + direction * (defaultSpeed) * Time.deltaTime);
         transform.LookAt(new Vector3(patrolRoute[indexPatrol].x, transform.position.y, patrolRoute[indexPatrol].z));

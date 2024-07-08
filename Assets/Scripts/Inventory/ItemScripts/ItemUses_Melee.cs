@@ -8,22 +8,30 @@ public class ItemUses_Melee : ItemUses
     [SerializeField] private float atkRange;
     [SerializeField] private float dmg;
     [SerializeField] private float knckBckPwr;
+    [SerializeField] Collider[] listColliders;
     public override void MainUse(bool isClicked, Transform source, Transform plr)
     {
-        if(Cooldown == null)
+        if(Cooldown == null && isClicked == true)
         {
             StartCoroutine(CoolingDown());
-            Collider[] listColliders = RotaryHeart.Lib.PhysicsExtension.Physics.OverlapBox(transform.position + Vector3.up * 1f, new Vector3(1f, 0.5f, 1.5f), Quaternion.LookRotation(transform.forward), RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Both);
-            foreach (Collider collider in listColliders)
+            listColliders = RotaryHeart.Lib.PhysicsExtension.Physics.OverlapBox(plr.position+ (plr.transform.up * 1.5f), new Vector3(2f, 0.5f, 2f), Quaternion.LookRotation(plr.forward), RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Both);
+
+            for(int i = 0; i < listColliders.Length; i++)
             {
-                Vector3 direction = collider.transform.position - plr.position;
-                float distance = Vector3.Distance(collider.transform.position, plr.position);
+                Vector3 direction = listColliders[i].transform.position - plr.position;
+                float distance = Vector3.Distance(listColliders[i].transform.position, plr.position);
                 float dotDir = Vector3.Dot(plr.forward, direction.normalized);
                 if (dotDir > 0.3f && distance <= atkRange)
                 {
-                    if (collider.TryGetComponent<IInflictDamage>(out IInflictDamage Enemy))
+                    if(Physics.Raycast(plr.position + Vector3.up * 0.75f, direction, out RaycastHit hit,atkRange))
                     {
-                        Enemy.DealDamage(dmg, plr, knckBckPwr);
+                        if (hit.transform == listColliders[i].transform)
+                        {
+                            if(listColliders[i].transform != plr && listColliders[i].transform.TryGetComponent<IInflictDamage>(out IInflictDamage dealDmg))
+                            {
+                                dealDmg.DealDamage(dmg, plr, knckBckPwr);
+                            }
+                        }
                     }
                 }
             }

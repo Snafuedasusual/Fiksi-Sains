@@ -7,6 +7,7 @@ public class Attack_TerrorBird : Attack
     [Header("Attack Variables")]
     [SerializeField] float mainDmg;
     [SerializeField] float mainDmgKnckBck;
+    public float mainDmgRange;
     [SerializeField] float secDmg;
     [SerializeField] float secDmgKnckBck;
     [SerializeField] float thirdDmg;
@@ -18,16 +19,23 @@ public class Attack_TerrorBird : Attack
     {
         if(AtkCooling == null)
         {
-            if (target.TryGetComponent<IInflictDamage>(out IInflictDamage trgt))
+            if(Physics.Raycast(sender.position + Vector3.up * 0.75f, target.position - sender.position, out RaycastHit hit, mainDmgRange))
             {
-                trgt.DealDamage(mainDmg, sender, mainDmgKnckBck);
-                AtkCooling = AtkCooldown();
-                StartCoroutine(AtkCooling);
-            }
-            else
-            {
+                if(hit.transform == target.transform)
+                {
+                    if (hit.transform.TryGetComponent<IInflictDamage>(out IInflictDamage trgt))
+                    {
+                        trgt.DealDamage(mainDmg, sender, mainDmgKnckBck);
+                        AtkCooling = AtkCooldown();
+                        StartCoroutine(AtkCooling);
+                    }
+                    else
+                    {
 
+                    }
+                }
             }
+            
         }
         else
         {

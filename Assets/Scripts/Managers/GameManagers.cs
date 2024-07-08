@@ -65,6 +65,6 @@ public class GameManagers : MonoBehaviour
         instance = this;
         GameObject plr = GameObject.FindGameObjectWithTag("Player");
         handlers[currentLevel - 1].player = plr;
-        OnPlayerDeath();
+        //OnPlayerDeath();
     }
 }

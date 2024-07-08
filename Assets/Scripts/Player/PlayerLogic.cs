@@ -43,7 +43,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
 
         Vector3 plrMoveDir = new Vector3(plrInp.GetMoveDir().x, 0f, plrInp.GetMoveDir().y);
 
-        if(plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding)
+        if(plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold)
         {
 
         }
@@ -130,7 +130,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
 
     public void PlayerRotate(Vector3 mousPos)
     {
-        if(plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding)
+        if(plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold)
         {
 
         }
@@ -193,8 +193,8 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
             IE_knockTime += Time.deltaTime;
             yield return 0;
         }
-        rb.isKinematic = false;
         rb.isKinematic = true;
+        rb.isKinematic = false;
         IE_knockTime = 0f;
         HitIsCoolingDown = null;
     }
