@@ -431,7 +431,6 @@ public class EnemyScriptBase : MonoBehaviour, IInflictDamage, IMakeSound
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, lookDir, 10f * Time.deltaTime);
             IE_lookTime += Time.deltaTime;
-            Debug.Log(IE_lookTime);
             yield return 0;
         }
         IE_lookTime = 0f;

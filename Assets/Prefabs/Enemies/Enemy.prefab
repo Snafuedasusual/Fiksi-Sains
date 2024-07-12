@@ -130,7 +130,6 @@ MonoBehaviour:
   m_Material: {fileID: 2100000, guid: 62e98fd5d52812542936fcb4d05342e1, type: 2}
   rb: {fileID: 1528052850299266481}
   agent: {fileID: 2173055621023780408}
-  targetPos: {fileID: 0}
   stopDistance: 1
   atkRange: 1.75
   patrolRoute: []
@@ -170,6 +169,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainDmg: 10
   mainDmgKnckBck: 10
+  mainDmgRange: 3
   secDmg: 0
   secDmgKnckBck: 0
   thirdDmg: 0
