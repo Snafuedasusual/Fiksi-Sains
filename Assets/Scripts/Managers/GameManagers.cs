@@ -6,6 +6,7 @@ public class GameManagers : MonoBehaviour
 {
     public static GameManagers instance;
     [Header("Level")]
+    [SerializeField] Transform loadingSpot;
     [SerializeField] GameObject[] sections;
     [SerializeField] BaseHandler[] handlers;
     [SerializeField] int currentLevel;
@@ -23,10 +24,9 @@ public class GameManagers : MonoBehaviour
             currentLevel++;
            if(IsLoading == null)
            {
-                handlers[currentLevel - 1].player = plr.gameObject;
-                OnPlayerDeath();
-                //IsLoading = LoadingLevel(plr);
-                //StartCoroutine(IsLoading);
+                sections[currentLevel - 2].gameObject.SetActive(false);
+                IsLoading = LoadingLevel(plr);
+                StartCoroutine(IsLoading);
            }
         }
         else
@@ -38,24 +38,37 @@ public class GameManagers : MonoBehaviour
     IEnumerator IsLoading;
     IEnumerator LoadingLevel(Transform plr)
     {
-        float loadTime = 0;
-        float loadRate = 0.2f;
+        plr.transform.position = loadingSpot.position;
+        plr.transform.GetComponent<PlayerLogic>().plrState = PlayerLogic.PlayerStates.Hiding;
+        var loadTime = 0f;
+        var loadRate = 0.07f;
 
-        for (int i = 0; i < sections[currentLevel - 1].transform.childCount; i++)
+        for(int i = 0; i < sections[currentLevel-1].transform.childCount; i++)
         {
             while (loadTime < loadRate)
             {
                 loadTime += Time.deltaTime;
                 yield return 0;
             }
-            if (sections[currentLevel - 1].transform.GetChild(i).gameObject.activeSelf == false)
+            loadTime = 0f;
+            sections[currentLevel - 1].transform.GetChild(i).transform.gameObject.SetActive(true);
+            if (sections[currentLevel - 1].transform.GetChild(i).childCount > 0)
             {
-                sections[currentLevel - 1].transform.GetChild(i).gameObject.SetActive(true);
+                sections[currentLevel - 1].transform.GetChild(i).transform.gameObject.SetActive(true);
+                for(int j = 0; j < sections[currentLevel - 1].transform.GetChild(i).childCount; j++)
+                {
+                    while (loadTime < loadRate)
+                    {
+                        loadTime += Time.deltaTime;
+                        yield return 0;
+                    }
+                    loadTime = 0f;
+                    sections[currentLevel - 1].transform.GetChild(i).GetChild(j).gameObject.SetActive(true);
+                }
             }
-            loadTime = 0;
-            Debug.Log(i);
-
         }
+        plr.transform.GetComponent<PlayerLogic>().plrState = PlayerLogic.PlayerStates.Idle;
+        handlers[currentLevel - 1].player = plr.gameObject;
         IsLoading = null;
         OnPlayerDeath();
     }
@@ -65,6 +78,7 @@ public class GameManagers : MonoBehaviour
         instance = this;
         GameObject plr = GameObject.FindGameObjectWithTag("Player");
         handlers[currentLevel - 1].player = plr;
-        //OnPlayerDeath();
+        StartCoroutine(LoadingLevel(plr.transform));
     }
+
 }

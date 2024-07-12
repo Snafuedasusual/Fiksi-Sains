@@ -31,7 +31,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
         Attacking,
         InteractingToggle,
         InteractingHold,
-        Hiding
+        Hiding,
     }
 
     public PlayerStates plrState;
@@ -183,11 +183,12 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
         }
     }
 
-    float IE_knockTime;
+    
     IEnumerator HitIsCoolingDown;
     private IEnumerator HitCooldown()
     {
-        float draintime = 0.2f;
+        var IE_knockTime = 0f;
+        var draintime = 0.2f;
         while(IE_knockTime < draintime)
         {
             IE_knockTime += Time.deltaTime;
@@ -204,7 +205,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
         if (HitIsCoolingDown == null && plrState == PlayerStates.Idle)
         {
             HitIsCoolingDown = HitCooldown();
-            Vector3 direction = (transform.position - sender.position).normalized;
+            var direction = (transform.position - sender.position).normalized;
             rb.AddForce(direction * knockBackPwr, ForceMode.Impulse);
             StartCoroutine(HitIsCoolingDown);
         }

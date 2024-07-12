@@ -26,7 +26,6 @@ public class AlertBarEnemy : MonoBehaviour
         {
             isCalled = false;
         }
-        isCalled = false;
     }
 
     IEnumerator IsBarDraining;

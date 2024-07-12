@@ -38,7 +38,7 @@ public class Interaction_PlayerInput : MonoBehaviour
         int layerMaskObj = 8 << layerNumObj;
 
 
-        if (RotaryHeart.Lib.PhysicsExtension.Physics.CapsuleCast(transform.position + Vector3.down * 2f, transform.position + Vector3.up * 2.5f, capsuleSize, transform.forward, out hit, 2f, interactable, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Both))
+        if (RotaryHeart.Lib.PhysicsExtension.Physics.CapsuleCast(transform.position + Vector3.down * 2f, transform.position + Vector3.up * 2.5f, capsuleSize, transform.forward, out hit, 2f, interactable, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.None))
         {
             if(hit.transform.gameObject.TryGetComponent<F_Interaction>(out F_Interaction fInteract0) && target == null)
             {
