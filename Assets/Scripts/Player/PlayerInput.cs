@@ -50,6 +50,8 @@ public class PlayerInput : MonoBehaviour
     }
     //End Of Move Inputs----------------------------
 
+
+
     //Handles Mous Position Input and Events Related.
     public event EventHandler<SendMousPosInputArgs>OnMousePosInput;
     public class SendMousPosInputArgs : EventArgs { public Vector3 mousPos; }
@@ -62,14 +64,19 @@ public class PlayerInput : MonoBehaviour
         var bottomBorder = cam.ViewportToWorldPoint(new Vector3(0.0F, -0.5F, screenPosition.z));
         var leftBorder = cam.ViewportToWorldPoint(new Vector3(-0.5F, 0.0F, screenPosition.z));
         var rightBorder = cam.ViewportToWorldPoint(new Vector3(0.5F, 0.0F, screenPosition.z));
-        Debug.Log(topBorder);
         posMous.position = new Vector3(Mathf.Clamp(mousePos.x, transform.position.x - 16f, transform.position.x + 20f), 0, Mathf.Clamp(mousePos.z, transform.position.z - 10f, transform.position.z + 10f));
-        //posMous.position = new Vector3(Mathf.Clamp(mousePos.x, leftBorder.x, rightBorder.x), 0, Mathf.Clamp(mousePos.z, bottomBorder.y, topBorder.y));
         OnMousePosInput?.Invoke(this, new SendMousPosInputArgs { mousPos = posMous.transform.position});
     }
     //End Of Mouse Pos Inputs--------------------------
 
-
+    public event EventHandler OnInteractInput;
+    private void InteractInput()
+    {
+        if (Input.GetKey(KeyCode.F))
+        {
+            OnInteractInput?.Invoke(this, EventArgs.Empty);
+        }
+    }
     private float SwitchInventory()
     {
         SI_debounce = true;
@@ -95,6 +102,8 @@ public class PlayerInput : MonoBehaviour
     }
 
 
+
+    //Handles Shift Input and Events related.
     public event EventHandler<SendShiftHoldArgs> OnShiftHold;
     public class SendShiftHoldArgs : EventArgs { public bool keyIsPress; }
     private bool HoldToSprint()
@@ -110,14 +119,12 @@ public class PlayerInput : MonoBehaviour
             keyisPress = false;
             //playerLogic.PlayerSprintController(keyisPress);
         }
-        OnShiftHold?.Invoke(this, new SendShiftHoldArgs { keyIsPress = keyisPress});
+        OnShiftHold?.Invoke(this, new SendShiftHoldArgs { keyIsPress = keyisPress });
         return keyisPress;
     }
+    //End of Shift Input Detection-------------------------------------------------
 
-    public bool SprintIsPressed()
-    {
-        return HoldToSprint();
-    }
+
 
     private void Update()
     {
@@ -125,6 +132,7 @@ public class PlayerInput : MonoBehaviour
         GetMousePosition();
         SwitchInventory();
         HoldToSprint();
+        InteractInput();
     }
 
 }

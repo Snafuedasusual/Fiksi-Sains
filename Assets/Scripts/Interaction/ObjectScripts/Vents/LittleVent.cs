@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LittleVent : MonoBehaviour, F_Interaction
+public class LittleVent : MonoBehaviour, IInteraction
 {
     [SerializeField] Transform plrSpot;
     [SerializeField] BrainVent brainVent;

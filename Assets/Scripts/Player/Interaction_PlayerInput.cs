@@ -12,7 +12,7 @@ public class Interaction_PlayerInput : MonoBehaviour
     {
         if (!e_debounce && Input.GetKeyDown(KeyCode.F) && target != null)
         {
-            if(target.TryGetComponent<F_Interaction>(out F_Interaction interact))
+            if(target.TryGetComponent<IInteraction>(out IInteraction interact))
             {
                 interact.OnInteract(transform);
             }
@@ -40,11 +40,11 @@ public class Interaction_PlayerInput : MonoBehaviour
 
         if (RotaryHeart.Lib.PhysicsExtension.Physics.CapsuleCast(transform.position + Vector3.down * 2f, transform.position + Vector3.up * 2.5f, capsuleSize, transform.forward, out hit, 2f, interactable, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.None))
         {
-            if(hit.transform.gameObject.TryGetComponent<F_Interaction>(out F_Interaction fInteract0) && target == null)
+            if(hit.transform.gameObject.TryGetComponent<IInteraction>(out IInteraction fInteract0) && target == null)
             {
                 target = hit.transform.gameObject;
             }
-            if(hit.transform.gameObject.TryGetComponent<F_Interaction>(out F_Interaction fInteract1) && target != null)
+            if(hit.transform.gameObject.TryGetComponent<IInteraction>(out IInteraction fInteract1) && target != null)
             {
                 target = CompareDistance(target, hit.transform.gameObject, transform.gameObject);
             }

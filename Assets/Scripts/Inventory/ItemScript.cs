@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class ItemScript : MonoBehaviour, F_Interaction
+public class ItemScript : MonoBehaviour, IInteraction
 {
     [SerializeField] GameObject inventoryPrefab;
     [SerializeField] private string itemName;

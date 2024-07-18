@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hide_Spots : MonoBehaviour, F_Interaction
+public class Hide_Spots : MonoBehaviour, IInteraction
 {
     public void OnInteract(Transform plr)
     {

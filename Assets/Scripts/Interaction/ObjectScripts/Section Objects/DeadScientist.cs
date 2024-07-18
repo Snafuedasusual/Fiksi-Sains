@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DeadScientist : MonoBehaviour, F_Interaction
+public class DeadScientist : MonoBehaviour, IInteraction
 {
     [SerializeField] HandlerSection2 handle;
     public void OnInteract(Transform plr)

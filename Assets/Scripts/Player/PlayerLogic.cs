@@ -21,16 +21,22 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     [SerializeField] float plrSprintBase = 10f;
     [SerializeField] float plrSprintApplied = 0f;
     [SerializeField] float plrStamina = 100f;
+    [SerializeField] Transform targetInteract;
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Transform mousPosTrans;
     [SerializeField] private float soundBar = 0;
 
-    private bool inShadow = false;
+    [Header("LayerMasks")]
+    [SerializeField]
+    private LayerMask interactableObjs;
+    [SerializeField] private LayerMask enemyLyr;
+
 
     float playerDirection;
-    [SerializeField] private LayerMask enemyLyr;
-    private float staminaTime = 0f;
 
+
+    [Header("PlayerStates")]
+    [SerializeField] PlayerStates defaultPlrState;
     public enum PlayerStates
     {
         Idle,
@@ -41,18 +47,17 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
         InteractingHold,
         Hiding,
     }
-
     public PlayerStates plrState;
-    [SerializeField] PlayerStates defaultPlrState;
 
     private void Start()
     {
         plrInp.OnMoveInput += OnMoveInputDetector;
         plrInp.OnMousePosInput += OnMousePosInputDetector;
         plrInp.OnShiftHold += OnShiftHoldDetector;
+        plrInp.OnInteractInput += OnInteractInputDetector;
     }
 
-    
+
 
     //Handles Movement When Input Detected
     private Vector2 plrDirection;
@@ -103,6 +108,8 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     }
     //End Of Movement Script----------------------------------------------------
 
+
+
     //Handles Sprint when Input detected.
     private void OnShiftHoldDetector(object sender, SendShiftHoldArgs e)
     {
@@ -115,51 +122,125 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
         {
             plrSprintApplied = plrSprintBase;
             plrState = PlayerStates.Sprinting;
+            DrainStamina();
             MoveSoundChecker();
         }
         else
         {
             plrSprintApplied = 0f;
+            RefillStamina();
+
         }
 
     }
     //End of Sprint Script-----------------------------------------------------
 
-    private void StaminaBar(bool spaceIsPressed)
+
+
+    //Handles Stamina Bar Drain and Regen.
+    private void DrainStamina()
     {
-        float drainRate = 0.4f;
-        if (spaceIsPressed && plrStamina > 0 && playerDirection >= 0.3f)
+        if(IsStaminaDrainerRunning == null)
         {
-            if (staminaTime < drainRate)
-            {
-                staminaTime = staminaTime + Time.deltaTime * 15f;
-                
-            }
-            else
-            {
-                plrStamina-= 1;
-                staminaTime = 0f;
-
-            }
-        }
-        if(!spaceIsPressed && plrStamina < 100 || spaceIsPressed && plrStamina < 100 && playerDirection < 0.3f)
-        {
-            if (staminaTime < drainRate)
-            {
-                staminaTime = staminaTime + Time.deltaTime * 2.5f;
-
-            }
-            else
-            {
-                plrStamina += 1f;
-                staminaTime = 0f;
-            }
+            StartCoroutine(StaminaDrainer());
         }
         else
         {
 
         }
     }
+    IEnumerator IsStaminaDrainerRunning;
+    IEnumerator StaminaDrainer()
+    {
+        var staminaRate = 0f;
+        var staminaTime = 0.4f;
+        if (IsStaminaDrainerRunning != null)
+        {
+
+        }
+        else
+        {
+            if (plrState == PlayerStates.Sprinting)
+            {
+                IsStaminaDrainerRunning = StaminaDrainer();
+                while (plrState == PlayerStates.Sprinting)
+                {
+                    staminaRate = 0f;
+                    while (staminaRate < staminaTime)
+                    {
+                        staminaRate += Time.deltaTime * 20;
+                        yield return null;
+                    }
+                    if (plrStamina <= 0)
+                    {
+
+                    }
+                    else if (plrStamina > 0)
+                    {
+                        plrStamina--;
+
+                    }
+
+                }
+            }
+            else
+            {
+
+            }
+        }
+        IsStaminaDrainerRunning = null;
+    }
+
+    private void RefillStamina()
+    {
+        if(IsStaminaRefillRunning == null)
+        {
+            StartCoroutine(StaminaRefillController());
+        }
+    }
+    IEnumerator IsStaminaRefillRunning;
+    IEnumerator StaminaRefillController()
+    {
+        var staminaRate = 0f;
+        var staminaTime = 0.4f;
+        if(IsStaminaRefillRunning != null)
+        {
+
+        }
+        else
+        {
+            if(plrState != PlayerStates.Sprinting)
+            {
+                
+                IsStaminaRefillRunning = StaminaRefillController();
+                while (plrState != PlayerStates.Sprinting)
+                {
+                    staminaRate = 0f;
+                    while (staminaRate < staminaTime)
+                    {
+                        staminaRate += Time.deltaTime * 2.5f;
+                        yield return null;
+                    }
+                    if (plrStamina == 100)
+                    {
+
+                    }
+                    else if (plrStamina < 100)
+                    {
+                        plrStamina++;
+                    }
+                }
+            }
+            else
+            {
+                
+            }
+            
+        }
+        IsStaminaRefillRunning = null;
+    }
+    //End of Stamina Bar script-----------------------------
+
 
 
     //Handles Player Look At When Mouse Pos Input Detected.
@@ -180,7 +261,39 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     }
     //End Of Player Look At Script----------------------------------------------------
 
-    
+    //Handles Interactions when Input detected.
+    private void OnInteractInputDetector(object sender, EventArgs e)
+    {
+        PlayerInteracts();
+    }
+    private void PlayerInteracts()
+    {
+        if(targetInteract == null)
+        {
+
+        }
+        else
+        {
+            if(targetInteract.TryGetComponent(out IInteraction interact))
+            {
+                interact.OnInteract(transform);
+            }
+        }
+    }
+    private void InteractionDetector()
+    {
+        var highestPoint = transform.position + Vector3.up * 3f;
+        var playerWidth = 0.35f;
+        var playerArmLength = 1.75f;
+        if (RotaryHeart.Lib.PhysicsExtension.Physics.CapsuleCast(transform.position, highestPoint, playerWidth, transform.forward, out RaycastHit hit, playerArmLength, interactableObjs, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.None))
+        {
+            targetInteract = hit.transform;
+        }
+        else
+        {
+            targetInteract = null;
+        }
+    }    
 
     public void SoundProducer(float soundAdder)
     {
@@ -241,7 +354,6 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
         IE_knockTime = 0f;
         HitIsCoolingDown = null;
     }
-
     public void KnockBack(Transform sender, float knockBackPwr)
     {
         if (HitIsCoolingDown == null && plrState == PlayerStates.Idle)
@@ -255,7 +367,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
 
     void Update()
     {
-        StaminaBar(plrInp.SprintIsPressed());
+        InteractionDetector();
     }
 
     private void OnDisable()
