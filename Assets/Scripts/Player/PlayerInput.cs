@@ -1,10 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
+using UnityEditor.PackageManager;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerInput : MonoBehaviour
 {
@@ -15,9 +18,12 @@ public class PlayerInput : MonoBehaviour
 
     private Vector2 moveDir;
 
+    //Handles Move Input and Events Related.
+    public event EventHandler<SendMoveInputArgs> OnMoveInput;
+    public class SendMoveInputArgs : EventArgs { public Vector2 plrDir; }
     private void PlayerInputMove()
     {
-        Vector2 inputVector = new Vector2(0, 0);
+        var inputVector = new Vector2(0, 0);
         if (Input.GetKey(KeyCode.W))
         {
             inputVector.y = Input.GetAxisRaw("Vertical");
@@ -38,40 +44,36 @@ public class PlayerInput : MonoBehaviour
             inputVector.x = Input.GetAxisRaw("Horizontal");
 
         }
-
-        playerLogic.PlayerMovement();
+        OnMoveInput?.Invoke(this, new SendMoveInputArgs {plrDir = inputVector});
         moveDir = inputVector;   
         
     }
+    //End Of Move Inputs----------------------------
 
+    //Handles Mous Position Input and Events Related.
+    public event EventHandler<SendMousPosInputArgs>OnMousePosInput;
+    public class SendMousPosInputArgs : EventArgs { public Vector3 mousPos; }
     public void GetMousePosition()
     {
-        Vector3 screenPosition = Input.mousePosition;
+        var screenPosition = Input.mousePosition;
         screenPosition.z = cam.nearClipPlane + (cam.transform.position.y - transform.position.y);
-        Vector3 mousePos = cam.ScreenToWorldPoint(screenPosition);
-        posMous.position = new Vector3(Mathf.Clamp(mousePos.x, transform.position.x - 10f, transform.position.x + 10f), 0, Mathf.Clamp(mousePos.z, transform.position.z - 10f, transform.position.z + 10f)); ;
-        playerLogic.PlayerRotate(posMous.transform.position);
+        var mousePos = cam.ScreenToWorldPoint(screenPosition);
+        var topBorder = cam.ViewportToWorldPoint(new Vector3(0.0F, 0.5F, screenPosition.z));
+        var bottomBorder = cam.ViewportToWorldPoint(new Vector3(0.0F, -0.5F, screenPosition.z));
+        var leftBorder = cam.ViewportToWorldPoint(new Vector3(-0.5F, 0.0F, screenPosition.z));
+        var rightBorder = cam.ViewportToWorldPoint(new Vector3(0.5F, 0.0F, screenPosition.z));
+        Debug.Log(topBorder);
+        posMous.position = new Vector3(Mathf.Clamp(mousePos.x, transform.position.x - 16f, transform.position.x + 20f), 0, Mathf.Clamp(mousePos.z, transform.position.z - 10f, transform.position.z + 10f));
+        //posMous.position = new Vector3(Mathf.Clamp(mousePos.x, leftBorder.x, rightBorder.x), 0, Mathf.Clamp(mousePos.z, bottomBorder.y, topBorder.y));
+        OnMousePosInput?.Invoke(this, new SendMousPosInputArgs { mousPos = posMous.transform.position});
     }
-    public Vector2 GetMoveDir()
-    {
-        return moveDir.normalized;
-    }
+    //End Of Mouse Pos Inputs--------------------------
 
-    private int Mouse1Press()
-    {
-        int mouse1press = 0;
-        if (Input.GetKey(KeyCode.Mouse0))
-        {
-            mouse1press = 1;
-        }
-
-        return mouse1press;
-    }
 
     private float SwitchInventory()
     {
         SI_debounce = true;
-        float switchInventory = 0f;
+        var switchInventory = 0f;
         if(Input.GetKeyDown(KeyCode.E) && SI_debounce == true)
         {
             SI_debounce = false;
@@ -92,22 +94,24 @@ public class PlayerInput : MonoBehaviour
         return SwitchInventory();
     }
 
+
+    public event EventHandler<SendShiftHoldArgs> OnShiftHold;
+    public class SendShiftHoldArgs : EventArgs { public bool keyIsPress; }
     private bool HoldToSprint()
     {
-        bool keyisPress = false;
+        var keyisPress = false;
         if (Input.GetKey(KeyCode.LeftShift))
         {
             keyisPress = true;
-            playerLogic.PlayerSprintController(keyisPress);
-            return keyisPress;
+            //playerLogic.PlayerSprintController(keyisPress);
         }
         else
         {
             keyisPress = false;
-            playerLogic.PlayerSprintController(keyisPress);
-            return keyisPress;
+            //playerLogic.PlayerSprintController(keyisPress);
         }
-
+        OnShiftHold?.Invoke(this, new SendShiftHoldArgs { keyIsPress = keyisPress});
+        return keyisPress;
     }
 
     public bool SprintIsPressed()

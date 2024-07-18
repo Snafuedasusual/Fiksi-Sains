@@ -1,14 +1,22 @@
+using JetBrains.Annotations;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
+using static PlayerInput;
 
 public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
 {
+    [Header("Components")]
+    [SerializeField] PlayerInput plrInp;
+    [SerializeField] InventorySystem inventorySystem;
+    [SerializeField] Handle handle;
+
     [Header("Variables")]
     [SerializeField] float plrHealth = 100;
-    [SerializeField] PlayerInput plrInp;
     [SerializeField] float plrSpdBase = 5f;
     [SerializeField] float plrSprintBase = 10f;
     [SerializeField] float plrSprintApplied = 0f;
@@ -37,13 +45,28 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     public PlayerStates plrState;
     [SerializeField] PlayerStates defaultPlrState;
 
-    public Vector3 PlayerMovement()
+    private void Start()
     {
-        float plrSpd = plrSpdBase + plrSprintApplied;
+        plrInp.OnMoveInput += OnMoveInputDetector;
+        plrInp.OnMousePosInput += OnMousePosInputDetector;
+        plrInp.OnShiftHold += OnShiftHoldDetector;
+    }
 
-        Vector3 plrMoveDir = new Vector3(plrInp.GetMoveDir().x, 0f, plrInp.GetMoveDir().y);
+    
 
-        if(plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold)
+    //Handles Movement When Input Detected
+    private Vector2 plrDirection;
+    private void OnMoveInputDetector(object sender, SendMoveInputArgs e)
+    {
+        PlayerMovement(e.plrDir);
+    }
+    private Vector3 PlayerMovement(Vector2 dir)
+    {
+        var plrSpd = plrSpdBase + plrSprintApplied;
+
+        var plrMoveDir = new Vector3(dir.x, 0f, dir.y).normalized;
+
+        if (plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold)
         {
 
         }
@@ -69,13 +92,22 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
 
             //transform.position += transform.forward  * PlrMoveDir.z * Time.deltaTime * plrSpd;
             //transform.position += transform.right * PlrMoveDir.x * Time.deltaTime * plrSpd;
-            
+
         }
+        plrDirection = plrMoveDir;
         return plrMoveDir;
-
     }
+    public Vector2 GetPlayerMovement()
+    {
+        return plrDirection;
+    }
+    //End Of Movement Script----------------------------------------------------
 
-
+    //Handles Sprint when Input detected.
+    private void OnShiftHoldDetector(object sender, SendShiftHoldArgs e)
+    {
+        PlayerSprintController(e.keyIsPress);
+    }
     public void PlayerSprintController(bool spaceIsPressed)
     {
 
@@ -91,6 +123,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
         }
 
     }
+    //End of Sprint Script-----------------------------------------------------
 
     private void StaminaBar(bool spaceIsPressed)
     {
@@ -128,6 +161,12 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
         }
     }
 
+
+    //Handles Player Look At When Mouse Pos Input Detected.
+    private void OnMousePosInputDetector(object sender, SendMousPosInputArgs e)
+    {
+        PlayerRotate(e.mousPos);
+    }
     public void PlayerRotate(Vector3 mousPos)
     {
         if(plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold)
@@ -139,6 +178,9 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
             transform.LookAt(new Vector3(mousPos.x, transform.position.y, mousPos.z));
         }
     }
+    //End Of Player Look At Script----------------------------------------------------
+
+    
 
     public void SoundProducer(float soundAdder)
     {
@@ -216,4 +258,21 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
         StaminaBar(plrInp.SprintIsPressed());
     }
 
+    private void OnDisable()
+    {
+        plrInp.OnMoveInput -= OnMoveInputDetector;
+        plrInp.OnMousePosInput -= OnMousePosInputDetector;
+    }
+
+    private void OnDestroy()
+    {
+        plrInp.OnMoveInput -= OnMoveInputDetector;
+        plrInp.OnMousePosInput -= OnMousePosInputDetector;
+    }
+
+    private void OnEnable()
+    {
+        plrInp.OnMoveInput += OnMoveInputDetector;
+        plrInp.OnMousePosInput += OnMousePosInputDetector;
+    }
 }

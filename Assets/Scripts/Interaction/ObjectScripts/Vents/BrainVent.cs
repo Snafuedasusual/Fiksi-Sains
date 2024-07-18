@@ -60,7 +60,7 @@ public class BrainVent : MonoBehaviour
     bool vent_dbounce = false;
     private void ChangeVents()
     {
-        if(plrLogic.PlayerMovement().x > 0)
+        if(plrLogic.GetPlayerMovement().x > 0)
         {
             if (vent_dbounce == false)
             {
@@ -81,7 +81,7 @@ public class BrainVent : MonoBehaviour
                 vent_dbounce = true;
             }
         }
-        else if(plrLogic.PlayerMovement().x < 0)
+        else if(plrLogic.GetPlayerMovement().x < 0)
         {
             if (vent_dbounce == false)
             {
