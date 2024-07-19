@@ -19,7 +19,7 @@ public class EnemySenses : MonoBehaviour
 
     private void EnemySight()
     {
-        bool seePlayer = RotaryHeart.Lib.PhysicsExtension.Physics.BoxCast(transform.position + Vector3.up * 1f, new Vector3(10f, 0.5f, 0.05f), transform.forward, out hitInfo, Quaternion.LookRotation(transform.forward), maxRayDist, player);
+        bool seePlayer = RotaryHeart.Lib.PhysicsExtension.Physics.BoxCast(transform.position + Vector3.up * 1f, new Vector3(10f, 0.5f, 0.05f), transform.forward, out hitInfo, Quaternion.LookRotation(transform.forward), maxRayDist, player, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Both);
 
         if (seePlayer)
         {

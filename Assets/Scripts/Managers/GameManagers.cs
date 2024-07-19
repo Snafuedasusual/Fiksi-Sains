@@ -78,7 +78,7 @@ public class GameManagers : MonoBehaviour
         instance = this;
         GameObject plr = GameObject.FindGameObjectWithTag("Player");
         handlers[currentLevel - 1].player = plr;
-        StartCoroutine(LoadingLevel(plr.transform));
+        //StartCoroutine(LoadingLevel(plr.transform));
     }
 
 }

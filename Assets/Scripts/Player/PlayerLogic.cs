@@ -152,8 +152,8 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     IEnumerator IsStaminaDrainerRunning;
     IEnumerator StaminaDrainer()
     {
-        var staminaRate = 0f;
-        var staminaTime = 0.4f;
+        var staminaTime = 0f;
+        var staminaRate = 0.4f;
         if (IsStaminaDrainerRunning != null)
         {
 
@@ -165,10 +165,10 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
                 IsStaminaDrainerRunning = StaminaDrainer();
                 while (plrState == PlayerStates.Sprinting)
                 {
-                    staminaRate = 0f;
-                    while (staminaRate < staminaTime)
+                    staminaTime = 0f;
+                    while (staminaTime < staminaRate)
                     {
-                        staminaRate += Time.deltaTime * 20;
+                        staminaTime += Time.deltaTime * 20;
                         yield return null;
                     }
                     if (plrStamina <= 0)
@@ -201,8 +201,8 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     IEnumerator IsStaminaRefillRunning;
     IEnumerator StaminaRefillController()
     {
-        var staminaRate = 0f;
-        var staminaTime = 0.4f;
+        var staminaTime = 0f;
+        var staminaRate = 0.4f;
         if(IsStaminaRefillRunning != null)
         {
 
@@ -215,8 +215,8 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
                 IsStaminaRefillRunning = StaminaRefillController();
                 while (plrState != PlayerStates.Sprinting)
                 {
-                    staminaRate = 0f;
-                    while (staminaRate < staminaTime)
+                    staminaTime = 0f;
+                    while (staminaTime < staminaRate)
                     {
                         staminaRate += Time.deltaTime * 2.5f;
                         yield return null;
