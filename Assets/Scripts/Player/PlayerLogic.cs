@@ -261,6 +261,8 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     }
     //End Of Player Look At Script----------------------------------------------------
 
+
+
     //Handles Interactions when Input detected.
     private void OnInteractInputDetector(object sender, EventArgs e)
     {
