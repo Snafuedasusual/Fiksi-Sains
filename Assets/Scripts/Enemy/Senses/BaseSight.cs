@@ -104,13 +104,43 @@ public class BaseSight : MonoBehaviour
     }
     // Friend or enemy check ends------------------------
 
+
+    public event EventHandler<SendTargetPosArgs> SendTargetPos;
+    public class SendTargetPosArgs : EventArgs { public Vector3 target; }
+    IEnumerator IsTrackingTracks;
     IEnumerator TrackTargetTracks()
     {
-        var trackRate = 0;
+        var trackTime = 0f;
+        var trackRate = 0.2f;
         while(targetLook != null)
         {
-            yield return null;
+            while(trackTime < trackRate)
+            {
+                trackTime += Time.deltaTime;
+                yield return null;
+            }
+            trackTime = 0f;
+            SendTargetPos?.Invoke(this, new SendTargetPosArgs { target = targetLook.position });
+            
         }
+    }
+
+    IEnumerator IsCountingDown;
+    IEnumerator CountdownToLoseTarget()
+    {
+        var loseTime = 0f;
+        var loseRate = 1.3f;
+        while(loseTime < loseRate)
+        {
+            loseTime += Time.deltaTime;
+            yield return 0;
+        }
+        if(IsTrackingTracks != null)
+        {
+            StopCoroutine(IsTrackingTracks);
+            targetLook = null;
+        }
+        IsCountingDown = null;
     }
     private void Update()
     {

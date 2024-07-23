@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "BaseSightStatesSO", menuName = "ScriptableObjects/EnemySightStates")]
+[CreateAssetMenu(fileName = "BaseSightStatesSO", menuName = "EnemySight/EnemyBaseSightStates")]
 public class BaseSightStatesSO : ScriptableObject
 {
     public enum SightStates
