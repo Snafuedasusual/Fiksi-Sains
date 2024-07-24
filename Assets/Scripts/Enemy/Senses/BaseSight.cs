@@ -12,9 +12,13 @@ public class BaseSight : MonoBehaviour
     [Header("LayerMask")]
     [SerializeField] LayerMask characters;
     [Header("Variables")]
-    [SerializeField] float maxRayDist;
-    [SerializeField] float maxVision;
+    [SerializeField] float defaultRayDist;
+    [SerializeField] float defaultMaxVision;
     [SerializeField] float minDotProduct;
+    [SerializeField] float seenRayDist;
+    [SerializeField] float seenMaxVision;
+    [SerializeField] float currentMaxVision;
+    [SerializeField] float currentRayDist;
     [SerializeField] RaycastHit[] seeCharacters;
 
     [Header("Enum States")]
@@ -30,14 +34,18 @@ public class BaseSight : MonoBehaviour
 
     private void Start()
     {
-        maxRayDist = baseSight.maxRayDist;
-        maxVision = baseSight.maxVision;
+        defaultRayDist = baseSight.maxRayDist;
+        defaultMaxVision = baseSight.maxVision;
+        seenMaxVision = baseSight.maxVision * 4;
+        seenRayDist = baseSight.maxRayDist * 4;
         minDotProduct = baseSight.minDotProduct;
+        currentMaxVision = defaultMaxVision;
+        currentRayDist = defaultRayDist;
     }
 
     private void EnemySight()
     {
-        seeCharacters = RotaryHeart.Lib.PhysicsExtension.Physics.BoxCastAll(transform.position + Vector3.up * 1f, new Vector3(10f, 0.5f, 0.05f), transform.forward, Quaternion.LookRotation(transform.forward), maxRayDist, characters);
+        seeCharacters = RotaryHeart.Lib.PhysicsExtension.Physics.BoxCastAll(transform.position + Vector3.up * 1f, new Vector3(10f, 0.5f, 0.05f), transform.forward, Quaternion.LookRotation(transform.forward), currentRayDist, characters);
 
         for (int i = 0; i < seeCharacters.Length; i++)
         {
@@ -50,7 +58,7 @@ public class BaseSight : MonoBehaviour
     //Checks distance then if its friend or enemy and events related.
     private void CheckDistance(RaycastHit hitInfo)
     {
-        if(hitInfo.distance < maxVision)
+        if(hitInfo.distance < defaultMaxVision)
         {
             var dotProduct = Vector3.Dot(transform.forward, (hitInfo.transform.position - transform.position).normalized);
             if(dotProduct > minDotProduct)
@@ -67,40 +75,53 @@ public class BaseSight : MonoBehaviour
     public class SendTargetInfo : EventArgs { public Transform target; }
     private void CheckFriendOrEnemy(RaycastHit hitInfo)
     {
+        //var sightRange = defaultMaxVision;
         var direction = hitInfo.transform.position - transform.position;
-        bool canSee = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position, direction, out RaycastHit hit, maxVision, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Both);
+        bool canSee = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position, direction, out RaycastHit hit, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.None);
+        var distance = Vector3.Distance(hitInfo.transform.position, transform.position);
         if(hitInfo.transform.TryGetComponent(out PlayerLogic plr))
         {
-            if (hit.transform == hitInfo.transform)
+            if (hit.transform == hitInfo.transform && distance <= currentMaxVision)
             {
+                StopAllCoroutines();
+                currentMaxVision = seenMaxVision;
+                currentRayDist = seenRayDist;
                 Debug.Log("Player Seen!");
                 currentState = SightStates.HasSeen;
                 targetLook = hitInfo.transform;
                 SendTarget?.Invoke(this, new SendTargetInfo { target = hitInfo.transform });
+                
             }
             else if (hit.transform != hitInfo.transform && currentState == SightStates.HasSeen)
             {
+                
                 Debug.Log("Player Lost!");
                 currentState = SightStates.HasNotSeen;
-                IsTrackingTracks = TrackTargetTracks();
-                StartCoroutine(IsTrackingTracks);
                 SendTarget?.Invoke(this, new SendTargetInfo { target = null });
+                IsTrackingTracks = TrackTargetTracks();
+                IsCountingDown = CountdownToLoseTarget();
+                StartCoroutine(IsTrackingTracks);
+                StartCoroutine(IsCountingDown);
             }
         }
         else if(hitInfo.transform.TryGetComponent(out BaseSight friend))
         {
-            if(hitInfo.transform == transform)
+            if(hitInfo.transform == transform )
             {
 
             }
             else
             {
-                if(hit.transform == hitInfo.transform)
+                if(hit.transform == hitInfo.transform && distance <= defaultMaxVision)
                 {
                     Debug.Log(hitInfo.transform.name);
                     Debug.Log("Is Fren!");
                 }
             }
+        }
+        else
+        {
+            
         }
     }
     // Friend or enemy check ends------------------------
@@ -111,15 +132,13 @@ public class BaseSight : MonoBehaviour
     IEnumerator IsTrackingTracks;
     IEnumerator TrackTargetTracks()
     {
-        IsCountingDown = CountdownToLoseTarget();
-        StartCoroutine(IsCountingDown);
         var trackTime = 0f;
-        var trackRate = 0.2f;
+        var trackRate = 0.1f;
         while(targetLook != null)
         {
             while(trackTime < trackRate)
             {
-                trackTime += Time.deltaTime;
+                trackTime += Time.deltaTime * 10;
                 yield return null;
             }
             trackTime = 0f;
@@ -132,13 +151,14 @@ public class BaseSight : MonoBehaviour
                 SendTargetPos?.Invoke(this, new SendTargetPosArgs { target = targetLook.position });
             }
         }
+        IsTrackingTracks = null;
     }
 
     IEnumerator IsCountingDown;
     IEnumerator CountdownToLoseTarget()
     {
         var loseTime = 0f;
-        var loseRate = 0.75f;
+        var loseRate = 1f;
         while(loseTime < loseRate)
         {
             loseTime += Time.deltaTime;
@@ -155,6 +175,8 @@ public class BaseSight : MonoBehaviour
             targetLook = null;
         }
         IsCountingDown = null;
+        currentMaxVision = defaultMaxVision;
+        currentRayDist = defaultRayDist;
     }
     private void Update()
     {

@@ -46,6 +46,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
         InteractingToggle,
         InteractingHold,
         Hiding,
+        InVent,
     }
     public PlayerStates plrState;
 
@@ -71,7 +72,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
 
         var plrMoveDir = new Vector3(dir.x, 0f, dir.y).normalized;
 
-        if (plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold)
+        if (plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold || plrState == PlayerStates.InVent)
         {
 
         }
@@ -153,7 +154,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     IEnumerator StaminaDrainer()
     {
         var staminaTime = 0f;
-        var staminaRate = 0.4f;
+        var staminaRate = 0.75f;
         if (IsStaminaDrainerRunning != null)
         {
 
@@ -168,7 +169,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
                     staminaTime = 0f;
                     while (staminaTime < staminaRate)
                     {
-                        staminaTime += Time.deltaTime * 20;
+                        staminaTime += Time.deltaTime * 15;
                         yield return null;
                     }
                     if (plrStamina <= 0)
@@ -295,7 +296,19 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
         {
             targetInteract = null;
         }
-    }    
+    }
+    // End of Interaction script--------------------------------------
+
+
+
+    // Allows outside script to get player states.
+    public PlayerStates GetStates()
+    {
+        return plrState;
+    }
+    // End of GetStates function----------------
+
+
 
     public void SoundProducer(float soundAdder)
     {

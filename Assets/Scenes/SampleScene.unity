@@ -13080,6 +13080,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2272745528222806944, guid: 4a33e743db33fbf4cb0e7aeb11bcfa46, type: 3}
+      propertyPath: plrState
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272745528222806944, guid: 4a33e743db33fbf4cb0e7aeb11bcfa46, type: 3}
+      propertyPath: defaultPlrState
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5452880639100260514, guid: 4a33e743db33fbf4cb0e7aeb11bcfa46, type: 3}
       propertyPath: cam
       value: 
@@ -13469,9 +13477,13 @@ MonoBehaviour:
   characters:
     serializedVersion: 2
     m_Bits: 520
-  maxRayDist: 16
-  maxVision: 7.5
+  defaultRayDist: 0
+  defaultMaxVision: 0
   minDotProduct: 0.3
+  seenRayDist: 0
+  seenMaxVision: 0
+  currentMaxVision: 0
+  currentRayDist: 0
   currentState: 0
 --- !u!65 &845783336
 BoxCollider:
@@ -13579,12 +13591,20 @@ MonoBehaviour:
   chaseSpeed: 0
   chaseAccel: 0
   minDistToAttack: 0
+  target: {fileID: 0}
   targetTrails:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  currentState: 0
+  targetPos: {x: 0, y: 0, z: 0}
 --- !u!195 &845783341
 NavMeshAgent:
   m_ObjectHideFlags: 0
