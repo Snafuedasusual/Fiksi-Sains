@@ -82,8 +82,9 @@ public class BaseSight : MonoBehaviour
             {
                 Debug.Log("Player Lost!");
                 currentState = SightStates.HasNotSeen;
-                targetLook = null;
-                SendTarget?.Invoke(this, new SendTargetInfo { target = hitInfo.transform });
+                IsTrackingTracks = TrackTargetTracks();
+                StartCoroutine(IsTrackingTracks);
+                SendTarget?.Invoke(this, new SendTargetInfo { target = null });
             }
         }
         else if(hitInfo.transform.TryGetComponent(out BaseSight friend))
@@ -110,6 +111,8 @@ public class BaseSight : MonoBehaviour
     IEnumerator IsTrackingTracks;
     IEnumerator TrackTargetTracks()
     {
+        IsCountingDown = CountdownToLoseTarget();
+        StartCoroutine(IsCountingDown);
         var trackTime = 0f;
         var trackRate = 0.2f;
         while(targetLook != null)
@@ -120,8 +123,14 @@ public class BaseSight : MonoBehaviour
                 yield return null;
             }
             trackTime = 0f;
-            SendTargetPos?.Invoke(this, new SendTargetPosArgs { target = targetLook.position });
-            
+            if(targetLook == null)
+            {
+
+            }
+            else
+            {
+                SendTargetPos?.Invoke(this, new SendTargetPosArgs { target = targetLook.position });
+            }
         }
     }
 
@@ -129,7 +138,7 @@ public class BaseSight : MonoBehaviour
     IEnumerator CountdownToLoseTarget()
     {
         var loseTime = 0f;
-        var loseRate = 1.3f;
+        var loseRate = 0.75f;
         while(loseTime < loseRate)
         {
             loseTime += Time.deltaTime;
@@ -138,6 +147,11 @@ public class BaseSight : MonoBehaviour
         if(IsTrackingTracks != null)
         {
             StopCoroutine(IsTrackingTracks);
+            IsTrackingTracks = null;
+            targetLook = null;
+        }
+        else
+        {
             targetLook = null;
         }
         IsCountingDown = null;

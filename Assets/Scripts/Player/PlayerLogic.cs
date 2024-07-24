@@ -218,7 +218,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
                     staminaTime = 0f;
                     while (staminaTime < staminaRate)
                     {
-                        staminaRate += Time.deltaTime * 2.5f;
+                        staminaTime += Time.deltaTime * 2.5f;
                         yield return null;
                     }
                     if (plrStamina == 100)
