@@ -122,6 +122,8 @@ public class BaseSight : MonoBehaviour
     // Friend or enemy check ends------------------------
 
 
+
+    //Handles sending target trails and events related.
     public event EventHandler<SendTargetPosArgs> SendTargetPos;
     public class SendTargetPosArgs : EventArgs { public Vector3 target; }
     IEnumerator IsTrackingTracks;
@@ -148,7 +150,11 @@ public class BaseSight : MonoBehaviour
         }
         IsTrackingTracks = null;
     }
+    // Target tracking script ends-------------------------------------------
 
+
+
+    //Handles counting down before stop tracking trails.
     IEnumerator IsCountingDown;
     IEnumerator CountdownToLoseTarget()
     {
@@ -171,6 +177,11 @@ public class BaseSight : MonoBehaviour
         }
         IsCountingDown = null;
     }
+    //Counting down to losing trails script ends--------------------------------
+
+
+
+
     private void Update()
     {
         EnemySight();

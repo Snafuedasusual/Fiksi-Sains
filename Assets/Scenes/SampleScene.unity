@@ -13453,6 +13453,7 @@ GameObject:
   - component: {fileID: 845783336}
   - component: {fileID: 845783335}
   - component: {fileID: 845783340}
+  - component: {fileID: 845783342}
   - component: {fileID: 845783341}
   m_Layer: 9
   m_Name: NewEnemy
@@ -13585,6 +13586,7 @@ MonoBehaviour:
   agent: {fileID: 845783341}
   baseStats: {fileID: 11400000, guid: 27d78853c32665c44a9f1531cf825293, type: 2}
   baseSight: {fileID: 845783335}
+  baseEnemyAlertBar: {fileID: 845783342}
   defaultSpeed: 0
   defaultAccel: 0
   chaseSpeed: 0
@@ -13603,6 +13605,7 @@ MonoBehaviour:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   currentState: 0
+  defaultState: 0
   targetPos: {x: 0, y: 0, z: 0}
 --- !u!195 &845783341
 NavMeshAgent:
@@ -13626,6 +13629,20 @@ NavMeshAgent:
   m_BaseOffset: 0.5
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &845783342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 845783334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d9c13f03ca33c54ab9c6e978edacda3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  alertBar: 0
+  baseEnemyLogic: {fileID: 845783340}
 --- !u!1 &851541944
 GameObject:
   m_ObjectHideFlags: 0
@@ -41831,6 +41848,7 @@ SceneRoots:
   - {fileID: 705507995}
   - {fileID: 1059585483}
   - {fileID: 5800950690315378615}
+  - {fileID: 785174036}
   - {fileID: 845783339}
   - {fileID: 39265449}
   - {fileID: 667557662}
@@ -41847,4 +41865,3 @@ SceneRoots:
   - {fileID: 1539644388}
   - {fileID: 851541950}
   - {fileID: 392419794}
-  - {fileID: 785174036}

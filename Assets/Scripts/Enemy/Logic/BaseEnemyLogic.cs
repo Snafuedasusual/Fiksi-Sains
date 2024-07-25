@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Rendering;
@@ -16,6 +17,7 @@ public class BaseEnemyLogic : MonoBehaviour
 
     [Header("Script References")]
     [SerializeField] BaseSight baseSight;
+    [SerializeField] BaseEnemyAlertBar baseEnemyAlertBar;
 
     [Header("Variables")]
     [SerializeField] float defaultSpeed;
@@ -28,6 +30,7 @@ public class BaseEnemyLogic : MonoBehaviour
 
     [Header("Enemy States")]
     [SerializeField] EnemyStates currentState;
+    [SerializeField] EnemyStates defaultState;
     public enum EnemyStates
     {
         Idle,
@@ -53,8 +56,11 @@ public class BaseEnemyLogic : MonoBehaviour
         InitializeEnemy();
         baseSight.SendTarget += SendTargetReceiver;
         baseSight.SendTargetPos += SendTargetPosReceiver;
+        baseEnemyAlertBar.AlertBarIsEmpty += AlertBarIsEmptyReceiver;
     }
 
+
+    //Handles enemy states.
     private void StateController()
     {
         if(currentState == EnemyStates.ChasePlayer)
@@ -75,9 +81,12 @@ public class BaseEnemyLogic : MonoBehaviour
         }
         if(currentState == EnemyStates.SearchingAlert)
         {
-            SearchingAlert();
+            SearchingAlert(RandomPointToSearch());
         }
     }
+    //Enemy states script ends----------------------------
+
+
 
     // Handles receiving target info
     private void SendTargetReceiver(object sender, BaseSight.SendTargetInfo e)
@@ -104,8 +113,12 @@ public class BaseEnemyLogic : MonoBehaviour
     }
     // Script handling target info ends------------------------------
 
+
+
+    // Handles chase player state.
     private void ChasePlayer()
     {
+        SendInfoToAlertBar(20f);
         agent.destination = target.position;
         agent.speed = chaseSpeed;
         agent.acceleration = chaseAccel;
@@ -123,8 +136,11 @@ public class BaseEnemyLogic : MonoBehaviour
             agent.isStopped = false;
         }
     }
+    // Chase player script ends---------------------------------
 
 
+
+    // Handles Chase last known position state.
     private void ChaseLastKnown(Vector3 pos)
     {
         agent.destination = pos;
@@ -132,6 +148,7 @@ public class BaseEnemyLogic : MonoBehaviour
         transform.LookAt(agent.velocity + transform.position);
         if (distance < 0.75)
         {
+            SendInfoToAlertBar(0f);
             currentState = EnemyStates.LookAroundSearching;
         }
         else
@@ -139,8 +156,11 @@ public class BaseEnemyLogic : MonoBehaviour
 
         }
     }
+    // Chase last known position script ends-----------------
 
 
+
+    // Handles Attacking target state and events related.
     public event EventHandler OnAttackEvent;
     public class OnAttackEventArgs : EventArgs { public Transform target; }
     private void Attack()
@@ -160,8 +180,12 @@ public class BaseEnemyLogic : MonoBehaviour
             
         }
     }
+    //Attacking script ends---------------------------------------
 
 
+
+
+    //Handles looking around when searching state.
     private void LookAroundSearching()
     {
         if(IsLookingAroundSearching == null)
@@ -224,20 +248,35 @@ public class BaseEnemyLogic : MonoBehaviour
             }
         }
     }
+    //Looking around while searching state script ends-------------------
 
 
 
-    private void SearchingAlert()
+    //Handles Searching while alert state.
+    private void SearchingAlert(Vector3 hitpoint)
     {
-        if(IsSearchingAlert == null)
+        var point = hitpoint;
+        var distance = Vector3.Distance(point, transform.position);
+        if(distance > 7.5f)
         {
-            IsSearchingAlert = StartSearchingAlert(RandomPointToSearch());
-            StartCoroutine(IsSearchingAlert);
+            if (IsSearchingAlert == null)
+            {
+                IsSearchingAlert = StartSearchingAlert(point);
+                StartCoroutine(IsSearchingAlert);
+            }
+            else
+            {
+
+            }
+        }
+        else
+        {
+
         }
     }
     private Vector3 RandomPointToSearch()
     {
-        var radius = 15f;
+        var radius = 20f;
         var randomPoint = Random.insideUnitSphere * radius;
         randomPoint += transform.position;
         var targetPos = Vector3.zero;
@@ -276,12 +315,21 @@ public class BaseEnemyLogic : MonoBehaviour
                     IsSearchingAlert = null;
                     break;
                 }
+                if(currentState != EnemyStates.SearchingAlert)
+                {
+                    StopCoroutine(IsSearchingAlert);
+                    IsSearchingAlert = null;
+                    break;
+                }
+                else
+                {
 
+                }
                 yield return null;
             }
         }
     }
-
+    //Searching target while alert script ends-----------------------
 
 
 
@@ -305,11 +353,13 @@ public class BaseEnemyLogic : MonoBehaviour
     }
     // Script Player trails ends--------------------------------
 
+
+
+    //Handles Getting last seen position.
     [SerializeField] Vector3 targetPos;
     private Vector3 GetLastSeenPosition()
     {
         var minDist = 10f;
-        var lastSeenPos = Vector3.zero;
         if(target != null)
         {
             for (int i = 0; i < targetTrails.Length; i++)
@@ -323,6 +373,24 @@ public class BaseEnemyLogic : MonoBehaviour
             }
         }
         return targetPos;
+    }
+    //Getting last seen position script ends---------------------
+
+    public event EventHandler<SendEventToAlertBarScrArgs> SendEventToAlertBarScr;
+    public class SendEventToAlertBarScrArgs : EventArgs { public float adder; }
+    private void SendInfoToAlertBar(float adder)
+    {
+        SendEventToAlertBarScr?.Invoke(this, new SendEventToAlertBarScrArgs { adder = adder });
+    }
+
+    private void AlertBarIsEmptyReceiver(object sender, EventArgs e)
+    {
+        AlertBarIsEmpty();
+    }
+    private void AlertBarIsEmpty()
+    {
+        StopAllCoroutines();
+        currentState = defaultState;
     }
 
     private void Update()

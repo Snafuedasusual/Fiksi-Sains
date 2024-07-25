@@ -154,14 +154,14 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     IEnumerator StaminaDrainer()
     {
         var staminaTime = 0f;
-        var staminaRate = 0.75f;
+        var staminaRate = 0.35f;
         if (IsStaminaDrainerRunning != null)
         {
 
         }
         else
         {
-            if (plrState == PlayerStates.Sprinting)
+            if (plrState == PlayerStates.Sprinting )
             {
                 IsStaminaDrainerRunning = StaminaDrainer();
                 while (plrState == PlayerStates.Sprinting)
@@ -169,14 +169,14 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
                     staminaTime = 0f;
                     while (staminaTime < staminaRate)
                     {
-                        staminaTime += Time.deltaTime * 15;
+                        staminaTime += Time.deltaTime * 7.5f;
                         yield return null;
                     }
                     if (plrStamina <= 0)
                     {
 
                     }
-                    else if (plrStamina > 0)
+                    else if (plrStamina > 0 && playerDirection >= 0.3f)
                     {
                         plrStamina--;
 
@@ -203,7 +203,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     IEnumerator StaminaRefillController()
     {
         var staminaTime = 0f;
-        var staminaRate = 0.4f;
+        var staminaRate = 0.45f;
         if(IsStaminaRefillRunning != null)
         {
 

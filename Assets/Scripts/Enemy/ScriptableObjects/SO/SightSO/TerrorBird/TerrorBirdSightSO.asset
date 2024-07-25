@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: TerrorBirdSightSO
   m_EditorClassIdentifier: 
   maxRayDist: 50
-  maxVision: 7.5
+  maxVision: 12
   minDotProduct: 0.1
