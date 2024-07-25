@@ -275,7 +275,7 @@ Transform:
   m_GameObject: {fileID: 2967808562602757388}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.18, y: 2.46, z: -0.04}
+  m_LocalPosition: {x: -0.18, y: 2.59, z: -0.63}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -293,7 +293,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 2.62
+  m_Intensity: 2.28
   m_Range: 2.6
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -415,7 +415,7 @@ Transform:
   m_GameObject: {fileID: 3256058643477785334}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.225, z: 0.8799999}
+  m_LocalPosition: {x: 0, y: 1.2249985, z: 0.8799999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -469,7 +469,7 @@ Transform:
   m_GameObject: {fileID: 5503946823747581184}
   serializedVersion: 2
   m_LocalRotation: {x: 0.2588191, y: -0, z: -0, w: 0.9659258}
-  m_LocalPosition: {x: 0, y: 1.5, z: 0.604}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0.267}
   m_LocalScale: {x: 1, y: 1, z: 0.2760085}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -487,9 +487,9 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 0.9622642, g: 0.92359203, b: 0.8333571, a: 1}
-  m_Intensity: 1.58
-  m_Range: 5.25
-  m_SpotAngle: 88
+  m_Intensity: 5.84
+  m_Range: 2.99
+  m_SpotAngle: 74.75463
   m_InnerSpotAngle: 1
   m_CookieSize: 10
   m_Shadows:
@@ -925,11 +925,11 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: aa0fcd4d3bbc99c40a956b9d06f5912f, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 5170add47bb94a742b88c65a7f049d7e, type: 2}
+      objectReference: {fileID: 9138718457793607510, guid: aa0fcd4d3bbc99c40a956b9d06f5912f, type: 3}
     - target: {fileID: -7511558181221131132, guid: aa0fcd4d3bbc99c40a956b9d06f5912f, type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 
-      objectReference: {fileID: 2100000, guid: e7b943ac23e792b4d90711766cd3cf2a, type: 2}
+      objectReference: {fileID: 7845933357499717443, guid: aa0fcd4d3bbc99c40a956b9d06f5912f, type: 3}
     - target: {fileID: 919132149155446097, guid: aa0fcd4d3bbc99c40a956b9d06f5912f, type: 3}
       propertyPath: m_Name
       value: VisualPlayer
