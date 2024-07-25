@@ -15,10 +15,8 @@ public class BaseSight : MonoBehaviour
     [SerializeField] float defaultRayDist;
     [SerializeField] float defaultMaxVision;
     [SerializeField] float minDotProduct;
-    [SerializeField] float seenRayDist;
     [SerializeField] float seenMaxVision;
     [SerializeField] float currentMaxVision;
-    [SerializeField] float currentRayDist;
     [SerializeField] RaycastHit[] seeCharacters;
 
     [Header("Enum States")]
@@ -37,15 +35,13 @@ public class BaseSight : MonoBehaviour
         defaultRayDist = baseSight.maxRayDist;
         defaultMaxVision = baseSight.maxVision;
         seenMaxVision = baseSight.maxVision * 4;
-        seenRayDist = baseSight.maxRayDist * 4;
         minDotProduct = baseSight.minDotProduct;
         currentMaxVision = defaultMaxVision;
-        currentRayDist = defaultRayDist;
     }
 
     private void EnemySight()
     {
-        seeCharacters = RotaryHeart.Lib.PhysicsExtension.Physics.BoxCastAll(transform.position + Vector3.up * 1f, new Vector3(10f, 0.5f, 0.05f), transform.forward, Quaternion.LookRotation(transform.forward), currentRayDist, characters);
+        seeCharacters = RotaryHeart.Lib.PhysicsExtension.Physics.BoxCastAll(transform.position + Vector3.up * 1f, new Vector3(10f, 0.5f, 0.05f), transform.forward, Quaternion.LookRotation(transform.forward), defaultRayDist, characters);
 
         for (int i = 0; i < seeCharacters.Length; i++)
         {
@@ -58,7 +54,7 @@ public class BaseSight : MonoBehaviour
     //Checks distance then if its friend or enemy and events related.
     private void CheckDistance(RaycastHit hitInfo)
     {
-        if(hitInfo.distance < defaultMaxVision)
+        if(hitInfo.distance < currentMaxVision)
         {
             var dotProduct = Vector3.Dot(transform.forward, (hitInfo.transform.position - transform.position).normalized);
             if(dotProduct > minDotProduct)
@@ -85,7 +81,6 @@ public class BaseSight : MonoBehaviour
             {
                 StopAllCoroutines();
                 currentMaxVision = seenMaxVision;
-                currentRayDist = seenRayDist;
                 Debug.Log("Player Seen!");
                 currentState = SightStates.HasSeen;
                 targetLook = hitInfo.transform;
@@ -112,7 +107,7 @@ public class BaseSight : MonoBehaviour
             }
             else
             {
-                if(hit.transform == hitInfo.transform && distance <= defaultMaxVision)
+                if(hit.transform == hitInfo.transform && distance <= currentMaxVision)
                 {
                     Debug.Log(hitInfo.transform.name);
                     Debug.Log("Is Fren!");
@@ -175,8 +170,6 @@ public class BaseSight : MonoBehaviour
             targetLook = null;
         }
         IsCountingDown = null;
-        currentMaxVision = defaultMaxVision;
-        currentRayDist = defaultRayDist;
     }
     private void Update()
     {
