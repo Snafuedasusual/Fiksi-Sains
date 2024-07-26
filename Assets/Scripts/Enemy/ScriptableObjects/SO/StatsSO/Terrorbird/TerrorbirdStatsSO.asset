@@ -17,3 +17,4 @@ MonoBehaviour:
   chaseSpeed: 9
   chaseAccel: 120
   minDistToAttack: 1.5
+  hearingModifier: 1

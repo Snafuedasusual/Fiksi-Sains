@@ -13,12 +13,13 @@ public class BaseEnemyLogic : MonoBehaviour
     [SerializeField] NavMeshAgent agent;
 
     [Header("Scriptable Objects")]
-    [SerializeField] BaseEnemyStatesSO baseStats;
+    [SerializeField] BaseEnemyStatsSO baseStats;
     [SerializeField] FactionBaseSO baseEnemyFactionsSO;
 
     [Header("Script References")]
     [SerializeField] BaseSight baseSight;
     [SerializeField] BaseEnemyAlertBar baseEnemyAlertBar;
+    [SerializeField] BaseEnemySoundController baseEnemySoundController;
 
     [Header("Faction")]
     [SerializeField] FactionBaseSO.EnemyFactions currentFaction;
@@ -37,11 +38,11 @@ public class BaseEnemyLogic : MonoBehaviour
     [SerializeField] Vector3 idlePos;
     [SerializeField] Vector3 idleLookRotation;
 
-    [Header("GetLast")]
-
     [Header("Enemy States")]
     [SerializeField] EnemyStates currentState;
     [SerializeField] EnemyStates defaultState;
+
+
     public enum EnemyStates
     {
         None,
@@ -51,6 +52,10 @@ public class BaseEnemyLogic : MonoBehaviour
         ChaseLastKnownPosition,
         LookAroundSearching,
         SearchingAlert,
+        Suspicious,
+        SuspiciousLookAround,
+        SuspiciousApproach,
+        SuspiciousRunTowards,
         Dead
     }
     
@@ -63,13 +68,18 @@ public class BaseEnemyLogic : MonoBehaviour
         chaseAccel = baseStats.chaseAccel;
         minDistToAttack = baseStats.minDistToAttack;
         currentFaction = baseEnemyFactionsSO.enemyFactions;
+
+        currentState = defaultState;
     }
     private void Start()
     {
         InitializeEnemy();
         baseSight.SendTarget += SendTargetReceiver;
         baseEnemyAlertBar.AlertBarIsEmpty += AlertBarIsEmptyReceiver;
+        baseEnemySoundController.SoundToLogic += SoundToLogicReceiver;
     }
+
+ 
 
 
     //Handles enemy states.
@@ -99,10 +109,26 @@ public class BaseEnemyLogic : MonoBehaviour
         {
             SearchingAlert(RandomPointToSearch());
         }
+        if(currentState == EnemyStates.Suspicious)
+        {
+            Suspicious();
+        }
+        if(currentState == EnemyStates.SuspiciousApproach)
+        {
+            SuspiciousApproach();
+        }
+        if(currentState == EnemyStates.SuspiciousLookAround)
+        {
+            SuspiciousLookAround();
+        }
+        if(currentState == EnemyStates.SuspiciousRunTowards)
+        {
+            SuspiciousRunTowards();
+        }
     }
     //Enemy states script ends----------------------------
 
-
+    //Handles Idle state.
     private void Idle()
     {
         if (transform.position != idlePos)
@@ -122,6 +148,9 @@ public class BaseEnemyLogic : MonoBehaviour
 
         }
     }
+    // Idle state script----------------------------------
+
+
 
     // Handles receiving target info
     private void SendTargetReceiver(object sender, BaseSight.SendTargetInfo e)
@@ -230,6 +259,7 @@ public class BaseEnemyLogic : MonoBehaviour
     // Handles chase player state.
     private void ChasePlayer()
     {
+        StopAllCoroutines();
         SendInfoToAlertBar(20f);
         agent.destination = target.position;
         agent.speed = chaseSpeed;
@@ -319,7 +349,6 @@ public class BaseEnemyLogic : MonoBehaviour
         var lookRate = 1.5f;
         if(currentState != EnemyStates.LookAroundSearching)
         {
-            Debug.Log("Coroutine Stop");
             StopCoroutine(IsLookingAroundSearching);
             lookCount = 0;
             IsLookingAroundSearching = null;
@@ -444,6 +473,167 @@ public class BaseEnemyLogic : MonoBehaviour
     //Searching target while alert script ends-----------------------
 
 
+
+
+    private void Suspicious()
+    {
+        if(IsSuspicious == null)
+        {
+            IsSuspicious = StartSuspicious();
+            StartCoroutine(IsSuspicious);
+        }
+    }
+    IEnumerator IsSuspicious;
+    IEnumerator StartSuspicious()
+    {
+        var lookSpeed = 10f;
+        var delayTime = 0f;
+        var delayRate = 1.2f;
+        var target = new Vector3(location.x, transform.position.y, location.z);
+        var lookDir = Quaternion.LookRotation(target - transform.position);
+        if (currentState != EnemyStates.Suspicious)
+        {
+            StopCoroutine(IsSuspicious);
+            IsSuspicious = null;
+        }
+        else
+        {
+            while(delayTime < delayRate)
+            {
+                if(currentState != EnemyStates.Suspicious)
+                {
+                    StopCoroutine(IsSuspicious);
+                    IsSuspicious = null;
+
+                }
+                else
+                {
+                    transform.rotation = Quaternion.Slerp(transform.rotation, lookDir, lookSpeed * Time.deltaTime);
+                    delayTime += Time.deltaTime;
+                    yield return 0;
+                }
+                
+            }
+            currentState = EnemyStates.SuspiciousApproach;
+        }
+        IsSuspicious = null;
+    }
+
+
+    private void SuspiciousApproach()
+    {
+        if(location == Vector3.zero)
+        {
+
+        }
+        else
+        {
+            agent.destination = location;
+            agent.speed = defaultSpeed;
+            agent.acceleration = defaultAccel;
+            transform.LookAt(agent.velocity + transform.position);
+            if (!agent.pathPending)
+            {
+                if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
+                {
+                    currentState = EnemyStates.SuspiciousLookAround;
+                }
+            }
+        }
+    }
+
+    private void SuspiciousLookAround()
+    {
+        if(IsSuspiciousLooking == null)
+        {
+            IsSuspiciousLooking = StartSuspiciousLookAround();
+            StartCoroutine(IsSuspiciousLooking);
+        }
+    }
+    IEnumerator IsSuspiciousLooking;
+    IEnumerator StartSuspiciousLookAround()
+    {
+        var amountOfLooks = 3;
+        var lookCount = 0;
+        var lookTime = 0f;
+        var lookRate = 2f;
+        if (currentState != EnemyStates.SuspiciousLookAround)
+        {
+            StopCoroutine(IsSuspiciousLooking);
+            lookCount = 0;
+            IsSuspiciousLooking = null;
+        }
+        else
+        {
+            while (currentState == EnemyStates.SuspiciousLookAround && lookCount < amountOfLooks)
+            {
+                var randomDirX = Random.Range(-1f, 1f);
+                var randomDirZ = Random.Range(-1f, 1f);
+                var lookSpeed = 10f;
+                var direction = new Vector3(randomDirX + transform.position.x, transform.position.y, randomDirZ + transform.position.z);
+                var lookDir = Quaternion.LookRotation(direction - transform.position);
+                lookTime = 0f;
+                while (lookTime < lookRate)
+                {
+                    if(currentState != EnemyStates.SuspiciousLookAround)
+                    {
+                        StopCoroutine(IsSuspiciousLooking);
+                        lookCount = 0;
+                        IsLookingAroundSearching = null;
+                    }
+                    else
+                    {
+                        transform.rotation = Quaternion.Slerp(transform.rotation, lookDir, lookSpeed * Time.deltaTime);
+                        lookTime += Time.deltaTime;
+                    }
+                    yield return 0;
+                }
+                if (lookCount < amountOfLooks)
+                {
+                    lookCount++;
+                }
+                if (currentState != EnemyStates.SuspiciousLookAround)
+                {
+                    StopCoroutine(IsSuspiciousLooking);
+                    IsSuspiciousLooking = null;
+                    lookCount = 0;
+                }
+                else if (lookCount >= amountOfLooks)
+                {
+                    StopCoroutine(IsSuspiciousLooking);
+                    IsSuspiciousLooking = null;
+                    currentState = defaultState;
+                    lookCount = 0;
+                }
+            }
+        }
+    }
+
+
+    private void SuspiciousRunTowards()
+    {
+        StopAllCoroutines();
+        if (location == Vector3.zero)
+        {
+
+        }
+        else
+        {
+            agent.destination = location;
+            agent.speed = chaseSpeed;
+            agent.acceleration = chaseAccel;
+            if (!agent.pathPending)
+            {
+                if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
+                {
+                    currentState = EnemyStates.LookAroundSearching;
+                }
+
+            }
+        }
+    }
+
+
     private void TrackTrails()
     {
         if(IsTrackingTrails == null)
@@ -554,8 +744,9 @@ public class BaseEnemyLogic : MonoBehaviour
         SendEventToAlertBarScr?.Invoke(this, new SendEventToAlertBarScrArgs { adder = adder });
     }
 
-    
 
+    
+    //Handles Alert bar communications.
     private void AlertBarIsEmptyReceiver(object sender, EventArgs e)
     {
         AlertBarIsEmpty();
@@ -567,8 +758,37 @@ public class BaseEnemyLogic : MonoBehaviour
         currentState = defaultState;
         target = null;
     }
+    //Alert bar communication script ends-----------------------------
 
 
+    private void SoundToLogicReceiver(object sender, BaseEnemySoundController.SoundToLogicArgs e)
+    {
+        ReceivingAudioInfo(e.alertLevel, e.location);
+    }
+    Vector3 location;
+    private void ReceivingAudioInfo(float alertLevel, Vector3 target)
+    {
+        var lowAlertLevel = 1f;
+        var highAlertLevel = 2f;
+        if (currentState == EnemyStates.ChaseTarget || currentState == EnemyStates.Attack || currentState == EnemyStates.ChaseLastKnownPosition || currentState == EnemyStates.None || currentState == EnemyStates.SuspiciousRunTowards)
+        {
+
+        }
+        else
+        {
+            if(alertLevel == lowAlertLevel)
+            {
+                currentState = EnemyStates.Suspicious;
+                location = target;
+            }
+            else if(alertLevel == highAlertLevel)
+            {
+                SendInfoToAlertBar(30f);
+                currentState = EnemyStates.SuspiciousRunTowards;
+                location = target;
+            }
+        }
+    }
 
     public FactionBaseSO.EnemyFactions GetCurrentFaction()
     {

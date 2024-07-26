@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu (fileName = "EnemyBaseStats", menuName = "EnemyStats/EnemyBaseStats")]
-public class BaseEnemyStatesSO : ScriptableObject
+public class BaseEnemyStatsSO : ScriptableObject
 {
     [Header("Speeds")]
     public float defaultSpeed;
@@ -13,4 +13,7 @@ public class BaseEnemyStatesSO : ScriptableObject
 
     [Header("Min Range to Attack")]
     public float minDistToAttack;
+
+    [Header("Hearing")]
+    public float hearingModifier;
 }

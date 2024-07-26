@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using static PlayerInput;
 
-public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
+public class PlayerLogic : MonoBehaviour, IInflictDamage
 {
     [Header("Components")]
     [SerializeField] PlayerInput plrInp;
@@ -24,7 +24,6 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     [SerializeField] Transform targetInteract;
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Transform mousPosTrans;
-    [SerializeField] private float soundBar = 0;
 
     [Header("LayerMasks")]
     [SerializeField]
@@ -72,6 +71,8 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
 
         var plrMoveDir = new Vector3(dir.x, 0f, dir.y).normalized;
 
+        var walkSound = 0.3f;
+
         if (plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold || plrState == PlayerStates.InVent)
         {
 
@@ -88,12 +89,12 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
             if (plrMoveDir != Vector3.zero)
             {
                 plrState = PlayerStates.Walking;
-                MoveSoundChecker();
+                MakeSound(walkSound);
             }
             else
             {
+                MakeSound(0f);
                 plrState = PlayerStates.Idle;
-                soundBar = 0;
             }
 
             //transform.position += transform.forward  * PlrMoveDir.z * Time.deltaTime * plrSpd;
@@ -118,17 +119,18 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     }
     public void PlayerSprintController(bool spaceIsPressed)
     {
-
+        var sprintSound = 10f;
         if (spaceIsPressed && plrStamina > 0 && playerDirection >= 0.3f)
         {
             plrSprintApplied = plrSprintBase;
             plrState = PlayerStates.Sprinting;
+            MakeSound(sprintSound);
             DrainStamina();
-            MoveSoundChecker();
         }
         else if (spaceIsPressed && plrStamina <= 0 && playerDirection >= 0.3f)
         {
             plrSprintApplied = 0f;
+            MakeSound(15f);
             plrState = PlayerStates.Sprinting;
         }
         else
@@ -315,34 +317,15 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
 
 
 
-    public void SoundProducer(float soundAdder)
+    public event EventHandler<ProduceSoundArgs> ProduceSound;
+    public class ProduceSoundArgs : EventArgs { public float soundSize; }
+    private void MakeSound(float soundVolume)
     {
-        soundBar = soundAdder;
-        Collider[] listColliders = Physics.OverlapSphere(transform.position, 100f, enemyLyr);
-        foreach(var collider in listColliders)
-        {
-            if(collider.TryGetComponent<IMakeSound>(out IMakeSound sound))
-            {
-                sound.SoundReceiver(new Vector3(transform.position.x, transform.position.y, transform.position.z), soundBar);
-            }
-        }
+        ProduceSound?.Invoke(this, new ProduceSoundArgs { soundSize = soundVolume });
     }
 
-    public void MoveSoundChecker()
-    {
-        if (plrState == PlayerStates.Walking)
-        {
-            SoundProducer(0.3f);
-        }
-        if (plrState == PlayerStates.Sprinting)
-        {
-            SoundProducer(15f);
-        }
-        if(plrState == PlayerStates.Idle)
-        {
-            SoundProducer(0f);
-        }
-    }
+
+
 
     public void DealDamage(float dmgVal, Transform dmgSender, float knckBckPwr)
     {
