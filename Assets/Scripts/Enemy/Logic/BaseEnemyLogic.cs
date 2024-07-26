@@ -14,10 +14,14 @@ public class BaseEnemyLogic : MonoBehaviour
 
     [Header("Scriptable Objects")]
     [SerializeField] BaseEnemyStatesSO baseStats;
+    [SerializeField] FactionBaseSO baseEnemyFactionsSO;
 
     [Header("Script References")]
     [SerializeField] BaseSight baseSight;
     [SerializeField] BaseEnemyAlertBar baseEnemyAlertBar;
+
+    [Header("Faction")]
+    [SerializeField] FactionBaseSO.EnemyFactions currentFaction;
 
     [Header("Variables")]
     [SerializeField] float defaultSpeed;
@@ -26,15 +30,23 @@ public class BaseEnemyLogic : MonoBehaviour
     [SerializeField] float chaseAccel;
     [SerializeField] float minDistToAttack;
     [SerializeField] Transform target;
+    [SerializeField] Transform lastCharToHitMe;
     [SerializeField] Vector3[] targetTrails;
+
+    [Header("Idle State Variables")]
+    [SerializeField] Vector3 idlePos;
+    [SerializeField] Vector3 idleLookRotation;
+
+    [Header("GetLast")]
 
     [Header("Enemy States")]
     [SerializeField] EnemyStates currentState;
     [SerializeField] EnemyStates defaultState;
     public enum EnemyStates
     {
+        None,
         Idle,
-        ChasePlayer,
+        ChaseTarget,
         Attack,
         ChaseLastKnownPosition,
         LookAroundSearching,
@@ -50,12 +62,12 @@ public class BaseEnemyLogic : MonoBehaviour
         chaseSpeed = baseStats.chaseSpeed;
         chaseAccel = baseStats.chaseAccel;
         minDistToAttack = baseStats.minDistToAttack;
+        currentFaction = baseEnemyFactionsSO.enemyFactions;
     }
     private void Start()
     {
         InitializeEnemy();
         baseSight.SendTarget += SendTargetReceiver;
-        baseSight.SendTargetPos += SendTargetPosReceiver;
         baseEnemyAlertBar.AlertBarIsEmpty += AlertBarIsEmptyReceiver;
     }
 
@@ -63,7 +75,11 @@ public class BaseEnemyLogic : MonoBehaviour
     //Handles enemy states.
     private void StateController()
     {
-        if(currentState == EnemyStates.ChasePlayer)
+        if(currentState == EnemyStates.Idle)
+        {
+            Idle();
+        }
+        if(currentState == EnemyStates.ChaseTarget)
         {
             ChasePlayer();
         }
@@ -87,30 +103,126 @@ public class BaseEnemyLogic : MonoBehaviour
     //Enemy states script ends----------------------------
 
 
+    private void Idle()
+    {
+        if (transform.position != idlePos)
+        {
+            agent.destination = idlePos;
+            transform.LookAt(transform.position + agent.velocity);
+            if (!agent.pathPending)
+            {
+                if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
+                {
+                    transform.LookAt(idleLookRotation);
+                }
+            }
+        }
+        else
+        {
+
+        }
+    }
 
     // Handles receiving target info
     private void SendTargetReceiver(object sender, BaseSight.SendTargetInfo e)
     {
-        if(e.target != null)
+        if (e.target != null)
         {
-            if (e.target.TryGetComponent(out PlayerLogic plr))
+            if(lastCharToHitMe == null)
             {
-                if (plr.GetStates() == PlayerLogic.PlayerStates.Hiding || plr.GetStates() == PlayerLogic.PlayerStates.InVent)
-                {
-                    
-                }
-                else
-                {
-                    target = e.target;
-                    currentState = EnemyStates.ChasePlayer;
-                }
-            } 
+               if(e.target.TryGetComponent(out PlayerLogic plr))
+               {
+                    if (plr.GetStates() == PlayerLogic.PlayerStates.Hiding || plr.GetStates() == PlayerLogic.PlayerStates.InVent)
+                    {
+
+                    }
+                    else
+                    {
+                        target = e.target;
+                        currentState = EnemyStates.ChaseTarget;
+                    }
+               }
+            }
         }
-        else
+        else if (e.target == null)
         {
+            TrackTrails();
             currentState = EnemyStates.ChaseLastKnownPosition;
         }
     }
+
+    private void TargetChecker(Transform trgt)
+    {
+        if (target != null)
+        {
+            CheckDistance(target, trgt);
+            if(target.TryGetComponent(out PlayerLogic plr))
+            {
+                if (plr.GetStates() == PlayerLogic.PlayerStates.Hiding || plr.GetStates() == PlayerLogic.PlayerStates.InVent)
+                {
+
+                }
+                else
+                {
+                    currentState = EnemyStates.ChaseTarget;
+                }
+            }
+            else if(target.TryGetComponent(out BaseEnemyLogic enemy))
+            {
+                if(enemy.GetCurrentFaction() == currentFaction)
+                {
+
+                }
+                else if((enemy.GetCurrentFaction() != currentFaction))
+                {
+                    currentState = EnemyStates.ChaseTarget;
+                }
+            }
+        }
+        else if (target == null)
+        {
+            if (trgt.TryGetComponent(out PlayerLogic plr))
+            {
+                if (plr.GetStates() == PlayerLogic.PlayerStates.Hiding || plr.GetStates() == PlayerLogic.PlayerStates.InVent)
+                {
+
+                }
+                else
+                {
+                    target = trgt;
+                    currentState = EnemyStates.ChaseTarget;
+                }
+            }
+            else if(trgt.TryGetComponent(out BaseEnemyLogic enemy))
+            {
+                if(enemy.GetCurrentFaction() == currentFaction)
+                {
+
+                }
+                else if(enemy.GetCurrentFaction() != currentFaction)
+                {
+                    target = trgt; 
+                    currentState = EnemyStates.ChaseTarget;
+                }
+            }
+        }
+    }
+
+    private void CheckDistance(Transform target1, Transform target2)
+    {
+        var distance1 = Vector3.Distance(target1.position, transform.position);
+        var distance2 = Vector3.Distance(target2.position, transform.position);
+
+        if (distance1 < distance2)
+        {
+            target = target1;
+        }
+        else if (distance1 > distance2)
+        {
+            target = target2;
+        }
+    }
+
     // Script handling target info ends------------------------------
 
 
@@ -146,14 +258,13 @@ public class BaseEnemyLogic : MonoBehaviour
         agent.destination = pos;
         var distance = Vector3.Distance(pos, transform.position);
         transform.LookAt(agent.velocity + transform.position);
-        if (distance < 0.75)
+        if (!agent.pathPending)
         {
-            SendInfoToAlertBar(0f);
-            currentState = EnemyStates.LookAroundSearching;
-        }
-        else
-        {
-
+            if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
+            {
+                SendInfoToAlertBar(0f);
+                currentState = EnemyStates.LookAroundSearching;
+            }
         }
     }
     // Chase last known position script ends-----------------
@@ -162,18 +273,18 @@ public class BaseEnemyLogic : MonoBehaviour
 
     // Handles Attacking target state and events related.
     public event EventHandler OnAttackEvent;
-    public class OnAttackEventArgs : EventArgs { public Transform target; }
+    public class OnAttackEventArgs : EventArgs { public Vector3 target; }
     private void Attack()
     {
         var distance = Vector3.Distance(target.position, transform.position);
-        if (target == null)
+        if (target != null)
         {
 
         }
         else if (target != null && distance < minDistToAttack)
         {
             transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z));
-            OnAttackEvent?.Invoke(this, new OnAttackEventArgs { target = target });
+            OnAttackEvent?.Invoke(this, new OnAttackEventArgs { target = target.position });
         }
         else
         {
@@ -188,7 +299,8 @@ public class BaseEnemyLogic : MonoBehaviour
     //Handles looking around when searching state.
     private void LookAroundSearching()
     {
-        if(IsLookingAroundSearching == null)
+        lastCharToHitMe = null;
+        if (IsLookingAroundSearching == null)
         {
             IsLookingAroundSearching = LookingAroundAndSearch();
             StartCoroutine(IsLookingAroundSearching);
@@ -332,11 +444,63 @@ public class BaseEnemyLogic : MonoBehaviour
     //Searching target while alert script ends-----------------------
 
 
-
-    // Handles when Player trails is added.
-    private void SendTargetPosReceiver(object sender, BaseSight.SendTargetPosArgs e)
+    private void TrackTrails()
     {
-        AddTrails(e.target);
+        if(IsTrackingTrails == null)
+        {
+            IsTrackingTrails = StartTrackingTrails();
+            StartCoroutine(IsTrackingTrails);
+        }
+    }
+    IEnumerator IsTrackingTrails;
+    IEnumerator StartTrackingTrails()
+    {
+        var trackTime = 0f;
+        var trackRate = 0.1f;
+        var trackAmounts = 120;
+        var trackCount = 0;
+        if(target != null)
+        {
+            while(target != null)
+            {
+                trackTime = 0f;
+                while(trackTime < trackRate)
+                {
+                    if(target == null)
+                    {
+                        StopCoroutine(IsTrackingTrails);
+                        IsTrackingTrails = null;
+                    }
+                    else
+                    {
+                        trackTime += Time.deltaTime * 15f;
+                    }
+                    yield return 0;
+                }
+                if(target == null)
+                {
+                    StopCoroutine(IsTrackingTrails);
+                    IsTrackingTrails = null;
+                }
+                else if(target != null)
+                {
+                    AddTrails(target.position);
+                    if (trackCount < trackAmounts)
+                    {
+                        trackCount++;
+                    }
+                    else if(trackCount >= trackAmounts)
+                    {
+                        StopCoroutine(IsTrackingTrails);
+                        IsTrackingTrails = null;
+                    }
+                }
+            }
+        }
+        else
+        {
+
+        }
     }
     int trailIndex = 0;
     private void AddTrails(Vector3 newTrails)
@@ -356,25 +520,32 @@ public class BaseEnemyLogic : MonoBehaviour
 
 
     //Handles Getting last seen position.
-    [SerializeField] Vector3 targetPos;
     private Vector3 GetLastSeenPosition()
     {
         var minDist = 10f;
+        var lastPos = Vector3.zero;
         if(target != null)
         {
             for (int i = 0; i < targetTrails.Length; i++)
             {
-                var distance = Vector3.Distance(targetTrails[i], target.position);
+                var distance = Vector3.Distance(target.position, targetTrails[i]);
                 if(distance < minDist)
                 {
                     minDist = distance;
-                    targetPos = targetTrails[i];
+                    lastPos = targetTrails[i];
+                }
+                else
+                {
+
                 }
             }
         }
-        return targetPos;
+        return lastPos;
     }
     //Getting last seen position script ends---------------------
+
+
+
 
     public event EventHandler<SendEventToAlertBarScrArgs> SendEventToAlertBarScr;
     public class SendEventToAlertBarScrArgs : EventArgs { public float adder; }
@@ -383,6 +554,8 @@ public class BaseEnemyLogic : MonoBehaviour
         SendEventToAlertBarScr?.Invoke(this, new SendEventToAlertBarScrArgs { adder = adder });
     }
 
+    
+
     private void AlertBarIsEmptyReceiver(object sender, EventArgs e)
     {
         AlertBarIsEmpty();
@@ -390,7 +563,16 @@ public class BaseEnemyLogic : MonoBehaviour
     private void AlertBarIsEmpty()
     {
         StopAllCoroutines();
+        lastCharToHitMe = null;
         currentState = defaultState;
+        target = null;
+    }
+
+
+
+    public FactionBaseSO.EnemyFactions GetCurrentFaction()
+    {
+        return currentFaction;
     }
 
     private void Update()

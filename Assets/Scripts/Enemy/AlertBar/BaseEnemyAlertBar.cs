@@ -63,6 +63,7 @@ public class BaseEnemyAlertBar : MonoBehaviour
         {
 
         }
+        AlertBarIsNotEmpty?.Invoke(this, EventArgs.Empty);
     }
 
     private void StartDecreasing()
@@ -76,7 +77,7 @@ public class BaseEnemyAlertBar : MonoBehaviour
         currentState = AlertBarStates.IsNotDraining;
     }
 
-
+    public event EventHandler AlertBarIsNotEmpty;
     public event EventHandler AlertBarIsEmpty;
 
 

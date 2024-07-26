@@ -126,6 +126,11 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
             DrainStamina();
             MoveSoundChecker();
         }
+        else if (spaceIsPressed && plrStamina <= 0 && playerDirection >= 0.3f)
+        {
+            plrSprintApplied = 0f;
+            plrState = PlayerStates.Sprinting;
+        }
         else
         {
             plrSprintApplied = 0f;
