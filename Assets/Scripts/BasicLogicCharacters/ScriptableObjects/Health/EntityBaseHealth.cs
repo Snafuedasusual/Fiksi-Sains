@@ -11,7 +11,7 @@ public class EntityBaseHealth : ScriptableObject
     public float health;
 
     public event EventHandler OnHealthChanged;
-    public class OnHealthChangedArgs : EventArgs { public float value; }
+    public class OnHealthChangedArgs : EventArgs { public float currentHealth; }
 
 
     private void Awake()
@@ -19,20 +19,25 @@ public class EntityBaseHealth : ScriptableObject
         health = maxHealth;
     }
 
-    public void HealthChanged(float value)
+    public void HealthHeal(float value)
     {
-        if(health < 100 || health > 0)
+        if(health < 100)
         {
             health += value;
             if(health > maxHealth)
             {
                 health = maxHealth;
             }
-            OnHealthChanged?.Invoke(this, new OnHealthChangedArgs { value = value });
+            OnHealthChanged?.Invoke(this, new OnHealthChangedArgs { currentHealth = health });
         }
-        else if(health > 100 || health <= 0)
-        {
+    }
 
+    public void HealthDamaged(float value)
+    {
+        if(health > 0)
+        {
+            health -= value;
+            OnHealthChanged?.Invoke(this, new OnHealthChangedArgs { currentHealth = health });
         }
     }
 }
