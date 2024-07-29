@@ -161,9 +161,9 @@ public class BaseEnemyLogic : MonoBehaviour
             {
                if(e.target.TryGetComponent(out PlayerLogic plr))
                {
-                    if (plr.GetStates() == PlayerLogic.PlayerStates.Hiding || plr.GetStates() == PlayerLogic.PlayerStates.InVent)
+                    if (plr.GetStates() == PlayerLogic.PlayerStates.Hiding || plr.GetStates() == PlayerLogic.PlayerStates.InVent || plr.GetStates() == PlayerLogic.PlayerStates.Dead)
                     {
-
+                        
                     }
                     else
                     {
@@ -302,19 +302,19 @@ public class BaseEnemyLogic : MonoBehaviour
 
 
     // Handles Attacking target state and events related.
-    public event EventHandler OnAttackEvent;
-    public class OnAttackEventArgs : EventArgs { public Vector3 target; }
+    public event EventHandler<OnAttackEventArgs> OnAttackEvent;
+    public class OnAttackEventArgs : EventArgs { public Transform target; }
     private void Attack()
     {
         var distance = Vector3.Distance(target.position, transform.position);
-        if (target != null)
+        if (target == null)
         {
 
         }
         else if (target != null && distance < minDistToAttack)
         {
             transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z));
-            OnAttackEvent?.Invoke(this, new OnAttackEventArgs { target = target.position });
+            OnAttackEvent?.Invoke(this, new OnAttackEventArgs { target = target });
         }
         else
         {

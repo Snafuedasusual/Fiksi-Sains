@@ -321,7 +321,7 @@ Transform:
   m_GameObject: {fileID: 3256058643477785334}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.2250001, z: 0.8800049}
+  m_LocalPosition: {x: 0, y: 1.225, z: 0.8800049}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -516,6 +516,7 @@ GameObject:
   m_Component:
   - component: {fileID: 570854918953596667}
   - component: {fileID: 778328105383802648}
+  - component: {fileID: 438545854042856042}
   - component: {fileID: 5452880639100260514}
   - component: {fileID: 2272745528222806944}
   - component: {fileID: 4687866729205682305}
@@ -571,6 +572,20 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   soundListeners: []
+--- !u!114 &438545854042856042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7796359892203015654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8615ee7e14c7e74a9f7159a7a013dd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseHealth: {fileID: 11400000, guid: cefd0da26ec06db48811b69b8961067d, type: 2}
+  health: 0
 --- !u!114 &5452880639100260514
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -598,6 +613,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0ba4ac5faf75754fabe8ac4da965c24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  healthController: {fileID: 438545854042856042}
   plrInp: {fileID: 5452880639100260514}
   inventorySystem: {fileID: 0}
   handle: {fileID: 0}
@@ -609,7 +625,6 @@ MonoBehaviour:
   targetInteract: {fileID: 0}
   rb: {fileID: 4687866729205682305}
   mousPosTrans: {fileID: 6670148121185220976}
-  soundBar: 0
   interactableObjs:
     serializedVersion: 2
     m_Bits: 384

@@ -10,8 +10,11 @@ using static PlayerInput;
 
 public class PlayerLogic : MonoBehaviour, IInflictDamage
 {
-    [Header("Components")]
+    [Header("Script References")]
+    [SerializeField] EntityHealthController healthController;
     [SerializeField] PlayerInput plrInp;
+    
+    [Header("Components")]
     [SerializeField] InventorySystem inventorySystem;
     [SerializeField] Handle handle;
 
@@ -46,6 +49,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
         InteractingHold,
         Hiding,
         InVent,
+        Dead
     }
     public PlayerStates plrState;
 
@@ -55,8 +59,8 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
         plrInp.OnMousePosInput += OnMousePosInputDetector;
         plrInp.OnShiftHold += OnShiftHoldDetector;
         plrInp.OnInteractInput += OnInteractInputDetector;
+        healthController.SendDmgToLogic += SendDmgToLogicReceiver;
     }
-
 
 
     //Handles Movement When Input Detected
@@ -120,26 +124,32 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
     public void PlayerSprintController(bool spaceIsPressed)
     {
         var sprintSound = 10f;
-        if (spaceIsPressed && plrStamina > 0 && playerDirection >= 0.3f)
+        if(plrState == PlayerStates.Dead || plrState == PlayerStates.InVent || plrState == PlayerStates.Hiding)
         {
-            plrSprintApplied = plrSprintBase;
-            plrState = PlayerStates.Sprinting;
-            MakeSound(sprintSound);
-            DrainStamina();
-        }
-        else if (spaceIsPressed && plrStamina <= 0 && playerDirection >= 0.3f)
-        {
-            plrSprintApplied = 0f;
-            MakeSound(15f);
-            plrState = PlayerStates.Sprinting;
+
         }
         else
         {
-            plrSprintApplied = 0f;
-            RefillStamina();
+            if (spaceIsPressed && plrStamina > 0 && playerDirection >= 0.3f)
+            {
+                plrSprintApplied = plrSprintBase;
+                plrState = PlayerStates.Sprinting;
+                MakeSound(sprintSound);
+                DrainStamina();
+            }
+            else if (spaceIsPressed && plrStamina <= 0 && playerDirection >= 0.3f)
+            {
+                plrSprintApplied = 0f;
+                MakeSound(15f);
+                plrState = PlayerStates.Sprinting;
+            }
+            else
+            {
+                plrSprintApplied = 0f;
+                RefillStamina();
 
+            }
         }
-
     }
     //End of Sprint Script-----------------------------------------------------
 
@@ -308,6 +318,24 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
 
 
 
+
+    private void SendDmgToLogicReceiver(object sender, EntityHealthController.SendDmgToLogicArgs e)
+    {
+        CheckStatus(e.currentHealth);
+    }
+
+    public void CheckStatus(float health)
+    {
+        if(health <= 0)
+        {
+            plrState = PlayerStates.Dead;
+        }
+        else
+        {
+
+        }
+    }
+
     // Allows outside script to get player states.
     public PlayerStates GetStates()
     {
@@ -324,49 +352,6 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
         ProduceSound?.Invoke(this, new ProduceSoundArgs { soundSize = soundVolume });
     }
 
-
-
-
-    public void DealDamage(float dmgVal, Transform dmgSender, float knckBckPwr)
-    {
-        plrHealth -= dmgVal;
-
-        if(plrHealth < 1)
-        {
-            transform.gameObject.SetActive(false);
-        }
-        else
-        {
-            KnockBack(dmgSender, knckBckPwr);
-        }
-    }
-
-    
-    IEnumerator HitIsCoolingDown;
-    private IEnumerator HitCooldown()
-    {
-        var IE_knockTime = 0f;
-        var draintime = 0.2f;
-        while(IE_knockTime < draintime)
-        {
-            IE_knockTime += Time.deltaTime;
-            yield return 0;
-        }
-        rb.isKinematic = true;
-        rb.isKinematic = false;
-        IE_knockTime = 0f;
-        HitIsCoolingDown = null;
-    }
-    public void KnockBack(Transform sender, float knockBackPwr)
-    {
-        if (HitIsCoolingDown == null && plrState == PlayerStates.Idle)
-        {
-            HitIsCoolingDown = HitCooldown();
-            var direction = (transform.position - sender.position).normalized;
-            rb.AddForce(direction * knockBackPwr, ForceMode.Impulse);
-            StartCoroutine(HitIsCoolingDown);
-        }
-    }
 
     void Update()
     {

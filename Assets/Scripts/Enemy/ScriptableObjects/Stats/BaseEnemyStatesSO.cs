@@ -11,8 +11,20 @@ public class BaseEnemyStatsSO : ScriptableObject
     public float chaseSpeed;
     public float chaseAccel;
 
-    [Header("Min Range to Attack")]
+    [Header("Attack")]
     public float minDistToAttack;
+    public float mainDmg;
+    public float mainDmgKnckBck;
+    public float mainDmgRange;
+    public float secDmg;
+    public float secDmgKnckBck;
+    public float secDmgRange;
+    public float thirdDmg;
+    public float thirdDmgKnckBck;
+    public float thirdDmgRange;
+    public float fourthDmg;
+    public float fourthDmgKnckBck;
+    public float fourthDmgRange;
 
     [Header("Hearing")]
     public float hearingModifier;

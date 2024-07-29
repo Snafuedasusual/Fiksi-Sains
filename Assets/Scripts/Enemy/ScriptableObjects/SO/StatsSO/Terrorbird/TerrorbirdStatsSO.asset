@@ -17,4 +17,16 @@ MonoBehaviour:
   chaseSpeed: 9
   chaseAccel: 120
   minDistToAttack: 1.5
+  mainDmg: 10
+  mainDmgKnckBck: 5
+  mainDmgRange: 2
+  secDmg: 0
+  secDmgKnckBck: 0
+  secDmgRange: 0
+  thirdDmg: 0
+  thirdDmgKnckBck: 0
+  thirdDmgRange: 0
+  fourthDmg: 0
+  fourthDmgKnckBck: 0
+  fourthDmgRange: 0
   hearingModifier: 1
