@@ -19,7 +19,6 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
     [SerializeField] Handle handle;
 
     [Header("Variables")]
-    [SerializeField] float plrHealth = 100;
     [SerializeField] float plrSpdBase = 5f;
     [SerializeField] float plrSprintBase = 10f;
     [SerializeField] float plrSprintApplied = 0f;
@@ -77,7 +76,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
 
         var walkSound = 0.3f;
 
-        if (plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold || plrState == PlayerStates.InVent)
+        if (plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold || plrState == PlayerStates.InVent || plrState == PlayerStates.Dead)
         {
 
         }
@@ -268,7 +267,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
     }
     public void PlayerRotate(Vector3 mousPos)
     {
-        if(plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold)
+        if(plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold || plrState == PlayerStates.Dead)
         {
 
         }

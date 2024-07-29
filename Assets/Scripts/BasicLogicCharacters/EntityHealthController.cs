@@ -21,19 +21,24 @@ public class EntityHealthController : MonoBehaviour, IInflictDamage
     public class SendDmgToLogicArgs : EventArgs { public float currentHealth;  public float dmg; public Transform dmgSender; public float knckBckPwr; }
     public void DealDamage(float damage, Transform dmgSender, float knckBckPwr)
     {
-        baseHealth.HealthHeal(-damage);
-        health = baseHealth.health;
+        if(health > 0)
+        {
+            health -= damage;
+        }
+        baseHealth.OnHealthChangedEvent(health);
         SendDmgToLogic?.Invoke(this, new SendDmgToLogicArgs { currentHealth = health, dmg = damage, dmgSender = dmgSender, knckBckPwr = knckBckPwr });
+
     }
 
     public void Heal(float value)
     {
-        baseHealth.HealthHeal(value);
-        health = baseHealth.health;
-    }
-
-    public float GetHealth()
-    {
-        return health;
+        if (health < 100)
+        {
+            health += value;
+            if (health > 100)
+            {
+                health = baseHealth.maxHealth;
+            }
+        }
     }
 }

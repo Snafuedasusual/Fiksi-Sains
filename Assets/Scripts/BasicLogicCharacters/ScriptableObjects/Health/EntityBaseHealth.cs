@@ -28,7 +28,6 @@ public class EntityBaseHealth : ScriptableObject
             {
                 health = maxHealth;
             }
-            OnHealthChanged?.Invoke(this, new OnHealthChangedArgs { currentHealth = health });
         }
     }
 
@@ -37,7 +36,11 @@ public class EntityBaseHealth : ScriptableObject
         if(health > 0)
         {
             health -= value;
-            OnHealthChanged?.Invoke(this, new OnHealthChangedArgs { currentHealth = health });
         }
+    }
+
+    public void OnHealthChangedEvent(float currentHealth)
+    {
+        OnHealthChanged?.Invoke(this, new OnHealthChangedArgs { currentHealth = currentHealth });
     }
 }

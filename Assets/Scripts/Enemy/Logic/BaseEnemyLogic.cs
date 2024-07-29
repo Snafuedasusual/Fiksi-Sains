@@ -99,6 +99,7 @@ public class BaseEnemyLogic : MonoBehaviour
         }
         if(currentState == EnemyStates.ChaseLastKnownPosition)
         {
+            TrackTrails();
             ChaseLastKnown(GetLastSeenPosition());
         }
         if(currentState == EnemyStates.LookAroundSearching)
@@ -175,7 +176,6 @@ public class BaseEnemyLogic : MonoBehaviour
         }
         else if (e.target == null)
         {
-            TrackTrails();
             currentState = EnemyStates.ChaseLastKnownPosition;
         }
     }
