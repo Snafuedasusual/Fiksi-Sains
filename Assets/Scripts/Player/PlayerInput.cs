@@ -72,7 +72,7 @@ public class PlayerInput : MonoBehaviour
     public event EventHandler OnInteractInput;
     private void InteractInput()
     {
-        if (Input.GetKey(KeyCode.F))
+        if (Input.GetKey(KeyCode.E))
         {
             OnInteractInput?.Invoke(this, EventArgs.Empty);
         }

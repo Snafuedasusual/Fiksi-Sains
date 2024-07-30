@@ -9706,7 +9706,7 @@ Transform:
   m_GameObject: {fileID: 518905740}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.81, y: 0.55, z: 98.36}
+  m_LocalPosition: {x: 7.81, y: 0.27, z: 98.36}
   m_LocalScale: {x: 4.93, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12151,13 +12151,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.9659259, y: -0, z: 0.258819, w: 0}
+  m_LocalRotation: {x: 0.6830127, y: -0.18301266, z: 0.18301266, w: 0.6830127}
   m_LocalPosition: {x: 0, y: 100, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 180, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: -30, z: 0}
 --- !u!43 &710533884
 Mesh:
   m_ObjectHideFlags: 0
@@ -13013,7 +13013,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 20
+  m_Intensity: 30
   m_Range: 20
   m_SpotAngle: 85
   m_InnerSpotAngle: 1
@@ -13072,7 +13072,7 @@ Transform:
   m_GameObject: {fileID: 783391204}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 8.015865, y: 10.32, z: 98.344986}
+  m_LocalPosition: {x: 8.015865, y: 20, z: 98.344986}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13090,7 +13090,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5372ec43ce0bbb84ba77e4c57e2178d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lightTypesSO: {fileID: 11400000, guid: d54309cc315cd054b835124130885472, type: 2}
   light: {fileID: 783391205}
+  characters:
+    serializedVersion: 2
+    m_Bits: 8
+  currentType: 1
 --- !u!43 &783412623
 Mesh:
   m_ObjectHideFlags: 0
@@ -38422,7 +38427,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 5
+  m_Intensity: 60
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -38481,7 +38486,7 @@ Transform:
   m_GameObject: {fileID: 2063650788}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3, y: 3.79, z: 101}
+  m_LocalPosition: {x: -2.69, y: 9.94, z: 101}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -41500,10 +41505,46 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 692857696886548993, guid: 450fc88458c26b34683636525eaa5696, type: 3}
+      propertyPath: m_StoppingDistance
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1616745357173844475, guid: 450fc88458c26b34683636525eaa5696, type: 3}
+      propertyPath: idlePos.x
+      value: 28.84
+      objectReference: {fileID: 0}
+    - target: {fileID: 1616745357173844475, guid: 450fc88458c26b34683636525eaa5696, type: 3}
+      propertyPath: idlePos.y
+      value: 0.285
+      objectReference: {fileID: 0}
+    - target: {fileID: 1616745357173844475, guid: 450fc88458c26b34683636525eaa5696, type: 3}
+      propertyPath: idlePos.z
+      value: 103.38
+      objectReference: {fileID: 0}
+    - target: {fileID: 1616745357173844475, guid: 450fc88458c26b34683636525eaa5696, type: 3}
+      propertyPath: currentState
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1616745357173844475, guid: 450fc88458c26b34683636525eaa5696, type: 3}
+      propertyPath: defaultState
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1616745357173844475, guid: 450fc88458c26b34683636525eaa5696, type: 3}
       propertyPath: baseEnemyAlertBar
       value: 
       objectReference: {fileID: 845783342}
+    - target: {fileID: 1616745357173844475, guid: 450fc88458c26b34683636525eaa5696, type: 3}
+      propertyPath: idleLookRotation.x
+      value: 28.84
+      objectReference: {fileID: 0}
+    - target: {fileID: 1616745357173844475, guid: 450fc88458c26b34683636525eaa5696, type: 3}
+      propertyPath: idleLookRotation.y
+      value: 0.285
+      objectReference: {fileID: 0}
+    - target: {fileID: 1616745357173844475, guid: 450fc88458c26b34683636525eaa5696, type: 3}
+      propertyPath: idleLookRotation.z
+      value: 104.81
+      objectReference: {fileID: 0}
     - target: {fileID: 1616745357173844475, guid: 450fc88458c26b34683636525eaa5696, type: 3}
       propertyPath: baseEnemySoundController
       value: 

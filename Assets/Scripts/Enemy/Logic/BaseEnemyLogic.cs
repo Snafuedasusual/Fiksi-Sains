@@ -91,15 +91,16 @@ public class BaseEnemyLogic : MonoBehaviour
         }
         if(currentState == EnemyStates.ChaseTarget)
         {
+            TrackTrails();
             ChasePlayer();
         }
         if(currentState == EnemyStates.Attack)
         {
+            TrackTrails();
             Attack();
         }
         if(currentState == EnemyStates.ChaseLastKnownPosition)
         {
-            TrackTrails();
             ChaseLastKnown(GetLastSeenPosition());
         }
         if(currentState == EnemyStates.LookAroundSearching)
@@ -259,7 +260,6 @@ public class BaseEnemyLogic : MonoBehaviour
     // Handles chase player state.
     private void ChasePlayer()
     {
-        StopAllCoroutines();
         SendInfoToAlertBar(20f);
         agent.destination = target.position;
         agent.speed = chaseSpeed;
@@ -332,6 +332,7 @@ public class BaseEnemyLogic : MonoBehaviour
         lastCharToHitMe = null;
         if (IsLookingAroundSearching == null)
         {
+            SendInfoToAlertBar(0f);
             IsLookingAroundSearching = LookingAroundAndSearch();
             StartCoroutine(IsLookingAroundSearching);
         }
@@ -532,12 +533,11 @@ public class BaseEnemyLogic : MonoBehaviour
             agent.speed = defaultSpeed;
             agent.acceleration = defaultAccel;
             transform.LookAt(agent.velocity + transform.position);
-            if (!agent.pathPending)
+            var distance = Vector3.Distance(location, transform.position);
+            if (distance < 0.5f)
             {
-                if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
-                {
-                    currentState = EnemyStates.SuspiciousLookAround;
-                }
+                agent.velocity = Vector3.zero;
+                currentState = EnemyStates.SuspiciousLookAround;
             }
         }
     }
@@ -612,7 +612,6 @@ public class BaseEnemyLogic : MonoBehaviour
 
     private void SuspiciousRunTowards()
     {
-        StopAllCoroutines();
         if (location == Vector3.zero)
         {
 
@@ -622,10 +621,12 @@ public class BaseEnemyLogic : MonoBehaviour
             agent.destination = location;
             agent.speed = chaseSpeed;
             agent.acceleration = chaseAccel;
+            transform.LookAt(agent.velocity + transform.position);
             if (!agent.pathPending)
             {
                 if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
                 {
+                    SendInfoToAlertBar(0f);
                     currentState = EnemyStates.LookAroundSearching;
                 }
 
