@@ -20,7 +20,7 @@ public class LightScript : MonoBehaviour
 
     
     private delegate void LightRaycast();
-    private LightRaycast lightRaycast;
+    [SerializeField] private LightRaycast lightRaycast;
     private LightRaycast debugCast;
 
 
@@ -28,30 +28,14 @@ public class LightScript : MonoBehaviour
     {
         if (currentType == LightTypesSO.LightType.SpotLight)
         {
-            if (light.intensity > light.range)
-            {
-                lightRange = light.range;
-                //minimumVisBar = (light.intensity / light.range) * (light.intensity * 0.75f);
-            }
-            else
-            {
-                lightRange = light.range;
-                //lightRange = (light.range / light.intensity) + light.intensity + ((light.range - light.intensity)/2);
-                //minimumVisBar = (light.range / light.intensity) * (light.intensity * 0.2f);
-            }
             lightRaycast = SpotLightRadiusCheck;
+            lightRange = light.range;
+
         }
         else if (currentType == LightTypesSO.LightType.PointLight)
         {
-            if (light.intensity < light.range)
-            {
-                
-            }
-            else
-            {
-                
-                
-            }
+            lightRaycast = PointLightRadiusCheck;
+            lightRange = light.range;
         }
     }
 
@@ -65,6 +49,7 @@ public class LightScript : MonoBehaviour
     private void Update()
     {
         RaycastHitChecker();
+        //DebugRay();
     }
 
 
@@ -107,7 +92,11 @@ public class LightScript : MonoBehaviour
 
     private void PointLightRadiusCheck()
     {
-        var ray = RotaryHeart.Lib.PhysicsExtension.Physics.OverlapSphere(transform.position, light.intensity, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Editor);
+        var ray = RotaryHeart.Lib.PhysicsExtension.Physics.OverlapSphere(transform.position, light.range, characters, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.None);
+        for(int i = 0; i < ray.Length; i++)
+        {
+            HitCheck(ray[i].transform);
+        }
     }
 
 

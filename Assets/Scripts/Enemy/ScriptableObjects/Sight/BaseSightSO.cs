@@ -9,4 +9,5 @@ public class BaseSightSO : ScriptableObject
     public float maxRayDist;
     public float maxVision;
     public float minDotProduct;
+    public float minVisibilityBar;
 }

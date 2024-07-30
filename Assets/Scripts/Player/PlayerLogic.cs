@@ -328,6 +328,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
         if(health <= 0)
         {
             plrState = PlayerStates.Dead;
+            transform.gameObject.SetActive(false);
         }
         else
         {

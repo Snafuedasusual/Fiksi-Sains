@@ -110,10 +110,13 @@ public class BaseSight : MonoBehaviour
             {
                 if (hit.transform == hitInfo.transform && distance <= currentMaxVision)
                 {
-                    StopAllCoroutines();
-                    currentState = SightStates.HasSeen;
-                    targetLook = hitInfo.transform;
-                    SendTarget?.Invoke(this, new SendTargetInfo { target = hitInfo.transform });
+                    if (hit.transform.GetComponent<EntityVisibilityController>().GetVisibilityBar() >= baseSight.minVisibilityBar)
+                    {
+                        StopAllCoroutines();
+                        currentState = SightStates.HasSeen;
+                        targetLook = hitInfo.transform;
+                        SendTarget?.Invoke(this, new SendTargetInfo { target = hitInfo.transform });
+                    }
                 }
                 else if (hit.transform != hitInfo.transform && currentState == SightStates.HasSeen)
                 {

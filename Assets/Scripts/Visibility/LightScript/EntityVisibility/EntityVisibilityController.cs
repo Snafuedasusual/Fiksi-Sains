@@ -61,7 +61,6 @@ public class EntityVisibilityController : MonoBehaviour
         while(currentLightSrc != null)
         {
             var rawDistance = (Vector3.Distance(currentLightSrc.position, transform.position));
-            Debug.Log(rawDistance);
             if(rawDistance > currentLightSrcRange)
             {
                 OnLightSourceLeave();

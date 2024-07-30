@@ -7,7 +7,7 @@ using UnityEngine.AI;
 using UnityEngine.Rendering;
 using Random = UnityEngine.Random;
 
-public class BaseEnemyLogic : MonoBehaviour
+public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
 {
     [Header("NavMesh Agent")]
     [SerializeField] NavMeshAgent agent;
@@ -20,6 +20,7 @@ public class BaseEnemyLogic : MonoBehaviour
     [SerializeField] BaseSight baseSight;
     [SerializeField] BaseEnemyAlertBar baseEnemyAlertBar;
     [SerializeField] BaseEnemySoundController baseEnemySoundController;
+    [SerializeField] EntityHealthController baseEnemyEntityHealthController;
 
     [Header("Faction")]
     [SerializeField] FactionBaseSO.EnemyFactions currentFaction;
@@ -33,6 +34,7 @@ public class BaseEnemyLogic : MonoBehaviour
     [SerializeField] Transform target;
     [SerializeField] Transform lastCharToHitMe;
     [SerializeField] Vector3[] targetTrails;
+    [SerializeField] Vector3[] patrolRoutes;
 
     [Header("Idle State Variables")]
     [SerializeField] Vector3 idlePos;
@@ -47,6 +49,7 @@ public class BaseEnemyLogic : MonoBehaviour
     {
         None,
         Idle,
+        Patrol,
         ChaseTarget,
         Attack,
         ChaseLastKnownPosition,
@@ -88,6 +91,10 @@ public class BaseEnemyLogic : MonoBehaviour
         if(currentState == EnemyStates.Idle)
         {
             Idle();
+        }
+        if(currentState == EnemyStates.Patrol)
+        {
+            Patrol();
         }
         if(currentState == EnemyStates.ChaseTarget)
         {
@@ -473,8 +480,30 @@ public class BaseEnemyLogic : MonoBehaviour
     }
     //Searching target while alert script ends-----------------------
 
-
-
+    int indexPatrol = 0;
+    private void Patrol()
+    {
+        if(patrolRoutes.Length > 1)
+        {
+            agent.isStopped = false;
+            agent.speed = defaultSpeed;
+            agent.acceleration = defaultAccel;
+            agent.destination = patrolRoutes[indexPatrol];
+            transform.LookAt(transform.position + agent.velocity);
+            var distance = Vector3.Distance(transform.position, patrolRoutes[indexPatrol]);
+            if (distance < 0.70)
+            {
+                if (indexPatrol < patrolRoutes.Length - 1)
+                {
+                    indexPatrol++;
+                }
+                else if (indexPatrol == patrolRoutes.Length - 1)
+                {
+                    indexPatrol = 0;
+                }
+            }
+        } 
+    }
 
     private void Suspicious()
     {
@@ -771,6 +800,7 @@ public class BaseEnemyLogic : MonoBehaviour
     {
         var lowAlertLevel = 1f;
         var highAlertLevel = 2f;
+        var knowLocation = 3f;
         if (currentState == EnemyStates.ChaseTarget || currentState == EnemyStates.Attack || currentState == EnemyStates.ChaseLastKnownPosition || currentState == EnemyStates.None || currentState == EnemyStates.SuspiciousRunTowards)
         {
 
@@ -799,5 +829,19 @@ public class BaseEnemyLogic : MonoBehaviour
     private void Update()
     {
         StateController();
+    }
+
+    private void OnDisable()
+    {
+        baseSight.SendTarget -= SendTargetReceiver;
+        baseEnemyAlertBar.AlertBarIsEmpty -= AlertBarIsEmptyReceiver;
+        baseEnemySoundController.SoundToLogic -= SoundToLogicReceiver;
+    }
+
+    private void OnDestroy()
+    {
+        baseSight.SendTarget -= SendTargetReceiver;
+        baseEnemyAlertBar.AlertBarIsEmpty -= AlertBarIsEmptyReceiver;
+        baseEnemySoundController.SoundToLogic -= SoundToLogicReceiver;
     }
 }

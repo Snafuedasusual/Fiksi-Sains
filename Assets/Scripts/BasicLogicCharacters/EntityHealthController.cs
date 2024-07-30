@@ -6,7 +6,7 @@ using UnityEngine;
 public class EntityHealthController : MonoBehaviour, IInflictDamage
 {
     [Header("ScriptableObjects")]
-    [SerializeField] EntityBaseHealth baseHealth;
+    [SerializeField] EntityBaseHealthSO baseHealth;
 
     [Header("Variables")]
     [SerializeField] float health;

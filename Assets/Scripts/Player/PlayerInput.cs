@@ -70,11 +70,13 @@ public class PlayerInput : MonoBehaviour
     //End Of Mouse Pos Inputs--------------------------
 
     public event EventHandler OnInteractInput;
+
     private void InteractInput()
     {
         if (Input.GetKey(KeyCode.E))
         {
             OnInteractInput?.Invoke(this, EventArgs.Empty);
+
         }
     }
     private float SwitchInventory()

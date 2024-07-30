@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "EntityBaseHealth", menuName = "EntityStats/EntityHealth")]
-public class EntityBaseHealth : ScriptableObject
+public class EntityBaseHealthSO : ScriptableObject
 {
     public float maxHealth;
     public float health;
