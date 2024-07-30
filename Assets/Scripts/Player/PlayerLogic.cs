@@ -8,15 +8,17 @@ using UnityEngine;
 using UnityEngine.Events;
 using static PlayerInput;
 
-public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
+public class PlayerLogic : MonoBehaviour, IInflictDamage
 {
-    [Header("Components")]
+    [Header("Script References")]
+    [SerializeField] EntityHealthController healthController;
     [SerializeField] PlayerInput plrInp;
+    
+    [Header("Components")]
     [SerializeField] InventorySystem inventorySystem;
     [SerializeField] Handle handle;
 
     [Header("Variables")]
-    [SerializeField] float plrHealth = 100;
     [SerializeField] float plrSpdBase = 5f;
     [SerializeField] float plrSprintBase = 10f;
     [SerializeField] float plrSprintApplied = 0f;
@@ -24,7 +26,6 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     [SerializeField] Transform targetInteract;
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Transform mousPosTrans;
-    [SerializeField] private float soundBar = 0;
 
     [Header("LayerMasks")]
     [SerializeField]
@@ -46,6 +47,8 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
         InteractingToggle,
         InteractingHold,
         Hiding,
+        InVent,
+        Dead
     }
     public PlayerStates plrState;
 
@@ -55,8 +58,8 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
         plrInp.OnMousePosInput += OnMousePosInputDetector;
         plrInp.OnShiftHold += OnShiftHoldDetector;
         plrInp.OnInteractInput += OnInteractInputDetector;
+        healthController.SendDmgToLogic += SendDmgToLogicReceiver;
     }
-
 
 
     //Handles Movement When Input Detected
@@ -71,7 +74,9 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
 
         var plrMoveDir = new Vector3(dir.x, 0f, dir.y).normalized;
 
-        if (plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold)
+        var walkSound = 0.3f;
+
+        if (plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold || plrState == PlayerStates.InVent || plrState == PlayerStates.Dead)
         {
 
         }
@@ -87,12 +92,12 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
             if (plrMoveDir != Vector3.zero)
             {
                 plrState = PlayerStates.Walking;
-                MoveSoundChecker();
+                MakeSound(walkSound);
             }
             else
             {
+                MakeSound(0f);
                 plrState = PlayerStates.Idle;
-                soundBar = 0;
             }
 
             //transform.position += transform.forward  * PlrMoveDir.z * Time.deltaTime * plrSpd;
@@ -117,21 +122,33 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     }
     public void PlayerSprintController(bool spaceIsPressed)
     {
-
-        if (spaceIsPressed && plrStamina > 0 && playerDirection >= 0.3f)
+        var sprintSound = 10f;
+        if(plrState == PlayerStates.Dead || plrState == PlayerStates.InVent || plrState == PlayerStates.Hiding)
         {
-            plrSprintApplied = plrSprintBase;
-            plrState = PlayerStates.Sprinting;
-            DrainStamina();
-            MoveSoundChecker();
+
         }
         else
         {
-            plrSprintApplied = 0f;
-            RefillStamina();
+            if (spaceIsPressed && plrStamina > 0 && playerDirection >= 0.3f)
+            {
+                plrSprintApplied = plrSprintBase;
+                plrState = PlayerStates.Sprinting;
+                MakeSound(sprintSound);
+                DrainStamina();
+            }
+            else if (spaceIsPressed && plrStamina <= 0 && playerDirection >= 0.3f)
+            {
+                plrSprintApplied = 0f;
+                MakeSound(15f);
+                plrState = PlayerStates.Sprinting;
+            }
+            else
+            {
+                plrSprintApplied = 0f;
+                RefillStamina();
 
+            }
         }
-
     }
     //End of Sprint Script-----------------------------------------------------
 
@@ -153,14 +170,14 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     IEnumerator StaminaDrainer()
     {
         var staminaTime = 0f;
-        var staminaRate = 0.4f;
+        var staminaRate = 0.35f;
         if (IsStaminaDrainerRunning != null)
         {
 
         }
         else
         {
-            if (plrState == PlayerStates.Sprinting)
+            if (plrState == PlayerStates.Sprinting )
             {
                 IsStaminaDrainerRunning = StaminaDrainer();
                 while (plrState == PlayerStates.Sprinting)
@@ -168,14 +185,14 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
                     staminaTime = 0f;
                     while (staminaTime < staminaRate)
                     {
-                        staminaTime += Time.deltaTime * 20;
+                        staminaTime += Time.deltaTime * 7.5f;
                         yield return null;
                     }
                     if (plrStamina <= 0)
                     {
 
                     }
-                    else if (plrStamina > 0)
+                    else if (plrStamina > 0 && playerDirection >= 0.3f)
                     {
                         plrStamina--;
 
@@ -202,7 +219,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     IEnumerator StaminaRefillController()
     {
         var staminaTime = 0f;
-        var staminaRate = 0.4f;
+        var staminaRate = 0.45f;
         if(IsStaminaRefillRunning != null)
         {
 
@@ -218,7 +235,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
                     staminaTime = 0f;
                     while (staminaTime < staminaRate)
                     {
-                        staminaRate += Time.deltaTime * 2.5f;
+                        staminaTime += Time.deltaTime * 2.5f;
                         yield return null;
                     }
                     if (plrStamina == 100)
@@ -250,7 +267,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     }
     public void PlayerRotate(Vector3 mousPos)
     {
-        if(plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold)
+        if(plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold || plrState == PlayerStates.Dead)
         {
 
         }
@@ -295,77 +312,45 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
         {
             targetInteract = null;
         }
-    }    
+    }
+    // End of Interaction script--------------------------------------
 
-    public void SoundProducer(float soundAdder)
+
+
+
+    private void SendDmgToLogicReceiver(object sender, EntityHealthController.SendDmgToLogicArgs e)
     {
-        soundBar = soundAdder;
-        Collider[] listColliders = Physics.OverlapSphere(transform.position, 100f, enemyLyr);
-        foreach(var collider in listColliders)
-        {
-            if(collider.TryGetComponent<IMakeSound>(out IMakeSound sound))
-            {
-                sound.SoundReceiver(new Vector3(transform.position.x, transform.position.y, transform.position.z), soundBar);
-            }
-        }
+        CheckStatus(e.currentHealth);
     }
 
-    public void MoveSoundChecker()
+    public void CheckStatus(float health)
     {
-        if (plrState == PlayerStates.Walking)
+        if(health <= 0)
         {
-            SoundProducer(0.3f);
-        }
-        if (plrState == PlayerStates.Sprinting)
-        {
-            SoundProducer(15f);
-        }
-        if(plrState == PlayerStates.Idle)
-        {
-            SoundProducer(0f);
-        }
-    }
-
-    public void DealDamage(float dmgVal, Transform dmgSender, float knckBckPwr)
-    {
-        plrHealth -= dmgVal;
-
-        if(plrHealth < 1)
-        {
-            transform.gameObject.SetActive(false);
+            plrState = PlayerStates.Dead;
         }
         else
         {
-            KnockBack(dmgSender, knckBckPwr);
+
         }
     }
 
-    
-    IEnumerator HitIsCoolingDown;
-    private IEnumerator HitCooldown()
+    // Allows outside script to get player states.
+    public PlayerStates GetStates()
     {
-        var IE_knockTime = 0f;
-        var draintime = 0.2f;
-        while(IE_knockTime < draintime)
-        {
-            IE_knockTime += Time.deltaTime;
-            yield return 0;
-        }
-        rb.isKinematic = true;
-        rb.isKinematic = false;
-        IE_knockTime = 0f;
-        HitIsCoolingDown = null;
+        return plrState;
     }
-    public void KnockBack(Transform sender, float knockBackPwr)
+    // End of GetStates function----------------
+
+
+
+    public event EventHandler<ProduceSoundArgs> ProduceSound;
+    public class ProduceSoundArgs : EventArgs { public float soundSize; }
+    private void MakeSound(float soundVolume)
     {
-        if (HitIsCoolingDown == null && plrState == PlayerStates.Idle)
-        {
-            HitIsCoolingDown = HitCooldown();
-            var direction = (transform.position - sender.position).normalized;
-            rb.AddForce(direction * knockBackPwr, ForceMode.Impulse);
-            StartCoroutine(HitIsCoolingDown);
-        }
+        ProduceSound?.Invoke(this, new ProduceSoundArgs { soundSize = soundVolume });
     }
+
 
     void Update()
     {

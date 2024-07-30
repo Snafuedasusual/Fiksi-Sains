@@ -5,7 +5,12 @@ using UnityEngine;
 
 public interface IInflictDamage
 {
-   void DealDamage(float damage, Transform dmgSender, float knckBckPwr)
+   public void Heal(float value)
+   {
+
+   }
+
+   public void DealDamage(float damage, Transform dmgSender, float knckBckPwr)
    {
 
    }
@@ -13,4 +18,9 @@ public interface IInflictDamage
    {
 
    }
+
+    public void CheckStatus(float health)
+    {
+
+    }
 }
