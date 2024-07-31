@@ -43,14 +43,13 @@ public class ScriptedSkinEater : BaseEnemyLogic
     IEnumerator StartSniffCount()
     {
         var coolTime = 0f;
-        var coolRate = 40f;
+        var coolRate = 30f;
         while(transform.gameObject.activeSelf == true)
         {
             coolTime = 0f;
             while(coolTime < coolRate)
             {
                 coolTime += Time.deltaTime;
-                Debug.Log(coolTime);
                 yield return null;
             }
             if(transform.gameObject.activeSelf == false)
@@ -68,7 +67,7 @@ public class ScriptedSkinEater : BaseEnemyLogic
     private void SniffTargetLocation()
     {
         var radius = 100f;
-        var sphere = RotaryHeart.Lib.PhysicsExtension.Physics.OverlapSphere(transform.position, radius, characters, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Both);
+        var sphere = RotaryHeart.Lib.PhysicsExtension.Physics.OverlapSphere(transform.position, radius, characters, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.None);
 
         for (int i = 0; i < sphere.Length; i++)
         {
