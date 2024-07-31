@@ -15,6 +15,11 @@ public class BaseEnemySoundController : MonoBehaviour, IMakeSound
         hearingModifier = statsSO.hearingModifier; 
     }
 
+    private void OnEnable()
+    {
+        hearingModifier = statsSO.hearingModifier;
+    }
+
     public void SoundProducer(float soundAdder)
     {
         

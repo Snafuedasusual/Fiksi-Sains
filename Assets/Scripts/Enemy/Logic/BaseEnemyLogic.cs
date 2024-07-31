@@ -10,17 +10,17 @@ using Random = UnityEngine.Random;
 public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
 {
     [Header("NavMesh Agent")]
-    [SerializeField] NavMeshAgent agent;
+    [SerializeField] protected NavMeshAgent agent;
 
     [Header("Scriptable Objects")]
-    [SerializeField] BaseEnemyStatsSO baseStats;
-    [SerializeField] FactionBaseSO baseEnemyFactionsSO;
+    [SerializeField] protected BaseEnemyStatsSO baseStats;
+    [SerializeField] protected FactionBaseSO baseEnemyFactionsSO;
 
     [Header("Script References")]
-    [SerializeField] BaseSight baseSight;
-    [SerializeField] BaseEnemyAlertBar baseEnemyAlertBar;
-    [SerializeField] BaseEnemySoundController baseEnemySoundController;
-    [SerializeField] EntityHealthController baseEnemyEntityHealthController;
+    [SerializeField] protected BaseSight baseSight;
+    [SerializeField] protected BaseEnemyAlertBar baseEnemyAlertBar;
+    [SerializeField] protected BaseEnemySoundController baseEnemySoundController;
+    [SerializeField] protected EntityHealthController baseEnemyEntityHealthController;
 
     [Header("Faction")]
     [SerializeField] FactionBaseSO.EnemyFactions currentFaction;
@@ -31,18 +31,21 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
     [SerializeField] float chaseSpeed;
     [SerializeField] float chaseAccel;
     [SerializeField] float minDistToAttack;
-    [SerializeField] Transform target;
-    [SerializeField] Transform lastCharToHitMe;
-    [SerializeField] Vector3[] targetTrails;
-    [SerializeField] Vector3[] patrolRoutes;
+    [SerializeField] protected Transform target;
+    [SerializeField] protected Transform lastCharToHitMe;
+    [SerializeField] protected Vector3[] targetTrails;
+    [SerializeField] protected Vector3[] patrolRoutes;
 
     [Header("Idle State Variables")]
-    [SerializeField] Vector3 idlePos;
-    [SerializeField] Vector3 idleLookRotation;
+    [SerializeField] protected Vector3 idlePos;
+    [SerializeField] protected Vector3 idleLookRotation;
 
     [Header("Enemy States")]
-    [SerializeField] EnemyStates currentState;
-    [SerializeField] EnemyStates defaultState;
+    [SerializeField] protected EnemyStates currentState;
+    [SerializeField] protected EnemyStates defaultState;
+
+
+    [SerializeField] Vector3 destinasion;
 
 
     public enum EnemyStates
@@ -63,7 +66,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
     }
     
 
-    private void InitializeEnemy()
+    public virtual void InitializeEnemy()
     {
         defaultSpeed = baseStats.defaultSpeed;
         defaultAccel = baseStats.defaultAccel;
@@ -82,12 +85,13 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
         baseEnemySoundController.SoundToLogic += SoundToLogicReceiver;
     }
 
- 
+
 
 
     //Handles enemy states.
-    private void StateController()
+    public virtual void StateController()
     {
+        
         if(currentState == EnemyStates.Idle)
         {
             Idle();
@@ -138,11 +142,12 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
     //Enemy states script ends----------------------------
 
     //Handles Idle state.
-    private void Idle()
+    public virtual void Idle()
     {
         if (transform.position != idlePos)
         {
             agent.destination = idlePos;
+            destinasion = agent.destination;
             transform.LookAt(transform.position + agent.velocity);
             if (!agent.pathPending)
             {
@@ -162,7 +167,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
 
 
     // Handles receiving target info
-    private void SendTargetReceiver(object sender, BaseSight.SendTargetInfo e)
+    public virtual void SendTargetReceiver(object sender, BaseSight.SendTargetInfo e)
     {
         if (e.target != null)
         {
@@ -188,7 +193,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
         }
     }
 
-    private void TargetChecker(Transform trgt)
+    public virtual void TargetChecker(Transform trgt)
     {
         if (target != null)
         {
@@ -245,7 +250,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
         }
     }
 
-    private void CheckDistance(Transform target1, Transform target2)
+    public virtual void CheckDistance(Transform target1, Transform target2)
     {
         var distance1 = Vector3.Distance(target1.position, transform.position);
         var distance2 = Vector3.Distance(target2.position, transform.position);
@@ -265,10 +270,11 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
 
 
     // Handles chase player state.
-    private void ChasePlayer()
+    public virtual void ChasePlayer()
     {
         SendInfoToAlertBar(20f);
         agent.destination = target.position;
+        destinasion = agent.destination;
         agent.speed = chaseSpeed;
         agent.acceleration = chaseAccel;
         agent.isStopped = false;
@@ -290,9 +296,10 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
 
 
     // Handles Chase last known position state.
-    private void ChaseLastKnown(Vector3 pos)
+    public virtual void ChaseLastKnown(Vector3 pos)
     {
         agent.destination = pos;
+        destinasion = agent.destination;
         var distance = Vector3.Distance(pos, transform.position);
         transform.LookAt(agent.velocity + transform.position);
         if (!agent.pathPending)
@@ -311,7 +318,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
     // Handles Attacking target state and events related.
     public event EventHandler<OnAttackEventArgs> OnAttackEvent;
     public class OnAttackEventArgs : EventArgs { public Transform target; }
-    private void Attack()
+    public virtual void Attack()
     {
         var distance = Vector3.Distance(target.position, transform.position);
         if (target == null)
@@ -334,7 +341,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
 
 
     //Handles looking around when searching state.
-    private void LookAroundSearching()
+    public virtual void LookAroundSearching()
     {
         lastCharToHitMe = null;
         if (IsLookingAroundSearching == null)
@@ -348,8 +355,8 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
 
         }
     }
-    IEnumerator IsLookingAroundSearching;
-    IEnumerator LookingAroundAndSearch()
+    protected IEnumerator IsLookingAroundSearching;
+    public virtual IEnumerator LookingAroundAndSearch()
     {
         var amountOfLooks = 6;
         var lookCount = 0;
@@ -367,7 +374,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
             {
                 var randomDirX = Random.Range(-1f, 1f);
                 var randomDirZ = Random.Range(-1f, 1f);
-                var lookSpeed = Random.Range(4f, 10f);
+                var lookSpeed = Random.Range(2f, 10f);
                 var direction = new Vector3(randomDirX + transform.position.x, transform.position.y, randomDirZ + transform.position.z);
                 var lookDir = Quaternion.LookRotation(direction - transform.position);
                 lookTime = 0f;
@@ -402,7 +409,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
 
 
     //Handles Searching while alert state.
-    private void SearchingAlert(Vector3 hitpoint)
+    public virtual void SearchingAlert(Vector3 hitpoint)
     {
         var point = hitpoint;
         var distance = Vector3.Distance(point, transform.position);
@@ -423,7 +430,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
 
         }
     }
-    private Vector3 RandomPointToSearch()
+    public virtual Vector3 RandomPointToSearch()
     {
         var radius = 20f;
         var randomPoint = Random.insideUnitSphere * radius;
@@ -439,8 +446,8 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
         }
         return targetPos;
     }
-    IEnumerator IsSearchingAlert;
-    IEnumerator StartSearchingAlert(Vector3 point)
+    protected IEnumerator IsSearchingAlert;
+    public virtual IEnumerator StartSearchingAlert(Vector3 point)
     {
         
         if(currentState != EnemyStates.SearchingAlert)
@@ -454,6 +461,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
             {
                 var distance = Vector3.Distance(point, transform.position);
                 agent.destination = point;
+                destinasion = agent.destination;
                 agent.speed = defaultSpeed;
                 agent.acceleration = defaultAccel;
                 transform.LookAt(agent.velocity + transform.position);
@@ -480,8 +488,8 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
     }
     //Searching target while alert script ends-----------------------
 
-    int indexPatrol = 0;
-    private void Patrol()
+    protected int indexPatrol = 0;
+    public virtual void Patrol()
     {
         if(patrolRoutes.Length > 1)
         {
@@ -489,6 +497,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
             agent.speed = defaultSpeed;
             agent.acceleration = defaultAccel;
             agent.destination = patrolRoutes[indexPatrol];
+            destinasion = agent.destination;
             transform.LookAt(transform.position + agent.velocity);
             var distance = Vector3.Distance(transform.position, patrolRoutes[indexPatrol]);
             if (distance < 0.70)
@@ -505,7 +514,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
         } 
     }
 
-    private void Suspicious()
+    public virtual void Suspicious()
     {
         if(IsSuspicious == null)
         {
@@ -513,8 +522,8 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
             StartCoroutine(IsSuspicious);
         }
     }
-    IEnumerator IsSuspicious;
-    IEnumerator StartSuspicious()
+    protected IEnumerator IsSuspicious;
+    public virtual IEnumerator StartSuspicious()
     {
         var lookSpeed = 10f;
         var delayTime = 0f;
@@ -530,18 +539,11 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
         {
             while(delayTime < delayRate)
             {
-                if(currentState != EnemyStates.Suspicious)
-                {
-                    StopCoroutine(IsSuspicious);
-                    IsSuspicious = null;
-
-                }
-                else
-                {
+                
+                
                     transform.rotation = Quaternion.Slerp(transform.rotation, lookDir, lookSpeed * Time.deltaTime);
                     delayTime += Time.deltaTime;
                     yield return 0;
-                }
                 
             }
             currentState = EnemyStates.SuspiciousApproach;
@@ -550,7 +552,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
     }
 
 
-    private void SuspiciousApproach()
+    public virtual void SuspiciousApproach()
     {
         if(location == Vector3.zero)
         {
@@ -559,6 +561,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
         else
         {
             agent.destination = location;
+            destinasion = agent.destination;
             agent.speed = defaultSpeed;
             agent.acceleration = defaultAccel;
             transform.LookAt(agent.velocity + transform.position);
@@ -571,7 +574,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
         }
     }
 
-    private void SuspiciousLookAround()
+    public virtual void SuspiciousLookAround()
     {
         if(IsSuspiciousLooking == null)
         {
@@ -579,8 +582,8 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
             StartCoroutine(IsSuspiciousLooking);
         }
     }
-    IEnumerator IsSuspiciousLooking;
-    IEnumerator StartSuspiciousLookAround()
+    protected IEnumerator IsSuspiciousLooking;
+    public virtual IEnumerator StartSuspiciousLookAround()
     {
         var amountOfLooks = 3;
         var lookCount = 0;
@@ -639,7 +642,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
     }
 
 
-    private void SuspiciousRunTowards()
+    public virtual void SuspiciousRunTowards()
     {
         if (location == Vector3.zero)
         {
@@ -648,6 +651,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
         else
         {
             agent.destination = location;
+            destinasion = agent.destination;
             agent.speed = chaseSpeed;
             agent.acceleration = chaseAccel;
             transform.LookAt(agent.velocity + transform.position);
@@ -664,7 +668,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
     }
 
 
-    private void TrackTrails()
+    public virtual void TrackTrails()
     {
         if(IsTrackingTrails == null)
         {
@@ -672,8 +676,8 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
             StartCoroutine(IsTrackingTrails);
         }
     }
-    IEnumerator IsTrackingTrails;
-    IEnumerator StartTrackingTrails()
+    protected IEnumerator IsTrackingTrails;
+    public virtual IEnumerator StartTrackingTrails()
     {
         var trackTime = 0f;
         var trackRate = 0.1f;
@@ -722,8 +726,8 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
 
         }
     }
-    int trailIndex = 0;
-    private void AddTrails(Vector3 newTrails)
+    protected int trailIndex = 0;
+    public virtual void AddTrails(Vector3 newTrails)
     {
         targetTrails[trailIndex] = newTrails;
         if(trailIndex < targetTrails.Length - 1)
@@ -740,7 +744,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
 
 
     //Handles Getting last seen position.
-    private Vector3 GetLastSeenPosition()
+    public virtual Vector3 GetLastSeenPosition()
     {
         var minDist = 10f;
         var lastPos = Vector3.zero;
@@ -769,7 +773,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
 
     public event EventHandler<SendEventToAlertBarScrArgs> SendEventToAlertBarScr;
     public class SendEventToAlertBarScrArgs : EventArgs { public float adder; }
-    private void SendInfoToAlertBar(float adder)
+    public virtual void SendInfoToAlertBar(float adder)
     {
         SendEventToAlertBarScr?.Invoke(this, new SendEventToAlertBarScrArgs { adder = adder });
     }
@@ -777,11 +781,11 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
 
     
     //Handles Alert bar communications.
-    private void AlertBarIsEmptyReceiver(object sender, EventArgs e)
+    public virtual void AlertBarIsEmptyReceiver(object sender, EventArgs e)
     {
         AlertBarIsEmpty();
     }
-    private void AlertBarIsEmpty()
+    public virtual void AlertBarIsEmpty()
     {
         StopAllCoroutines();
         lastCharToHitMe = null;
@@ -791,12 +795,12 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
     //Alert bar communication script ends-----------------------------
 
 
-    private void SoundToLogicReceiver(object sender, BaseEnemySoundController.SoundToLogicArgs e)
+    public virtual void SoundToLogicReceiver(object sender, BaseEnemySoundController.SoundToLogicArgs e)
     {
         ReceivingAudioInfo(e.alertLevel, e.location);
     }
-    Vector3 location;
-    private void ReceivingAudioInfo(float alertLevel, Vector3 target)
+    protected Vector3 location;
+    public virtual void ReceivingAudioInfo(float alertLevel, Vector3 target)
     {
         var lowAlertLevel = 1f;
         var highAlertLevel = 2f;
@@ -810,13 +814,13 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
             if(alertLevel == lowAlertLevel)
             {
                 currentState = EnemyStates.Suspicious;
-                location = target;
+                location = new Vector3(target.x, transform.position.y, target.z);
             }
             else if(alertLevel == highAlertLevel)
             {
                 SendInfoToAlertBar(30f);
                 currentState = EnemyStates.SuspiciousRunTowards;
-                location = target;
+                location = new Vector3(target.x, transform.position.y, target.z);
             }
         }
     }
@@ -829,6 +833,21 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
     private void Update()
     {
         StateController();
+    }
+
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        var direction = (collision.transform.position - transform.position).normalized;
+        if (collision.transform.TryGetComponent(out PlayerLogic plr))
+        {
+            var dot = Vector3.Dot(transform.forward, direction);
+            if(dot > 0.1)
+            {
+                target = collision.transform;
+                currentState = EnemyStates.ChaseTarget;
+            }
+        }
     }
 
     private void OnDisable()

@@ -59,8 +59,10 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
         plrInp.OnShiftHold += OnShiftHoldDetector;
         plrInp.OnInteractInput += OnInteractInputDetector;
         healthController.SendDmgToLogic += SendDmgToLogicReceiver;
+        plrInp.OnFlashlightInput += OnFlashlightInputDetector;
     }
 
+ 
 
     //Handles Movement When Input Detected
     private Vector2 plrDirection;
@@ -351,6 +353,19 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
     {
         ProduceSound?.Invoke(this, new ProduceSoundArgs { soundSize = soundVolume });
     }
+
+
+    private void OnFlashlightInputDetector(object sender, EventArgs e)
+    {
+        TurnFlashlight();
+    }
+
+    public event EventHandler TurnFlashlightEvent;
+    void TurnFlashlight()
+    {
+        TurnFlashlightEvent?.Invoke(this, EventArgs.Empty);
+    }
+
 
 
     void Update()

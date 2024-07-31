@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultSpeed: 3.5
   defaultAccel: 60
-  chaseSpeed: 11
+  chaseSpeed: 8
   chaseAccel: 120
   minDistToAttack: 3
   mainDmg: 15
   mainDmgKnckBck: 0
-  mainDmgRange: 3
+  mainDmgRange: 3.25
   secDmg: 0
   secDmgKnckBck: 0
   secDmgRange: 0

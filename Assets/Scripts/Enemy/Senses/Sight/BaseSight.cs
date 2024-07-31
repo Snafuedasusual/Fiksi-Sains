@@ -20,6 +20,7 @@ public class BaseSight : MonoBehaviour
     [SerializeField] float minDotProduct;
     [SerializeField] float alertMaxVision;
     [SerializeField] float currentMaxVision;
+    [SerializeField] float minVisibility;
     [SerializeField] RaycastHit[] seeCharacters;
 
     [Header("Enum States")]
@@ -40,6 +41,7 @@ public class BaseSight : MonoBehaviour
         alertMaxVision = baseSight.maxVision * 2;
         minDotProduct = baseSight.minDotProduct;
         currentMaxVision = defaultMaxVision;
+        minVisibility = baseSight.minVisibilityBar;
     }
 
     private void Start()
@@ -102,7 +104,7 @@ public class BaseSight : MonoBehaviour
     {
         //var sightRange = defaultMaxVision;
         var direction = hitInfo.transform.position - transform.position;
-        bool canSee = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position + Vector3.up * eyeHeight, direction + Vector3.up * eyeHeight, out RaycastHit hit, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Both);
+        bool canSee = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position + Vector3.up * eyeHeight, direction + Vector3.up * eyeHeight, out RaycastHit hit, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.None);
         var distance = Vector3.Distance(hitInfo.transform.position, transform.position);
         if (canSee)
         {

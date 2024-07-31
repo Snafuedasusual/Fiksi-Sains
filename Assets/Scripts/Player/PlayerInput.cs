@@ -104,6 +104,14 @@ public class PlayerInput : MonoBehaviour
     }
 
 
+    public event EventHandler OnFlashlightInput;
+    private void FlashlightInput()
+    {
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            OnFlashlightInput?.Invoke(this, EventArgs.Empty);
+        }
+    }
 
     //Handles Shift Input and Events related.
     public event EventHandler<SendShiftHoldArgs> OnShiftHold;
@@ -135,6 +143,7 @@ public class PlayerInput : MonoBehaviour
         SwitchInventory();
         HoldToSprint();
         InteractInput();
+        FlashlightInput();
     }
 
 }

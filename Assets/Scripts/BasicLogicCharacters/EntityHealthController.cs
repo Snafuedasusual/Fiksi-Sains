@@ -17,6 +17,7 @@ public class EntityHealthController : MonoBehaviour, IInflictDamage
         health = baseHealth.health;
     }
 
+
     public event EventHandler<SendDmgToLogicArgs> SendDmgToLogic;
     public class SendDmgToLogicArgs : EventArgs { public float currentHealth;  public float dmg; public Transform dmgSender; public float knckBckPwr; }
     public void DealDamage(float damage, Transform dmgSender, float knckBckPwr)

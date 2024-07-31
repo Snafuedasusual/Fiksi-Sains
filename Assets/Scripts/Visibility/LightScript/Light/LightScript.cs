@@ -26,6 +26,7 @@ public class LightScript : MonoBehaviour
 
     private void InitializeVariables()
     {
+        currentType = lightTypesSO.currentType;
         if (currentType == LightTypesSO.LightType.SpotLight)
         {
             lightRaycast = SpotLightRadiusCheck;
@@ -42,6 +43,11 @@ public class LightScript : MonoBehaviour
     private void Start()
     {
        InitializeVariables();
+    }
+
+    private void OnEnable()
+    {
+        InitializeVariables();
     }
 
 
