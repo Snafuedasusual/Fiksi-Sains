@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -34,13 +35,20 @@ public class EntityVisibilityController : MonoBehaviour
         }
     }
 
+
+
+
     public void OnLightSourceLeave()
     {
         currentLightSrc = null;
         currentLightSrcPwr = 0f;
         currentLightSrcRange = 0f;
         visibilityBar = 0;
+        VisBarToUIFunc(visibilityBar);
     }
+
+
+
 
     private void StartVisBarController()
     {
@@ -77,17 +85,20 @@ public class EntityVisibilityController : MonoBehaviour
                 else
                 {
                     var distance = currentLightSrcRange - rawDistance;
-                    visibilityBar = ((distance / currentLightSrcRange * 100) * currentLightSrcPwr/2f);
+                    visibilityBar = ((distance / currentLightSrcRange * 100) + (currentLightSrcPwr * 0.75f));
                     if(visibilityBar > 100)
                     {
                         visibilityBar = 100;
                     }
+                    VisBarToUIFunc(visibilityBar);
                 }
             }
             yield return 0;
         }
         VisibilityBarController = null;
     }
+
+
 
     private void CompareDistance(Transform source1, Transform source2, float lightRange1, float lightRange2, float initialVisVal1, float initialVisVal2)
     {
@@ -112,8 +123,20 @@ public class EntityVisibilityController : MonoBehaviour
         }
     }
 
+
+
     public float GetVisibilityBar()
     {
         return visibilityBar;
+    }
+
+
+
+
+    public event EventHandler<VisBarToUIArgs> VisBarToUI;
+    public class VisBarToUIArgs : EventArgs { public float visibilityBarValue; }
+    private void VisBarToUIFunc(float visBarValue)
+    {
+        VisBarToUI?.Invoke(this, new VisBarToUIArgs{visibilityBarValue = visBarValue});
     }
 }

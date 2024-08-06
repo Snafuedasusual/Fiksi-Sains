@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8ef1d2b42e4a8f43859ad3c07e5430d, type: 3}
   m_Name: SkinEaterStats
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  health: 100
+  maxHealth: 150
+  health: 150

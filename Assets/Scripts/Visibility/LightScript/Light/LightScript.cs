@@ -88,7 +88,7 @@ public class LightScript : MonoBehaviour
     {
         var radius = (light.spotAngle / 10f) * (1 + 0.3f);
         var offset = 2f;
-        var ray = RotaryHeart.Lib.PhysicsExtension.Physics.SphereCastAll(transform.position, radius + offset, transform.forward, light.range + offset, characters, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Editor);
+        var ray = RotaryHeart.Lib.PhysicsExtension.Physics.SphereCastAll(transform.position, radius + offset, transform.forward, light.range + offset, characters, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.None);
         for (int i = 0; i < ray.Length; i++)
         {
             HitCheck(ray[i].transform);
@@ -109,7 +109,7 @@ public class LightScript : MonoBehaviour
     private void HitCheck(Transform target)
     {
         var direction = target.position - transform.position;
-        var canHit = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position, direction + Vector3.up * 0.15f, out RaycastHit hit);
+        var canHit = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position, direction + Vector3.up * 0.15f, out RaycastHit hit, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.None);
         if (hit.transform == target.transform)
         {
             if(hit.transform.TryGetComponent(out EntityVisibilityController vis))
@@ -124,6 +124,13 @@ public class LightScript : MonoBehaviour
                     vis.OnLightSourceLeave();
                 }
                 
+            }
+        }
+        else
+        {
+            if(target.transform.TryGetComponent(out EntityVisibilityController vis))
+            {
+                vis.OnLightSourceLeave();
             }
         }
     }

@@ -6,10 +6,10 @@ using UnityEngine;
 public class EntityHealthController : MonoBehaviour, IInflictDamage
 {
     [Header("ScriptableObjects")]
-    [SerializeField] EntityBaseHealthSO baseHealth;
+    [SerializeField] protected EntityBaseHealthSO baseHealth;
 
     [Header("Variables")]
-    [SerializeField] float health;
+    [SerializeField] protected float health;
 
 
     private void Start()
@@ -18,9 +18,12 @@ public class EntityHealthController : MonoBehaviour, IInflictDamage
     }
 
 
-    public event EventHandler<SendDmgToLogicArgs> SendDmgToLogic;
+    public virtual event EventHandler<HealthBarToUIArgs> HealthBarToUI;
+    public class HealthBarToUIArgs : EventArgs { public float healthBarValue; }
+
+    public virtual event EventHandler<SendDmgToLogicArgs> SendDmgToLogic;
     public class SendDmgToLogicArgs : EventArgs { public float currentHealth;  public float dmg; public Transform dmgSender; public float knckBckPwr; }
-    public void DealDamage(float damage, Transform dmgSender, float knckBckPwr)
+    public virtual void DealDamage(float damage, Transform dmgSender, float knckBckPwr)
     {
         if(health > 0)
         {
@@ -28,10 +31,10 @@ public class EntityHealthController : MonoBehaviour, IInflictDamage
         }
         baseHealth.OnHealthChangedEvent(health);
         SendDmgToLogic?.Invoke(this, new SendDmgToLogicArgs { currentHealth = health, dmg = damage, dmgSender = dmgSender, knckBckPwr = knckBckPwr });
-
+        HealthBarToUI?.Invoke(this, new HealthBarToUIArgs { healthBarValue = health });
     }
 
-    public void Heal(float value)
+    public virtual void Heal(float value)
     {
         if (health < 100)
         {
@@ -40,6 +43,7 @@ public class EntityHealthController : MonoBehaviour, IInflictDamage
             {
                 health = baseHealth.maxHealth;
             }
+            HealthBarToUI?.Invoke(this, new HealthBarToUIArgs { healthBarValue = health });
         }
     }
 }

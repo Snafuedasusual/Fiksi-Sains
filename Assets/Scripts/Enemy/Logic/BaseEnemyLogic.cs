@@ -272,24 +272,32 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
     // Handles chase player state.
     public virtual void ChasePlayer()
     {
-        SendInfoToAlertBar(20f);
-        agent.destination = target.position;
-        destinasion = agent.destination;
-        agent.speed = chaseSpeed;
-        agent.acceleration = chaseAccel;
-        agent.isStopped = false;
-        transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z));
-        var distance = Vector3.Distance(target.position, transform.position);
-        if(distance < minDistToAttack)
+        if(target != null)
         {
-            agent.velocity = Vector3.zero;
-            agent.isStopped = true;
-            currentState = EnemyStates.Attack;
+            SendInfoToAlertBar(20f);
+            agent.destination = target.position;
+            destinasion = agent.destination;
+            agent.speed = chaseSpeed;
+            agent.acceleration = chaseAccel;
+            agent.isStopped = false;
+            transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z));
+            var distance = Vector3.Distance(target.position, transform.position);
+            if (distance < minDistToAttack)
+            {
+                agent.velocity = Vector3.zero;
+                agent.isStopped = true;
+                currentState = EnemyStates.Attack;
+            }
+            else
+            {
+                agent.isStopped = false;
+            }
         }
         else
         {
-            agent.isStopped = false;
+            currentState = defaultState;
         }
+        
     }
     // Chase player script ends---------------------------------
 
@@ -332,7 +340,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInflictDamage
         }
         else
         {
-            
+            currentState = EnemyStates.ChaseTarget;
         }
     }
     //Attacking script ends---------------------------------------

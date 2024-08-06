@@ -157,6 +157,13 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
 
 
     //Handles Stamina Bar Drain and Regen.
+    public event EventHandler<StaminaBarToUIArgs> StaminaBarToUI;
+    public class StaminaBarToUIArgs : EventArgs { public float staminaBarValue; }
+    private void StaminaBarToUIFunc(float staminaBarValue)
+    {
+        StaminaBarToUI?.Invoke(this, new StaminaBarToUIArgs { staminaBarValue = plrStamina });
+    }
+
     private void DrainStamina()
     {
         if(IsStaminaDrainerRunning == null)
@@ -199,7 +206,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
                         plrStamina--;
 
                     }
-
+                    StaminaBarToUIFunc(plrStamina);
                 }
             }
             else
@@ -248,6 +255,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
                     {
                         plrStamina++;
                     }
+                    StaminaBarToUIFunc(plrStamina);
                 }
             }
             else
@@ -287,6 +295,8 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
     {
         PlayerInteracts();
     }
+    public event EventHandler<InteractNotifArgs> InteractNotif;
+    public class InteractNotifArgs : EventArgs { public Transform target; }
     private void PlayerInteracts()
     {
         if(targetInteract == null)
@@ -309,22 +319,23 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
         if (RotaryHeart.Lib.PhysicsExtension.Physics.CapsuleCast(transform.position, highestPoint, playerWidth, transform.forward, out RaycastHit hit, playerArmLength, interactableObjs, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.None))
         {
             targetInteract = hit.transform;
+            InteractNotif?.Invoke(this, new InteractNotifArgs { target = targetInteract });
         }
         else
         {
             targetInteract = null;
+            InteractNotif?.Invoke(this, new InteractNotifArgs { target = null });
         }
     }
     // End of Interaction script--------------------------------------
 
 
 
-
+    //Checking Health Status
     private void SendDmgToLogicReceiver(object sender, EntityHealthController.SendDmgToLogicArgs e)
     {
         CheckStatus(e.currentHealth);
     }
-
     public void CheckStatus(float health)
     {
         if(health <= 0)
@@ -337,6 +348,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
 
         }
     }
+    //End of Check status-------------------------------------
 
     // Allows outside script to get player states.
     public PlayerStates GetStates()
@@ -355,6 +367,8 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
     }
 
 
+
+    //Handles Flashlight Input
     private void OnFlashlightInputDetector(object sender, EventArgs e)
     {
         TurnFlashlight();
@@ -365,6 +379,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
     {
         TurnFlashlightEvent?.Invoke(this, EventArgs.Empty);
     }
+    //End of flashlight script----------------------------------------------------
 
 
 
@@ -372,6 +387,9 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
     {
         InteractionDetector();
     }
+
+
+
 
     private void OnDisable()
     {
