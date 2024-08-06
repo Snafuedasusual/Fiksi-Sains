@@ -11,6 +11,7 @@ public class HandlerSection3: BaseHandler
     [SerializeField] int amountOfLevers;
     [SerializeField] int activatedLevers;
     [SerializeField] Door_Section doorSection;
+    [SerializeField] GameObject skinEater;
 
     public override void Restart()
     {
@@ -96,7 +97,7 @@ public class HandlerSection3: BaseHandler
     public void InteractedLever()
     {
         activatedLevers++;
-        Debug.Log("Yo!");
+        skinEater.SetActive(true);
         if(activatedLevers == activeLevers.Count)
         {
             doorSection.canFinish = true;

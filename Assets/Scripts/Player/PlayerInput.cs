@@ -70,11 +70,13 @@ public class PlayerInput : MonoBehaviour
     //End Of Mouse Pos Inputs--------------------------
 
     public event EventHandler OnInteractInput;
+
     private void InteractInput()
     {
-        if (Input.GetKey(KeyCode.F))
+        if (Input.GetKey(KeyCode.E))
         {
             OnInteractInput?.Invoke(this, EventArgs.Empty);
+
         }
     }
     private float SwitchInventory()
@@ -102,6 +104,14 @@ public class PlayerInput : MonoBehaviour
     }
 
 
+    public event EventHandler OnFlashlightInput;
+    private void FlashlightInput()
+    {
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            OnFlashlightInput?.Invoke(this, EventArgs.Empty);
+        }
+    }
 
     //Handles Shift Input and Events related.
     public event EventHandler<SendShiftHoldArgs> OnShiftHold;
@@ -133,6 +143,7 @@ public class PlayerInput : MonoBehaviour
         SwitchInventory();
         HoldToSprint();
         InteractInput();
+        FlashlightInput();
     }
 
 }

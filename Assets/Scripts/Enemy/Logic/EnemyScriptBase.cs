@@ -176,7 +176,7 @@ public class EnemyScriptBase : MonoBehaviour, IInflictDamage, IMakeSound
             }
             if(distance < 2)
             {
-                atkScr.MainAttack(plrPos, transform);
+
             }
             else
             {
