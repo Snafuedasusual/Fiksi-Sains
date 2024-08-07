@@ -4,7 +4,20 @@ using UnityEngine;
 
 public class GameManagers : MonoBehaviour
 {
-    public static GameManagers instance;
+    public static GameManagers gameManager;
+
+    private void Awake()
+    {
+        if(gameManager != null && gameManager != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            gameManager = this;
+        }
+    }
+
     [Header("Level")]
     [SerializeField] Transform loadingSpot;
     [SerializeField] GameObject[] sections;
@@ -38,6 +51,7 @@ public class GameManagers : MonoBehaviour
     IEnumerator IsLoading;
     IEnumerator LoadingLevel(Transform plr)
     {
+        LoadScreenManager.loadScreenManager.StartLoadScreen();
         plr.transform.position = loadingSpot.position;
         plr.transform.GetComponent<PlayerLogic>().plrState = PlayerLogic.PlayerStates.Hiding;
         var loadTime = 0f;
@@ -70,12 +84,12 @@ public class GameManagers : MonoBehaviour
         plr.transform.GetComponent<PlayerLogic>().plrState = PlayerLogic.PlayerStates.Idle;
         handlers[currentLevel - 1].player = plr.gameObject;
         IsLoading = null;
+        LoadScreenManager.loadScreenManager.EndLoadScreen();
         OnPlayerDeath();
     }
 
     private void Start()
     {
-        instance = this;
         GameObject plr = GameObject.FindGameObjectWithTag("Player");
         handlers[currentLevel - 1].player = plr;
         StartCoroutine(LoadingLevel(plr.transform));

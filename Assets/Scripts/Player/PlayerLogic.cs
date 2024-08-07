@@ -13,10 +13,12 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
     [Header("Script References")]
     [SerializeField] EntityHealthController healthController;
     [SerializeField] PlayerInput plrInp;
-    
-    [Header("Components")]
     [SerializeField] InventorySystem inventorySystem;
     [SerializeField] Handle handle;
+
+    [Header("Components")]
+    [SerializeField] GameObject plrVis;
+    [SerializeField] CapsuleCollider capsuleCollider;
 
     [Header("Variables")]
     [SerializeField] float plrSpdBase = 5f;
@@ -277,7 +279,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
     }
     public void PlayerRotate(Vector3 mousPos)
     {
-        if(plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold || plrState == PlayerStates.Dead)
+        if(plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InVent || plrState == PlayerStates.InteractingHold || plrState == PlayerStates.Dead)
         {
 
         }
@@ -380,6 +382,44 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage
         TurnFlashlightEvent?.Invoke(this, EventArgs.Empty);
     }
     //End of flashlight script----------------------------------------------------
+
+
+
+    public void Hide()
+    {
+        if(plrVis.activeSelf == false && capsuleCollider.enabled == false)
+        {
+            plrVis.SetActive(true);
+            capsuleCollider.enabled = true;
+            plrState = PlayerStates.Idle;
+            rb.useGravity = true;
+        }
+        else
+        {
+            plrVis.SetActive(false);
+            capsuleCollider.enabled = false;
+            plrState = PlayerStates.Hiding;
+            rb.useGravity = false;
+        }
+    }
+
+    public void GetInVent()
+    {
+        if (plrVis.activeSelf == false && capsuleCollider.enabled == false)
+        {
+            plrVis.SetActive(true);
+            capsuleCollider.enabled = true;
+            plrState = PlayerStates.Idle;
+            rb.useGravity = true;
+        }
+        else
+        {
+            plrVis.SetActive(false);
+            capsuleCollider.enabled = false;
+            plrState = PlayerStates.InVent;
+            rb.useGravity = false;
+        }
+    }
 
 
 

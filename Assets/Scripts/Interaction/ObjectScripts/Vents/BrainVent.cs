@@ -19,7 +19,7 @@ public class BrainVent : MonoBehaviour
             plrLogic.plrState = PlayerLogic.PlayerStates.Idle;
             plrLogic = null;
             currentIndex = 0;
-            plr.localScale = new Vector3(1f, 1f, 1f);
+            plrLogic.GetInVent();
             this.plr = null;
             
         }
@@ -32,8 +32,7 @@ public class BrainVent : MonoBehaviour
                     currentIndex = i;
                     plrLogic = plr.GetComponent<PlayerLogic>();
                     this.plr = plr;
-                    plr.localScale = new Vector3(0.005f, 0.005f, 0.005f);
-                    plrLogic.plrState = PlayerStates.InteractingHold;
+                    plrLogic.GetInVent();
                     StartCoroutine(CheckInputs());
                 }
             }

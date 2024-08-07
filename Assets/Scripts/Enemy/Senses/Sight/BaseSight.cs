@@ -72,7 +72,7 @@ public class BaseSight : MonoBehaviour
 
     private void EnemySight()
     {
-        seeCharacters = RotaryHeart.Lib.PhysicsExtension.Physics.BoxCastAll(transform.position + Vector3.up * eyeHeight, new Vector3(10f, 0.5f, 0.05f), transform.forward, Quaternion.LookRotation(transform.forward), defaultRayDist, characters, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Both);
+        seeCharacters = RotaryHeart.Lib.PhysicsExtension.Physics.BoxCastAll(transform.position + Vector3.up * eyeHeight, new Vector3(10f, 0.5f, 0.05f), transform.forward, Quaternion.LookRotation(transform.forward), defaultRayDist, characters, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.None);
 
         for (int i = 0; i < seeCharacters.Length; i++)
         {
@@ -104,7 +104,7 @@ public class BaseSight : MonoBehaviour
     {
         //var sightRange = defaultMaxVision;
         var direction = hitInfo.transform.position - transform.position;
-        bool canSee = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position + Vector3.up * eyeHeight, direction + Vector3.up * 0.5f, out RaycastHit hit, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Both);
+        bool canSee = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position + Vector3.up * eyeHeight, direction + Vector3.up * 0.5f, out RaycastHit hit, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.None);
         var distance = Vector3.Distance(hitInfo.transform.position, transform.position);
         if (canSee)
         {

@@ -97,7 +97,7 @@ public class HandlerSection3: BaseHandler
     public void InteractedLever()
     {
         activatedLevers++;
-        skinEater.SetActive(true);
+        //skinEater.SetActive(true);
         if(activatedLevers == activeLevers.Count)
         {
             doorSection.canFinish = true;

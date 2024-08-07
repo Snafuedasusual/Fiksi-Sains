@@ -9,7 +9,7 @@ public class Door_Section : MonoBehaviour, IInteraction
     {
         if (canFinish == true)
         {
-            GameManagers.instance.OnLevelChange(plr);
+            GameManagers.gameManager.OnLevelChange(plr);
         }
     }
 }
