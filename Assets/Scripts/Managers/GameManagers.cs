@@ -79,6 +79,7 @@ public class GameManagers : MonoBehaviour
         GameObject plr = GameObject.FindGameObjectWithTag("Player");
         handlers[currentLevel - 1].player = plr;
         StartCoroutine(LoadingLevel(plr.transform));
+        Screen.SetResolution(640, 480, true);
     }
 
 }

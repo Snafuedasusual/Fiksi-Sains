@@ -12,6 +12,11 @@ public class EntityVisibilityController : MonoBehaviour
     [SerializeField] float currentLightSrcPwr;
 
 
+    private void Start()
+    {
+        VisBarToUIFunc(visibilityBar);
+    }
+
     public void OnLightSourceHit(Transform lightSrc, float power, float lightSrcRange)
     {
         if (currentLightSrc != null)
