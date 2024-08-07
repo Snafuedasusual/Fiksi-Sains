@@ -11,7 +11,6 @@ public class ScriptedSkinEater : BaseEnemyLogic
     
     private void OnEnable()
     {
-        currentState = defaultState;
         SniffCount();
         SniffTargetLocation();
     }
@@ -71,7 +70,7 @@ public class ScriptedSkinEater : BaseEnemyLogic
 
         for (int i = 0; i < sphere.Length; i++)
         {
-            if (sphere[i].TryGetComponent(out EntityHealthController trgt))
+            if (sphere[i].TryGetComponent(out EntityHealthController trgt) && sphere[i].transform != transform)
             {
                 if(currentState == EnemyStates.ChaseTarget || currentState == EnemyStates.ChaseLastKnownPosition || currentState == EnemyStates.SuspiciousRunTowards)
                 {
@@ -79,10 +78,12 @@ public class ScriptedSkinEater : BaseEnemyLogic
                 }
                 else
                 {
+                    Debug.Log("Found You!");
                     target = sphere[i].transform;
                     currentState = EnemyStates.ChaseTarget;
                 }
             }
+
         }
     }
 }

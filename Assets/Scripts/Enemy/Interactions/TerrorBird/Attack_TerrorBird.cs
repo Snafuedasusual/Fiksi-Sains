@@ -61,7 +61,7 @@ public class Attack_TerrorBird : Attack
     {
         if(AtkCooling == null)
         {
-            if(Physics.Raycast(sender.position + Vector3.up * 0.75f, target.position - sender.position, out RaycastHit hit, mainDmgRange))
+            if(RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(sender.position + Vector3.up * 0.75f, target.position - sender.position, out RaycastHit hit, mainDmgRange, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Both))
             {
                 if(hit.transform == target.transform)
                 {

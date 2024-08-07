@@ -16,4 +16,4 @@ MonoBehaviour:
   maxRayDist: 100
   maxVision: 12
   minDotProduct: 0.1
-  minVisibilityBar: 15
+  minVisibilityBar: 0
