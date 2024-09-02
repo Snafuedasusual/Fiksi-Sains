@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e01d556e4525d54e86ac40b03ffbb58, type: 3}
   m_Name: TerrorBirdSightSO
   m_EditorClassIdentifier: 
-  maxRayDist: 16
-  maxVision: 7.5
-  minDotProduct: 0.15
+  eyeHeight: 0.5
+  maxRayDist: 150
+  maxVision: 12
+  minDotProduct: 0.1
+  minVisibilityBar: 35

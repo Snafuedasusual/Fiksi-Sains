@@ -6,16 +6,44 @@ public class Hide_Spots : MonoBehaviour, IInteraction
 {
     public void OnInteract(Transform plr)
     {
-        Debug.Log("Hit!");
-        if(plr.localScale != new Vector3(0.001f, 0.001f, 0.001f))
+        if(IsDebounce == null)
         {
-            plr.localScale = new Vector3(0.001f, 0.001f, 0.001f);
-            plr.GetComponent<PlayerLogic>().plrState = PlayerLogic.PlayerStates.Hiding;
+            IsDebounce = Debounce();
+            StartCoroutine(IsDebounce);
+            Debug.Log("Hit!");
+            if (plr.localScale != new Vector3(0.001f, 0.001f, 0.001f))
+            {
+                plr.localScale = new Vector3(0.001f, 0.001f, 0.001f);
+                plr.GetComponent<PlayerLogic>().plrState = PlayerLogic.PlayerStates.Hiding;
+            }
+            else
+            {
+                plr.localScale = new Vector3(1f, 1f, 1f);
+                plr.transform.position += transform.up + Vector3.up * 0.25f;
+                plr.GetComponent<PlayerLogic>().plrState = PlayerLogic.PlayerStates.Idle;
+            }
         }
         else
         {
-            plr.localScale = new Vector3(1f, 1f, 1f);
-            plr.GetComponent<PlayerLogic>().plrState = PlayerLogic.PlayerStates.Idle;
+
         }
+    }
+
+    public void OnDetected(Transform plr)
+    {
+
+    }
+
+    IEnumerator IsDebounce;
+    IEnumerator Debounce()
+    {
+        var debTime = 0f;
+        var debRate = 0.25f;
+        while(debTime < debRate)
+        {
+            debTime += Time.deltaTime;
+            yield return 0;
+        }
+        IsDebounce = null;
     }
 }

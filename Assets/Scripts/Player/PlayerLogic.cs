@@ -8,27 +8,29 @@ using UnityEngine;
 using UnityEngine.Events;
 using static PlayerInput;
 
-public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
+public class PlayerLogic : MonoBehaviour, IHealthInterface
 {
-    [Header("Components")]
+    [Header("Script References")]
+    [SerializeField] EntityHealthController healthController;
     [SerializeField] PlayerInput plrInp;
+    
+    [Header("Components")]
     [SerializeField] InventorySystem inventorySystem;
-    [SerializeField] Handle handle;
+    [SerializeField] Transform mousePosition;
 
     [Header("Variables")]
-    [SerializeField] float plrHealth = 100;
     [SerializeField] float plrSpdBase = 5f;
     [SerializeField] float plrSprintBase = 10f;
     [SerializeField] float plrSprintApplied = 0f;
     [SerializeField] float plrStamina = 100f;
+    [SerializeField] float centerBody = 1.1f;
     [SerializeField] Transform targetInteract;
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Transform mousPosTrans;
-    [SerializeField] private float soundBar = 0;
+    [SerializeField] private ItemUses equippedItem;
 
     [Header("LayerMasks")]
-    [SerializeField]
-    private LayerMask interactableObjs;
+    [SerializeField] private LayerMask interactableObjs;
     [SerializeField] private LayerMask enemyLyr;
 
 
@@ -39,6 +41,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     [SerializeField] PlayerStates defaultPlrState;
     public enum PlayerStates
     {
+        Null,
         Idle,
         Walking,
         Sprinting,
@@ -46,15 +49,69 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
         InteractingToggle,
         InteractingHold,
         Hiding,
+        InVent,
+        Dead
     }
+
+    public enum PlrAnimations
+    {
+        MOVEMENT_WALK,
+        MOVEMENT_RUN,
+        NONE
+    }
+
+    public event EventHandler<PlayThisMovementAnimArgs> PlayThisMovementAnim;
+    public class PlayThisMovementAnimArgs : EventArgs { public PlrAnimations playThisAnim; public float xAxis; public float yAxis; }
+
     public PlayerStates plrState;
 
-    private void Start()
+
+
+    public void InitializeScript()
     {
         plrInp.OnMoveInput += OnMoveInputDetector;
         plrInp.OnMousePosInput += OnMousePosInputDetector;
         plrInp.OnShiftHold += OnShiftHoldDetector;
-        plrInp.OnInteractInput += OnInteractInputDetector;
+        plrInp.OnEInputEvent += OnInteractInputDetector;
+        healthController.SendDmgToLogic += SendDmgToLogicReceiver;
+        plrInp.OnFlashlightInput += OnFlashlightInputDetector;
+        plrInp.OnMouse1Pressed += OnMouse1PressedReceiver;
+        inventorySystem.EquipItemEvent += InventorySystem_EquipItemEvent;
+    }
+
+    
+
+    public void DeInitializeScript()
+    {
+        plrInp.OnMoveInput -= OnMoveInputDetector;
+        plrInp.OnMousePosInput -= OnMousePosInputDetector;
+        plrInp.OnShiftHold -= OnShiftHoldDetector;
+        plrInp.OnEInputEvent -= OnInteractInputDetector;
+        healthController.SendDmgToLogic -= SendDmgToLogicReceiver;
+        plrInp.OnFlashlightInput -= OnFlashlightInputDetector;
+    }
+
+    private void ForceStopAllCoroutines()
+    {
+        StopCoroutine(StaminaDrainer());
+        IsStaminaDrainerRunning = null;
+        StopCoroutine(StaminaRefillController());
+        IsStaminaRefillRunning = null;
+    }
+
+    private void OnEnable()
+    {
+        InitializeScript();
+    }
+
+    private void OnDisable()
+    {
+        DeInitializeScript();
+    }
+
+    private void OnDestroy()
+    {
+        DeInitializeScript();
     }
 
 
@@ -71,35 +128,47 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
 
         var plrMoveDir = new Vector3(dir.x, 0f, dir.y).normalized;
 
-        if (plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold)
-        {
+        plrDirection = new Vector2(plrMoveDir.x, plrMoveDir.z);
 
+        var walkSound = 0.3f;
+        if(GameManagers.instance.GetGameState() != GameManagers.GameState.Playing)
+        {
+            StopAllCoroutines();
         }
         else
         {
-            rb.MovePosition(rb.position + plrMoveDir * plrSpd * Time.deltaTime);
-
-
-            playerDirection = Vector3.Dot(transform.forward, plrMoveDir);
-
-
-
-            if (plrMoveDir != Vector3.zero)
+            if (plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold || plrState == PlayerStates.InVent || plrState == PlayerStates.Dead)
             {
-                plrState = PlayerStates.Walking;
-                MoveSoundChecker();
+
             }
             else
             {
-                plrState = PlayerStates.Idle;
-                soundBar = 0;
+                rb.MovePosition(rb.position + plrMoveDir * plrSpd * Time.deltaTime);
+
+                var localMoveDir = (transform.forward * plrMoveDir.z) + (transform.right * plrMoveDir.x);
+
+                //rb.MovePosition(rb.position + transform.forward * plrMoveDir.z * plrSpd * Time.deltaTime);
+                //rb.MovePosition(rb.position + transform.right * plrMoveDir.x * plrSpd * Time.deltaTime);
+
+                playerDirection = Vector3.Dot(transform.forward, plrMoveDir);
+                //playerDirection = Vector3.Dot(transform.forward.normalized, localMoveDir.normalized);
+
+                
+
+                if (plrMoveDir != Vector3.zero)
+                {
+                    plrState = PlayerStates.Walking;
+                    MakeSound(walkSound);
+                }
+                else if(plrMoveDir == Vector3.zero)
+                {
+                    MakeSound(0f);
+                    plrState = PlayerStates.Idle;
+                }
+
             }
-
-            //transform.position += transform.forward  * PlrMoveDir.z * Time.deltaTime * plrSpd;
-            //transform.position += transform.right * PlrMoveDir.x * Time.deltaTime * plrSpd;
-
+            PlayMovementAnim();
         }
-        plrDirection = plrMoveDir;
         return plrMoveDir;
     }
     public Vector2 GetPlayerMovement()
@@ -117,50 +186,104 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     }
     public void PlayerSprintController(bool spaceIsPressed)
     {
-
-        if (spaceIsPressed && plrStamina > 0 && playerDirection >= 0.3f)
+        var sprintSound = 10f;
+        if(GameManagers.instance.GetGameState() != GameManagers.GameState.Playing)
         {
-            plrSprintApplied = plrSprintBase;
-            plrState = PlayerStates.Sprinting;
-            DrainStamina();
-            MoveSoundChecker();
+            ForceStopAllCoroutines();
         }
         else
         {
-            plrSprintApplied = 0f;
-            RefillStamina();
+            if (plrState == PlayerStates.Dead || plrState == PlayerStates.InVent || plrState == PlayerStates.Hiding)
+            {
 
-        }
+            }
+            else
+            {
+                if(spaceIsPressed == true && plrStamina > 0 && playerDirection >= 0.3f && plrState == PlayerStates.Walking)
+                {
+                    plrSprintApplied = plrSprintBase;
+                    plrState = PlayerStates.Sprinting;
+                    MakeSound(sprintSound);
+                    DrainStamina();
+                }
+                if(spaceIsPressed == true && plrStamina <= 0 && playerDirection >= 0.3f && plrState == PlayerStates.Walking)
+                {
+                    plrSprintApplied = 0f;
+                    DrainStamina();
+                    MakeSound(sprintSound);
 
+                }
+                else if(playerDirection <= 0)
+                {
+                    plrSprintApplied = 0f;
+                    RefillStamina();
+                }
+                else if(spaceIsPressed == false)
+                {
+                    plrSprintApplied = 0f;
+                    RefillStamina();
+
+                }
+                PlayMovementAnim();
+            }
+        } 
     }
     //End of Sprint Script-----------------------------------------------------
 
 
 
+    void PlayMovementAnim()
+    {
+        if(plrState == PlayerStates.Idle || plrState == PlayerStates.Walking)
+        {
+            PlayThisMovementAnim?.Invoke(this, new PlayThisMovementAnimArgs { playThisAnim = PlrAnimations.MOVEMENT_WALK, xAxis = plrDirection.x, yAxis = plrDirection.y });
+        }
+        if(plrState == PlayerStates.Sprinting)
+        {
+            PlayThisMovementAnim?.Invoke(this, new PlayThisMovementAnimArgs { playThisAnim = PlrAnimations.MOVEMENT_RUN, xAxis = plrDirection.x, yAxis = plrDirection.y });
+        }
+    }
+
+
     //Handles Stamina Bar Drain and Regen.
+    public event EventHandler<StaminaBarToUIArgs> StaminaBarToUI;
+    public class StaminaBarToUIArgs : EventArgs { public float staminaBarValue; }
+    private void StaminaBarToUIFunc(float staminaBarValue)
+    {
+        StaminaBarToUI?.Invoke(this, new StaminaBarToUIArgs { staminaBarValue = plrStamina });
+    }
+
     private void DrainStamina()
     {
-        if(IsStaminaDrainerRunning == null)
+        if(GameManagers.instance.GetGameState() != GameManagers.GameState.Playing)
         {
-            StartCoroutine(StaminaDrainer());
+            ForceStopAllCoroutines();
+            IsStaminaDrainerRunning = null;
         }
         else
         {
+            if (IsStaminaDrainerRunning == null)
+            {
+                StartCoroutine(StaminaDrainer());
+            }
+            else
+            {
 
-        }
+            }
+        } 
     }
     IEnumerator IsStaminaDrainerRunning;
     IEnumerator StaminaDrainer()
     {
         var staminaTime = 0f;
-        var staminaRate = 0.4f;
+        var staminaRate = 0.35f;
         if (IsStaminaDrainerRunning != null)
         {
 
         }
         else
         {
-            if (plrState == PlayerStates.Sprinting)
+            if (plrState == PlayerStates.Sprinting )
             {
                 IsStaminaDrainerRunning = StaminaDrainer();
                 while (plrState == PlayerStates.Sprinting)
@@ -168,19 +291,25 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
                     staminaTime = 0f;
                     while (staminaTime < staminaRate)
                     {
-                        staminaTime += Time.deltaTime * 20;
+                        staminaTime += Time.deltaTime * 15f;
                         yield return null;
                     }
                     if (plrStamina <= 0)
                     {
-
+                        StopCoroutine(StaminaDrainer());
+                        IsStaminaDrainerRunning = null;
                     }
-                    else if (plrStamina > 0)
+                    else if (plrStamina > 0 && playerDirection >= 0.3f)
                     {
                         plrStamina--;
 
                     }
-
+                    else if(playerDirection <= 0)
+                    {
+                        StopCoroutine(IsStaminaDrainerRunning);
+                        IsStaminaDrainerRunning = null;
+                    }
+                    StaminaBarToUIFunc(plrStamina);
                 }
             }
             else
@@ -193,16 +322,24 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
 
     private void RefillStamina()
     {
-        if(IsStaminaRefillRunning == null)
+        if(GameManagers.instance.GetGameState() != GameManagers.GameState.Playing)
         {
-            StartCoroutine(StaminaRefillController());
+            ForceStopAllCoroutines();
+            IsStaminaRefillRunning = null;
+        }
+        else
+        {
+            if (IsStaminaRefillRunning == null)
+            {
+                StartCoroutine(StaminaRefillController());
+            }
         }
     }
     IEnumerator IsStaminaRefillRunning;
     IEnumerator StaminaRefillController()
     {
         var staminaTime = 0f;
-        var staminaRate = 0.4f;
+        var staminaRate = 0.45f;
         if(IsStaminaRefillRunning != null)
         {
 
@@ -218,7 +355,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
                     staminaTime = 0f;
                     while (staminaTime < staminaRate)
                     {
-                        staminaRate += Time.deltaTime * 2.5f;
+                        staminaTime += Time.deltaTime * 7.5f;
                         yield return null;
                     }
                     if (plrStamina == 100)
@@ -229,6 +366,7 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
                     {
                         plrStamina++;
                     }
+                    StaminaBarToUIFunc(plrStamina);
                 }
             }
             else
@@ -246,18 +384,40 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     //Handles Player Look At When Mouse Pos Input Detected.
     private void OnMousePosInputDetector(object sender, SendMousPosInputArgs e)
     {
-        PlayerRotate(e.mousPos);
+        CameraFollow(e.mousPos);
     }
-    public void PlayerRotate(Vector3 mousPos)
-    {
-        if(plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold)
-        {
 
+    private void CameraFollow(Vector3 mousPos)
+    {
+        if(GameManagers.instance.GetGameState() != GameManagers.GameState.Playing)
+        {
+            ForceStopAllCoroutines();
         }
         else
         {
-            transform.LookAt(new Vector3(mousPos.x, transform.position.y, mousPos.z));
+            mousePosition.position = new Vector3(Mathf.Clamp(mousPos.x, transform.position.x - 20f, transform.position.x + 20f), 0, Mathf.Clamp(mousPos.z, transform.position.z - 10f, transform.position.z + 10f));
+            PlayerRotate(mousePosition.position);
+        } 
+    }
+
+    private void PlayerRotate(Vector3 mousPos)
+    {
+        if(GameManagers.instance.GetGameState() != GameManagers.GameState.Playing)
+        {
+            ForceStopAllCoroutines();
         }
+        else
+        {
+            if (plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold || plrState == PlayerStates.Dead)
+            {
+
+            }
+            else
+            {
+                transform.LookAt(new Vector3(mousPos.x, transform.position.y, mousPos.z));
+            }
+        }
+        
     }
     //End Of Player Look At Script----------------------------------------------------
 
@@ -268,18 +428,28 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
     {
         PlayerInteracts();
     }
+    public event EventHandler<InteractNotifArgs> InteractNotif;
+    public class InteractNotifArgs : EventArgs { public Transform target; }
     private void PlayerInteracts()
     {
-        if(targetInteract == null)
+        if(GameManagers.instance.GetGameState() == GameManagers.GameState.Playing || GameManagers.instance.GetGameState() == GameManagers.GameState.OnUI)
         {
+            if (targetInteract == null)
+            {
+                InteractNotif?.Invoke(this, new InteractNotifArgs { target = null });
+            }
+            else
+            {
+                if (targetInteract.TryGetComponent(out IInteraction interact))
+                {
+                    interact.OnInteract(transform);
 
+                }
+            }
         }
         else
         {
-            if(targetInteract.TryGetComponent(out IInteraction interact))
-            {
-                interact.OnInteract(transform);
-            }
+            ForceStopAllCoroutines();
         }
     }
     private void InteractionDetector()
@@ -287,106 +457,132 @@ public class PlayerLogic : MonoBehaviour, IInflictDamage, IMakeSound
         var highestPoint = transform.position + Vector3.up * 3f;
         var playerWidth = 0.35f;
         var playerArmLength = 1.75f;
-        if (RotaryHeart.Lib.PhysicsExtension.Physics.CapsuleCast(transform.position, highestPoint, playerWidth, transform.forward, out RaycastHit hit, playerArmLength, interactableObjs, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.None))
+        if (GameManagers.instance.GetGameState() != GameManagers.GameState.Playing)
         {
-            targetInteract = hit.transform;
+            ForceStopAllCoroutines();
         }
         else
         {
-            targetInteract = null;
-        }
-    }    
-
-    public void SoundProducer(float soundAdder)
-    {
-        soundBar = soundAdder;
-        Collider[] listColliders = Physics.OverlapSphere(transform.position, 100f, enemyLyr);
-        foreach(var collider in listColliders)
-        {
-            if(collider.TryGetComponent<IMakeSound>(out IMakeSound sound))
+            if (RotaryHeart.Lib.PhysicsExtension.Physics.CapsuleCast(transform.position, highestPoint, playerWidth, transform.forward, out RaycastHit hit, playerArmLength, interactableObjs, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.None))
             {
-                sound.SoundReceiver(new Vector3(transform.position.x, transform.position.y, transform.position.z), soundBar);
+                targetInteract = hit.transform;
+                InteractNotif?.Invoke(this, new InteractNotifArgs { target = targetInteract });
+
+
+            }
+            else
+            {
+                targetInteract = null;
+                InteractNotif?.Invoke(this, new InteractNotifArgs { target = null });
+            }
+        } 
+    }
+    // End of Interaction script--------------------------------------
+
+
+
+    //Checking Health Status
+    private void SendDmgToLogicReceiver(object sender, EntityHealthController.SendDmgToLogicArgs e)
+    {
+        CheckStatus(e.currentHealth);
+    }
+    public void CheckStatus(float health)
+    {
+        if (GameManagers.instance.GetGameState() != GameManagers.GameState.Playing)
+        {
+            ForceStopAllCoroutines();
+        }
+        else
+        {
+            if (health <= 0)
+            {
+                plrState = PlayerStates.Dead;
+                transform.gameObject.SetActive(false);
+                GameManagers.instance.OnPlayerDeath();
+                ForceStopAllCoroutines();
+            }
+            else
+            {
+
+            }
+        } 
+    }
+    //End of Check status-------------------------------------
+
+    // Allows outside script to get player states.
+    public PlayerStates GetStates()
+    {
+        return plrState;
+    }
+    // End of GetStates function----------------
+
+
+
+    public event EventHandler<ProduceSoundArgs> ProduceSound;
+    public class ProduceSoundArgs : EventArgs { public float soundSize; }
+    private void MakeSound(float soundVolume)
+    {
+        ProduceSound?.Invoke(this, new ProduceSoundArgs { soundSize = soundVolume });
+    }
+
+
+
+    //Handles Flashlight Input
+    private void OnFlashlightInputDetector(object sender, EventArgs e)
+    {
+        TurnFlashlight();
+    }
+
+    public event EventHandler TurnFlashlightEvent;
+    private void TurnFlashlight()
+    {
+        if (GameManagers.instance.GetGameState() != GameManagers.GameState.Playing)
+        {
+            ForceStopAllCoroutines();
+        }
+        else
+        {
+            TurnFlashlightEvent?.Invoke(this, EventArgs.Empty);
+        }
+    }
+    //End of flashlight script----------------------------------------------------
+
+
+
+    private void InventorySystem_EquipItemEvent(object sender, InventorySystem.EquipItemEventArgs e)
+    {
+        equippedItem = e.item.TryGetComponent(out ItemUses itemUses) ? itemUses : null;
+    }
+
+
+
+
+    private void OnMouse1PressedReceiver(object sender, OnMouse1PressedArgs e)
+    {
+        if(GameManagers.instance.GetGameState() != GameManagers.GameState.Playing)
+        {
+            ForceStopAllCoroutines();
+        }
+        else
+        {
+            if(equippedItem != null)
+            {
+                equippedItem.MainUse(e.isPressed, transform, centerBody);
             }
         }
     }
 
-    public void MoveSoundChecker()
+    public void ResetPlayer()
     {
-        if (plrState == PlayerStates.Walking)
-        {
-            SoundProducer(0.3f);
-        }
-        if (plrState == PlayerStates.Sprinting)
-        {
-            SoundProducer(15f);
-        }
-        if(plrState == PlayerStates.Idle)
-        {
-            SoundProducer(0f);
-        }
+        healthController.ResetHealth();
+        plrStamina = 100;
+        plrState = PlayerStates.Idle;
     }
 
-    public void DealDamage(float dmgVal, Transform dmgSender, float knckBckPwr)
-    {
-        plrHealth -= dmgVal;
-
-        if(plrHealth < 1)
-        {
-            transform.gameObject.SetActive(false);
-        }
-        else
-        {
-            KnockBack(dmgSender, knckBckPwr);
-        }
-    }
-
-    
-    IEnumerator HitIsCoolingDown;
-    private IEnumerator HitCooldown()
-    {
-        var IE_knockTime = 0f;
-        var draintime = 0.2f;
-        while(IE_knockTime < draintime)
-        {
-            IE_knockTime += Time.deltaTime;
-            yield return 0;
-        }
-        rb.isKinematic = true;
-        rb.isKinematic = false;
-        IE_knockTime = 0f;
-        HitIsCoolingDown = null;
-    }
-    public void KnockBack(Transform sender, float knockBackPwr)
-    {
-        if (HitIsCoolingDown == null && plrState == PlayerStates.Idle)
-        {
-            HitIsCoolingDown = HitCooldown();
-            var direction = (transform.position - sender.position).normalized;
-            rb.AddForce(direction * knockBackPwr, ForceMode.Impulse);
-            StartCoroutine(HitIsCoolingDown);
-        }
-    }
 
     void Update()
     {
         InteractionDetector();
     }
 
-    private void OnDisable()
-    {
-        plrInp.OnMoveInput -= OnMoveInputDetector;
-        plrInp.OnMousePosInput -= OnMousePosInputDetector;
-    }
-
-    private void OnDestroy()
-    {
-        plrInp.OnMoveInput -= OnMoveInputDetector;
-        plrInp.OnMousePosInput -= OnMousePosInputDetector;
-    }
-
-    private void OnEnable()
-    {
-        plrInp.OnMoveInput += OnMoveInputDetector;
-        plrInp.OnMousePosInput += OnMousePosInputDetector;
-    }
 }

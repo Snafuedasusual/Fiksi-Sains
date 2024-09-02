@@ -12,9 +12,7 @@ using UnityEngine.Events;
 public class PlayerInput : MonoBehaviour
 {
     [SerializeField] private Camera cam;
-    [SerializeField] private Transform posMous;
     [SerializeField] private PlayerLogic playerLogic;
-    private bool SI_debounce = true;
 
     private Vector2 moveDir;
 
@@ -45,7 +43,7 @@ public class PlayerInput : MonoBehaviour
 
         }
         OnMoveInput?.Invoke(this, new SendMoveInputArgs {plrDir = inputVector});
-        moveDir = inputVector;   
+        moveDir = inputVector;
         
     }
     //End Of Move Inputs----------------------------
@@ -60,79 +58,142 @@ public class PlayerInput : MonoBehaviour
         var screenPosition = Input.mousePosition;
         screenPosition.z = cam.nearClipPlane + (cam.transform.position.y - transform.position.y);
         var mousePos = cam.ScreenToWorldPoint(screenPosition);
-        var topBorder = cam.ViewportToWorldPoint(new Vector3(0.0F, 0.5F, screenPosition.z));
-        var bottomBorder = cam.ViewportToWorldPoint(new Vector3(0.0F, -0.5F, screenPosition.z));
-        var leftBorder = cam.ViewportToWorldPoint(new Vector3(-0.5F, 0.0F, screenPosition.z));
-        var rightBorder = cam.ViewportToWorldPoint(new Vector3(0.5F, 0.0F, screenPosition.z));
-        posMous.position = new Vector3(Mathf.Clamp(mousePos.x, transform.position.x - 16f, transform.position.x + 20f), 0, Mathf.Clamp(mousePos.z, transform.position.z - 10f, transform.position.z + 10f));
-        OnMousePosInput?.Invoke(this, new SendMousPosInputArgs { mousPos = posMous.transform.position});
+        //var topBorder = cam.ViewportToWorldPoint(new Vector3(0.0F, 0.5F, screenPosition.z));
+        //var bottomBorder = cam.ViewportToWorldPoint(new Vector3(0.0F, -0.5F, screenPosition.z));
+        //var leftBorder = cam.ViewportToWorldPoint(new Vector3(-0.5F, 0.0F, screenPosition.z));
+        //var rightBorder = cam.ViewportToWorldPoint(new Vector3(0.5F, 0.0F, screenPosition.z));
+        OnMousePosInput?.Invoke(this, new SendMousPosInputArgs { mousPos = mousePos});
     }
     //End Of Mouse Pos Inputs--------------------------
 
-    public event EventHandler OnInteractInput;
-    private void InteractInput()
+
+
+
+    //Handles Interaction Inputs and events related.
+    public event EventHandler OnEInputEvent;
+    private void OnEInput()
     {
-        if (Input.GetKey(KeyCode.F))
+        if (Input.GetKey(KeyCode.E))
         {
-            OnInteractInput?.Invoke(this, EventArgs.Empty);
-        }
-    }
-    private float SwitchInventory()
-    {
-        SI_debounce = true;
-        var switchInventory = 0f;
-        if(Input.GetKeyDown(KeyCode.E) && SI_debounce == true)
-        {
-            SI_debounce = false;
-            switchInventory = 1f;
+            OnEInputEvent?.Invoke(this, EventArgs.Empty);
 
         }
-        if (Input.GetKeyDown(KeyCode.Q) && SI_debounce == true)
-        {
-            SI_debounce = false;
-            switchInventory = -1f;   
-        }
-        return switchInventory;
     }
+    //Input script ends-----------------------------------
 
-    public float GetSwitchInventoryCode()
+
+
+    //Handles flashlight inputs and events related.
+    public event EventHandler OnFlashlightInput;
+    private void FlashlightInput()
     {
-        //Debug.Log(SwitchInventory());
-        return SwitchInventory();
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            OnFlashlightInput?.Invoke(this, EventArgs.Empty);
+        }
     }
+    //Flashligh script ends------------------------------
+
 
 
 
     //Handles Shift Input and Events related.
     public event EventHandler<SendShiftHoldArgs> OnShiftHold;
     public class SendShiftHoldArgs : EventArgs { public bool keyIsPress; }
-    private bool HoldToSprint()
+    private void HoldToSprint()
     {
-        var keyisPress = false;
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            keyisPress = true;
+            OnShiftHold?.Invoke(this, new SendShiftHoldArgs { keyIsPress = true });
             //playerLogic.PlayerSprintController(keyisPress);
         }
-        else
+        else if(!Input.GetKey(KeyCode.LeftShift))
         {
-            keyisPress = false;
+            OnShiftHold?.Invoke(this, new SendShiftHoldArgs { keyIsPress = false });
             //playerLogic.PlayerSprintController(keyisPress);
         }
-        OnShiftHold?.Invoke(this, new SendShiftHoldArgs { keyIsPress = keyisPress });
-        return keyisPress;
     }
     //End of Shift Input Detection-------------------------------------------------
 
 
 
-    private void Update()
+
+
+    //Handles Esc input and events related.
+    public event EventHandler EscInputEvent;
+    private bool esc_Deboune = false;
+    private void EscInputDetector()
+    {
+        if (Input.GetKey(KeyCode.Escape) && esc_Deboune == false)
+        {
+            esc_Deboune = true;
+            EscInputEvent?.Invoke(this, EventArgs.Empty);
+        }
+        if(Input.GetKey(KeyCode.Escape) && esc_Deboune == true)
+        {
+
+        }
+        else if(!Input.GetKeyDown(KeyCode.Escape))
+        {
+            esc_Deboune= false;
+        }
+    }
+    //Esc input ends------------------------------------------------
+
+
+
+
+    private bool tabDebounce = false;
+    public event EventHandler OnTabInput;
+    private void TabInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab) && tabDebounce == false)
+        {
+            tabDebounce = true;
+            OnTabInput?.Invoke(this, EventArgs.Empty);
+        }
+        if(Input.GetKeyDown(KeyCode.Tab) && tabDebounce == true)
+        {
+
+        }
+        else if (!Input.GetKeyDown(KeyCode.Tab))
+        {
+            tabDebounce = false;
+        }
+    }
+
+
+    public event EventHandler<OnMouse1PressedArgs> OnMouse1Pressed;
+    public class OnMouse1PressedArgs : EventArgs { public bool isPressed; }
+    private void Mouse1Pressed()
+    {
+        if(Input.GetMouseButton(0))
+        {
+            OnMouse1Pressed?.Invoke(this, new OnMouse1PressedArgs { isPressed = Input.GetMouseButton(0) });
+        }
+        if(Input.GetMouseButtonUp(0))
+        {
+            OnMouse1Pressed?.Invoke(this, new OnMouse1PressedArgs { isPressed = !Input.GetMouseButtonUp(0) });
+        }
+    }
+
+
+    private void CheckInputs()
     {
         PlayerInputMove();
         GetMousePosition();
-        SwitchInventory();
         HoldToSprint();
-        InteractInput();
+        OnEInput();
+        FlashlightInput();
+        EscInputDetector();
+        TabInput();
+        Mouse1Pressed();
+    }
+
+
+    private void Update()
+    {
+        CheckInputs();
     }
 
 }

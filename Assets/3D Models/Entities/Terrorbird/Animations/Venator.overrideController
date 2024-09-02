@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Venator
+  m_Controller: {fileID: 9100000, guid: 111ee171a6b56da43aeecd8a2d47d7ad, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: d9155920bf8527742bc3c8005f7869ef, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: d9155920bf8527742bc3c8005f7869ef, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 895dafff593c31542b25d00b062253d1, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 895dafff593c31542b25d00b062253d1, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 14d927b655e42ff409586a0fd255bb36, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 14d927b655e42ff409586a0fd255bb36, type: 2}

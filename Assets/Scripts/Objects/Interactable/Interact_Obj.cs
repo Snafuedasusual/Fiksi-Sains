@@ -8,4 +8,9 @@ public class Interact_Obj : MonoBehaviour, IInteraction
     {
         Debug.Log("Its an Object!");
     }
+
+    public void OnDetected(Transform plr)
+    {
+
+    }
 }

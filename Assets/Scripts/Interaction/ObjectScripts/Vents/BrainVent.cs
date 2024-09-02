@@ -60,6 +60,7 @@ public class BrainVent : MonoBehaviour
     bool vent_dbounce = false;
     private void ChangeVents()
     {
+        Debug.Log(plrLogic.GetPlayerMovement());
         if(plrLogic.GetPlayerMovement().x > 0)
         {
             if (vent_dbounce == false)

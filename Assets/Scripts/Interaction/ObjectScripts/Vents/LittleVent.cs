@@ -9,6 +9,29 @@ public class LittleVent : MonoBehaviour, IInteraction
 
     public void OnInteract(Transform plr)
     {
-        brainVent.InitializeVent(plrSpot, plr);
+        if (IsDebounce == null)
+        {
+            IsDebounce = Debounce();
+            StartCoroutine(IsDebounce);
+            brainVent.InitializeVent(plrSpot, plr);
+        }
+    }
+
+    public void OnDetected(Transform plr)
+    {
+
+    }
+
+    IEnumerator IsDebounce;
+    IEnumerator Debounce()
+    {
+        var debTime = 0f;
+        var debRate = 0.15f;
+        while(debTime < debRate)
+        {
+            debTime += Time.deltaTime;
+            yield return 0;
+        }
+        IsDebounce = null;
     }
 }

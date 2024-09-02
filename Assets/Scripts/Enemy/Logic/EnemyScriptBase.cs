@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
 
-public class EnemyScriptBase : MonoBehaviour, IInflictDamage, IMakeSound
+public class EnemyScriptBase : MonoBehaviour, IHealthInterface, IMakeSound
 {
     [Header("Hearing Settings")]
     [SerializeField] float hearingMultiplier;
@@ -176,7 +176,7 @@ public class EnemyScriptBase : MonoBehaviour, IInflictDamage, IMakeSound
             }
             if(distance < 2)
             {
-                atkScr.MainAttack(plrPos, transform);
+
             }
             else
             {
