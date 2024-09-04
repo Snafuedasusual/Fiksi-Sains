@@ -46,14 +46,39 @@ public class GameManagers : MonoBehaviour
         UIManager.instance.DeactivateGameOver();
     }
 
+
+
+    IEnumerator IsGameOverActivated;
+    IEnumerator GameOverActivate()
+    {
+        var debTime = 0f;
+        var debRate = 0.2f;
+        while(debTime < debRate)
+        {
+            debTime += Time.deltaTime;
+            yield return null;
+        }
+        UIManager.instance.ActivateGameOver();
+        IsGameOverActivated = null;
+    }
+    private void GameOver()
+    {
+        if(IsGameOverActivated == null)
+        {
+            IsGameOverActivated = GameOverActivate();
+            StartCoroutine(IsGameOverActivated);
+        }
+    }
     public void OnPlayerDeath()
     {
         UIManager.instance.CloseAllMenus();
         currentState = GameState.Dead;
-        UIManager.instance.ActivateGameOver();
         PauseGame();
         SetStateToDead();
+        UIManager.instance.ActivateGameOver();
     }
+
+
 
     public void OnPlayerLoadLevel()
     {

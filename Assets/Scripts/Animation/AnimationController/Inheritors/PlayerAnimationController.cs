@@ -42,8 +42,10 @@ public class PlayerAnimationController : AnimationController, IInitializeScript
     private void PlayerMovementAnimEventReceiver(object sender, LgcToComms.PlayerSendMovementAnimEventArgs e)
     {
         PlayPlayerAnimation(e.playThisAnim, UPPERBODY, false, false, 0.2f);
-        animator.SetFloat("XAxis", e.xAxis);
-        animator.SetFloat("YAxis", e.yAxis);
+        var plrDir = new Vector3(e.xAxis, 0, e.yAxis);
+        plrDir = transform.InverseTransformDirection(plrDir);
+        animator.SetFloat("XAxis", plrDir.x);
+        animator.SetFloat("YAxis", plrDir.z);
     }
 
 

@@ -122,7 +122,7 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
     {
         PlayerMovement(e.plrDir);
     }
-    private Vector3 PlayerMovement(Vector2 dir)
+    private void PlayerMovement(Vector2 dir)
     {
         var plrSpd = plrSpdBase + plrSprintApplied;
 
@@ -131,7 +131,8 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         plrDirection = new Vector2(plrMoveDir.x, plrMoveDir.z);
 
         var walkSound = 0.3f;
-        if(GameManagers.instance.GetGameState() != GameManagers.GameState.Playing)
+        var sprintSound = 10f;
+        if (GameManagers.instance.GetGameState() != GameManagers.GameState.Playing)
         {
             StopAllCoroutines();
         }
@@ -155,21 +156,29 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
 
                 
 
-                if (plrMoveDir != Vector3.zero)
+                if (plrMoveDir != Vector3.zero && plrSprintApplied == 0)
                 {
                     plrState = PlayerStates.Walking;
                     MakeSound(walkSound);
+                    PlayMovementAnim();
+                    return;
                 }
-                else if(plrMoveDir == Vector3.zero)
+                else if(plrMoveDir == Vector3.zero && plrSprintApplied == 0)
                 {
                     MakeSound(0f);
                     plrState = PlayerStates.Idle;
+                    PlayMovementAnim();
+                }
+                else if(plrMoveDir != Vector3.zero && plrSprintApplied > 0)
+                {
+                    MakeSound(sprintSound);
+                    plrState = PlayerStates.Sprinting;
+                    PlayMovementAnim();
                 }
 
             }
-            PlayMovementAnim();
+            
         }
-        return plrMoveDir;
     }
     public Vector2 GetPlayerMovement()
     {
@@ -186,7 +195,6 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
     }
     public void PlayerSprintController(bool spaceIsPressed)
     {
-        var sprintSound = 10f;
         if(GameManagers.instance.GetGameState() != GameManagers.GameState.Playing)
         {
             ForceStopAllCoroutines();
@@ -199,34 +207,73 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
             }
             else
             {
-                if(spaceIsPressed == true && plrStamina > 0 && playerDirection >= 0.3f && plrState == PlayerStates.Walking)
+                if(spaceIsPressed == false)
                 {
-                    plrSprintApplied = plrSprintBase;
-                    plrState = PlayerStates.Sprinting;
-                    MakeSound(sprintSound);
-                    DrainStamina();
-                }
-                if(spaceIsPressed == true && plrStamina <= 0 && playerDirection >= 0.3f && plrState == PlayerStates.Walking)
-                {
-                    plrSprintApplied = 0f;
-                    DrainStamina();
-                    MakeSound(sprintSound);
-
-                }
-                else if(playerDirection <= 0)
-                {
-                    plrSprintApplied = 0f;
+                    if(plrStamina >= 100) { plrStamina = 100; StopCoroutine(StaminaRefillController()); IsStaminaRefillRunning = null; return; }
                     RefillStamina();
+                    StopDrainStamina();
                 }
-                else if(spaceIsPressed == false)
+                else
                 {
-                    plrSprintApplied = 0f;
-                    RefillStamina();
-
+                    if (plrStamina <= 0) { plrSprintApplied = 0f; StopDrainStamina(); return; };
+                    if (playerDirection <= 0) { plrSprintApplied = 0f; StopDrainStamina(); return; };
+                    if (plrStamina > 0 && playerDirection >= 0.3f && plrState == PlayerStates.Walking) 
+                    { 
+                        plrSprintApplied = plrSprintBase; 
+                        plrState = PlayerStates.Sprinting;
+                        DrainStamina();
+                        StopRefillStamina();
+                    }
                 }
-                PlayMovementAnim();
             }
         } 
+    }
+    private void OnStartSprint(bool activated)
+    {
+        if (activated == true && plrStamina > 0 && playerDirection >= 0.3f && plrState == PlayerStates.Walking)
+        {
+            plrSprintApplied = plrSprintBase;
+            plrState = PlayerStates.Sprinting;
+            DrainStamina();
+            return;
+        }
+        else if (activated == true && plrStamina <= 0)
+        {
+            plrSprintApplied = 0f;
+            DrainStamina();
+            return;
+
+        }
+        else if (playerDirection <= 0)
+        {
+            plrSprintApplied = 0f;
+            RefillStamina();
+            return;
+        }
+        else if(activated == false)
+        {
+            plrSprintApplied = 0f;
+            StopCoroutine(StaminaDrainer());
+            IsStaminaDrainerRunning = null;
+            return;
+        }
+        else
+        {
+            plrSprintApplied = 0f;
+        }
+    }
+    private void OnStopSprint(bool activated)
+    {
+        if(activated == false)
+        {
+            if(plrStamina >= 100) { plrStamina = 100; StopCoroutine(StaminaRefillController()); IsStaminaRefillRunning = null; return; }
+            RefillStamina();
+        }
+        else if(activated == true) { StopCoroutine(StaminaRefillController()); IsStaminaRefillRunning = null; return; }
+        else
+        {
+
+        }
     }
     //End of Sprint Script-----------------------------------------------------
 
@@ -272,6 +319,20 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
             }
         } 
     }
+    private void StopDrainStamina()
+    {
+        if (GameManagers.instance.GetGameState() != GameManagers.GameState.Playing)
+        {
+            ForceStopAllCoroutines();
+            IsStaminaDrainerRunning = null;
+        }
+        else
+        {
+            StopCoroutine(StaminaDrainer());
+            IsStaminaDrainerRunning = null;
+            plrSprintApplied = 0;
+        }
+    }
     IEnumerator IsStaminaDrainerRunning;
     IEnumerator StaminaDrainer()
     {
@@ -291,13 +352,14 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
                     staminaTime = 0f;
                     while (staminaTime < staminaRate)
                     {
-                        staminaTime += Time.deltaTime * 15f;
+                        staminaTime += Time.deltaTime * 8f;
                         yield return null;
                     }
                     if (plrStamina <= 0)
                     {
                         StopCoroutine(StaminaDrainer());
                         IsStaminaDrainerRunning = null;
+                        yield break;
                     }
                     else if (plrStamina > 0 && playerDirection >= 0.3f)
                     {
@@ -306,8 +368,9 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
                     }
                     else if(playerDirection <= 0)
                     {
-                        StopCoroutine(IsStaminaDrainerRunning);
+                        StopCoroutine(StaminaDrainer());
                         IsStaminaDrainerRunning = null;
+                        yield break;
                     }
                     StaminaBarToUIFunc(plrStamina);
                 }
@@ -335,6 +398,19 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
             }
         }
     }
+    private void StopRefillStamina()
+    {
+        if (GameManagers.instance.GetGameState() != GameManagers.GameState.Playing)
+        {
+            ForceStopAllCoroutines();
+            IsStaminaRefillRunning = null;
+        }
+        else
+        {
+            StopCoroutine(StaminaRefillController());
+            IsStaminaRefillRunning = null;
+        }
+    }
     IEnumerator IsStaminaRefillRunning;
     IEnumerator StaminaRefillController()
     {
@@ -360,7 +436,9 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
                     }
                     if (plrStamina == 100)
                     {
-
+                        StopCoroutine(StaminaRefillController());
+                        IsStaminaRefillRunning = null;
+                        yield break;
                     }
                     else if (plrStamina < 100)
                     {

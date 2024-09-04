@@ -19,11 +19,15 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
     [Header("Script References")]
     [SerializeField] SectionEventComms sectionEventComms;
 
+    private int[] ambianceClips;
 
     public void InitializeScript()
     {
         sectionEventComms.OnObjActivatedEvent += OnObjActivatedReceiver;
         sectionEventComms.OnObjDoneEvent += OnObjDoneEventReceiver;
+        ambianceClips = new int[2];
+        ambianceClips[0] = (int)AmbianceSO.AmbianceClips.AMBIANCE_SECT3_1;
+        ambianceClips[1] = (int)AmbianceSO.AmbianceClips.AMBIANCE_SECT3_2;
     }
 
 
@@ -71,6 +75,7 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
         ObjectiveTextManager.instance.UpdateText(newObj.GetObjText());
         skinEater.transform.position = skinEaterPos;
         skinEater.SetActive(false);
+        AmbianceManager.instance.RequestPlay(ambianceClips);
     }
 
     public override void Restart()

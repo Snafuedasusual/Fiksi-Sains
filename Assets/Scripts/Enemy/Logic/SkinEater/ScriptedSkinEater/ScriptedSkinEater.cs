@@ -17,6 +17,11 @@ public class ScriptedSkinEater : BaseEnemyLogic
         //SniffTargetLocation();
     }
 
+    private void OnDisable()
+    {
+        IsLookingAroundSearching = null;
+    }
+
     public override void LookAroundSearching()
     {
         lastCharToHitMe = null;
@@ -50,6 +55,7 @@ public class ScriptedSkinEater : BaseEnemyLogic
             coolTime = 0f;
             while(coolTime < coolRate)
             {
+                Debug.Log(coolTime);
                 coolTime += Time.deltaTime;
                 yield return null;
             }

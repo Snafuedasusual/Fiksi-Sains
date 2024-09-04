@@ -569,13 +569,13 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
                     StopCoroutine(IsSearchingAlert);
                     IsSearchingAlert = null;
                     StopMove();
-                    break;
+                    yield break;
                 }
                 if(currentState != EnemyStates.SearchingAlert)
                 {
                     StopCoroutine(IsSearchingAlert);
                     IsSearchingAlert = null;
-                    break;
+                    yield break;
                 }
                 else
                 {

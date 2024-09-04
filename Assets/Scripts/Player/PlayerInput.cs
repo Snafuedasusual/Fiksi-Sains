@@ -105,11 +105,13 @@ public class PlayerInput : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftShift))
         {
             OnShiftHold?.Invoke(this, new SendShiftHoldArgs { keyIsPress = true });
+            return;
             //playerLogic.PlayerSprintController(keyisPress);
         }
         else if(!Input.GetKey(KeyCode.LeftShift))
         {
             OnShiftHold?.Invoke(this, new SendShiftHoldArgs { keyIsPress = false });
+            return;
             //playerLogic.PlayerSprintController(keyisPress);
         }
     }

@@ -104,7 +104,7 @@ public class BaseSight : MonoBehaviour
     {
         //var sightRange = defaultMaxVision;
         var direction = hitInfo.transform.position - transform.position;
-        bool canSee = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position + Vector3.up * eyeHeight, direction, out RaycastHit hit, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Both);
+        bool canSee = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position + Vector3.up * eyeHeight, direction, out RaycastHit hit, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.None);
         var distance = Vector3.Distance(hitInfo.transform.position, transform.position);
         if (canSee)
         {
