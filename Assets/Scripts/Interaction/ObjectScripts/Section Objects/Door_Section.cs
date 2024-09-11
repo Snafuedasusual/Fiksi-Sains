@@ -8,6 +8,7 @@ public class Door_Section : MonoBehaviour, IInteraction, IObjectiveSection
     [SerializeField] SectionEventComms sectionEventComms;
 
     [SerializeField] string objText;
+    [SerializeField] TextAsset ifLockedText;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
     public void OnInteract(Transform plr)
@@ -19,7 +20,7 @@ public class Door_Section : MonoBehaviour, IInteraction, IObjectiveSection
         }
         else
         {
-
+            if(ifLockedText != null) { SubtitleManager.instance.ActivateSubtitle(ifLockedText); }
         }
     }
 

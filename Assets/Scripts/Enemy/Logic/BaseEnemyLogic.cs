@@ -414,13 +414,9 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         }
         else if (target != null && distance < minDistToAttack)
         {
-            var direction = target.position - transform.position;
-            var isObstructed = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position + Vector3.up * centerBody, direction, minDistToAttack, obstacles);
-            if (!isObstructed)
-            {
-                transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z));
-                OnAttackEvent?.Invoke(this, new OnAttackEventArgs { target = target });
-            }
+            StopMove();
+            transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z));
+            OnAttackEvent?.Invoke(this, new OnAttackEventArgs { target = target });
         }
         else
         {

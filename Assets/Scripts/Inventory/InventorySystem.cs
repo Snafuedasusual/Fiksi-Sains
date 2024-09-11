@@ -11,6 +11,8 @@ public class InventorySystem : MonoBehaviour, IInitializeScript
 
 
     [SerializeField] private GameObject inventory;
+    [SerializeField] GameObject hand;
+    [SerializeField] private GameObject currentItem;
 
     public void InitializeScript()
     {
@@ -51,15 +53,56 @@ public class InventorySystem : MonoBehaviour, IInitializeScript
         }
     }
 
+
+    Coroutine EquipDebounce;
+    IEnumerator EquipStart()
+    {
+        var debTime = 0f;
+        var debRate = 0.15f;
+        while(debTime < debRate)
+        {
+            debTime += Time.deltaTime;
+            yield return null;
+        }
+        EquipDebounce = null;
+    }
     private void EquipItemEventSenderEventReceiver(object sender, PlayerToUI.EquipItemEventSenderEventArgs e)
     {
+        if (EquipDebounce != null) return;
         EquipItem(e.item);
+        EquipDebounce = StartCoroutine(EquipStart());
     }
     public event EventHandler<EquipItemEventArgs> EquipItemEvent;
     public class EquipItemEventArgs : EventArgs { public GameObject senderObject; public GameObject item; }
     private void EquipItem(GameObject item)
     {
         EquipItemEvent?.Invoke(this, new EquipItemEventArgs {senderObject = transform.gameObject, item = item });
+        if (currentItem != null)
+        {
+            currentItem.transform.parent = transform;
+            currentItem.transform.position = transform.position;
+            currentItem.SetActive(false);
+            currentItem.transform.LookAt(transform.forward);
+            currentItem = item;
+            currentItem.SetActive(true);
+            currentItem.transform.parent = hand.transform;
+            currentItem.transform.position = hand.transform.position;
+            currentItem.transform.eulerAngles = new Vector3(hand.transform.eulerAngles.x, hand.transform.eulerAngles.y, hand.transform.eulerAngles.z);
+            //currentItem.transform.LookAt(hand.transform.forward);
+            Debug.Log("Replaced");
+            return;
+        }
+        else if (currentItem == null)
+        {
+            currentItem = item;
+            currentItem.SetActive(true);
+            currentItem.transform.parent = hand.transform;
+            currentItem.transform.position = hand.transform.position;
+            currentItem.transform.eulerAngles = new Vector3(hand.transform.eulerAngles.x, hand.transform.eulerAngles.y, hand.transform.eulerAngles.z);
+            //currentItem.transform.LookAt(hand.transform.forward);
+            Debug.Log("New Item");
+            return;
+        }
     }
 
 

@@ -13,6 +13,7 @@ public class ItemIcon : MonoBehaviour, IInitializeScript, IPointerEnterHandler, 
     [SerializeField] string itemName;
     [SerializeField] string itemDesc;
     [SerializeField] int ammo;
+    [SerializeField] bool isInteractable;
 
     public void InitializeScript()
     {
@@ -38,7 +39,7 @@ public class ItemIcon : MonoBehaviour, IInitializeScript, IPointerEnterHandler, 
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        itemHolder.GetComponent<ItemSlot>().OnHoveredItem();
+        if (isInteractable == true) { itemHolder.GetComponent<ItemSlot>().OnHoveredItem(); }
     }
 
     public void ItemHolderAdder(GameObject itemHold)
@@ -48,6 +49,16 @@ public class ItemIcon : MonoBehaviour, IInitializeScript, IPointerEnterHandler, 
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        itemHolder.GetComponent<ItemSlot>().OnExitItem();
+        if (isInteractable == true) { itemHolder.GetComponent<ItemSlot>().OnExitItem(); }
+    }
+
+    public void SetInteractable()
+    {
+        isInteractable = true;
+    }
+
+    public void SetUnInteractable()
+    {
+        isInteractable = false;
     }
 }

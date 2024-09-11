@@ -13,6 +13,8 @@ public class PlayerAnimationController : AnimationController, IInitializeScript
 
     private const int UPPERBODY = 0;
 
+    [SerializeField] RuntimeAnimatorController defaultCont;
+    [SerializeField] RuntimeAnimatorController controllerOverride;
 
     public void InitializeScript()
     {
@@ -78,7 +80,7 @@ public class PlayerAnimationController : AnimationController, IInitializeScript
 
     public override void PlayPlayerAnimation(PlayerLogic.PlrAnimations animation, int layer, bool isLock, bool bypassLock, float crossfade)
     {
-
+        if (controllerOverride == null) animator.runtimeAnimatorController = defaultCont;
         if(animation == PlayerLogic.PlrAnimations.NONE)
         {
             DefaultAnimation(layer);

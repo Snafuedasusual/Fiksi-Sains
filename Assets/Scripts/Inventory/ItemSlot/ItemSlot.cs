@@ -27,6 +27,7 @@ public class ItemSlot : MonoBehaviour
         itemName = newItemUses.GetDisplayName();
         itemDesc = newItemUses.GetItemDesc();
         itemUIScr.ItemHolderAdder(this.gameObject);
+        itemUIScr.SetInteractable();
     }
 
     public GameObject GetItemHeld()

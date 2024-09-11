@@ -33,6 +33,8 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
     [SerializeField] private LayerMask interactableObjs;
     [SerializeField] private LayerMask enemyLyr;
 
+    [Header("Animation")]
+    [SerializeField] RuntimeAnimatorController currentController;
 
     float playerDirection;
 
@@ -50,7 +52,7 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         InteractingHold,
         Hiding,
         InVent,
-        Dead
+        Dead,
     }
 
     public enum PlrAnimations
@@ -89,6 +91,8 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         plrInp.OnEInputEvent -= OnInteractInputDetector;
         healthController.SendDmgToLogic -= SendDmgToLogicReceiver;
         plrInp.OnFlashlightInput -= OnFlashlightInputDetector;
+        plrInp.OnMouse1Pressed -= OnMouse1PressedReceiver;
+        inventorySystem.EquipItemEvent -= InventorySystem_EquipItemEvent;
     }
 
     private void ForceStopAllCoroutines()
@@ -138,9 +142,10 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         }
         else
         {
-            if (plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold || plrState == PlayerStates.InVent || plrState == PlayerStates.Dead)
+            if (plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold || plrState == PlayerStates.InVent || plrState == PlayerStates.Dead || plrState == PlayerStates.Null)
             {
-
+                plrDirection = Vector3.zero;
+                PlayMovementAnim();
             }
             else
             {
@@ -216,7 +221,7 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
                 else
                 {
                     if (plrStamina <= 0) { plrSprintApplied = 0f; StopDrainStamina(); return; };
-                    if (playerDirection <= 0) { plrSprintApplied = 0f; StopDrainStamina(); return; };
+                    if (playerDirection <= 0) { plrSprintApplied = 0f; StopDrainStamina(); RefillStamina(); return; };
                     if (plrStamina > 0 && playerDirection >= 0.3f && plrState == PlayerStates.Walking) 
                     { 
                         plrSprintApplied = plrSprintBase; 
@@ -284,10 +289,17 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         if(plrState == PlayerStates.Idle || plrState == PlayerStates.Walking)
         {
             PlayThisMovementAnim?.Invoke(this, new PlayThisMovementAnimArgs { playThisAnim = PlrAnimations.MOVEMENT_WALK, xAxis = plrDirection.x, yAxis = plrDirection.y });
+            return;
         }
-        if(plrState == PlayerStates.Sprinting)
+        else if(plrState == PlayerStates.Sprinting)
         {
             PlayThisMovementAnim?.Invoke(this, new PlayThisMovementAnimArgs { playThisAnim = PlrAnimations.MOVEMENT_RUN, xAxis = plrDirection.x, yAxis = plrDirection.y });
+            return;
+        }
+        else
+        {
+            PlayThisMovementAnim?.Invoke(this, new PlayThisMovementAnimArgs { playThisAnim = PlrAnimations.MOVEMENT_WALK, xAxis = plrDirection.x, yAxis = plrDirection.y });
+            return;
         }
     }
 
@@ -352,7 +364,7 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
                     staminaTime = 0f;
                     while (staminaTime < staminaRate)
                     {
-                        staminaTime += Time.deltaTime * 8f;
+                        staminaTime += Time.deltaTime * 7f;
                         yield return null;
                     }
                     if (plrStamina <= 0)
@@ -431,7 +443,7 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
                     staminaTime = 0f;
                     while (staminaTime < staminaRate)
                     {
-                        staminaTime += Time.deltaTime * 7.5f;
+                        staminaTime += Time.deltaTime * 6.5f;
                         yield return null;
                     }
                     if (plrStamina == 100)
@@ -473,8 +485,15 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         }
         else
         {
-            mousePosition.position = new Vector3(Mathf.Clamp(mousPos.x, transform.position.x - 20f, transform.position.x + 20f), 0, Mathf.Clamp(mousPos.z, transform.position.z - 10f, transform.position.z + 10f));
-            PlayerRotate(mousePosition.position);
+            if(plrState == PlayerStates.Null)
+            {
+
+            }
+            else
+            {
+                mousePosition.position = new Vector3(Mathf.Clamp(mousPos.x, transform.position.x - 20f, transform.position.x + 20f), 0, Mathf.Clamp(mousPos.z, transform.position.z - 10f, transform.position.z + 10f));
+                PlayerRotate(mousePosition.position);
+            }
         } 
     }
 
@@ -486,7 +505,7 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         }
         else
         {
-            if (plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold || plrState == PlayerStates.Dead)
+            if (plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold || plrState == PlayerStates.Dead || plrState == PlayerStates.Null)
             {
 
             }
@@ -518,6 +537,7 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
             }
             else
             {
+                if (plrState == PlayerStates.Null) return;
                 if (targetInteract.TryGetComponent(out IInteraction interact))
                 {
                     interact.OnInteract(transform);
@@ -633,6 +653,17 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
     }
 
 
+    public void NullifyState()
+    {
+        plrState = PlayerStates.Null;
+        plrDirection = Vector3.zero;
+        PlayMovementAnim();
+    }
+
+    public void UnNullifyState()
+    {
+        plrState = PlayerStates.Idle;
+    }
 
 
     private void OnMouse1PressedReceiver(object sender, OnMouse1PressedArgs e)
