@@ -59,11 +59,12 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
     {
         MOVEMENT_WALK,
         MOVEMENT_RUN,
+        ATTACK1,
         NONE
     }
 
     public event EventHandler<PlayThisMovementAnimArgs> PlayThisMovementAnim;
-    public class PlayThisMovementAnimArgs : EventArgs { public PlrAnimations playThisAnim; public float xAxis; public float yAxis; }
+    public class PlayThisMovementAnimArgs : EventArgs { public RuntimeAnimatorController controller; public PlrAnimations playThisAnim; public float xAxis; public float yAxis; }
 
     public PlayerStates plrState;
 
@@ -288,17 +289,17 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
     {
         if(plrState == PlayerStates.Idle || plrState == PlayerStates.Walking)
         {
-            PlayThisMovementAnim?.Invoke(this, new PlayThisMovementAnimArgs { playThisAnim = PlrAnimations.MOVEMENT_WALK, xAxis = plrDirection.x, yAxis = plrDirection.y });
+            PlayThisMovementAnim?.Invoke(this, new PlayThisMovementAnimArgs { playThisAnim = PlrAnimations.MOVEMENT_WALK, xAxis = plrDirection.x, yAxis = plrDirection.y, controller = currentController });
             return;
         }
         else if(plrState == PlayerStates.Sprinting)
         {
-            PlayThisMovementAnim?.Invoke(this, new PlayThisMovementAnimArgs { playThisAnim = PlrAnimations.MOVEMENT_RUN, xAxis = plrDirection.x, yAxis = plrDirection.y });
+            PlayThisMovementAnim?.Invoke(this, new PlayThisMovementAnimArgs { playThisAnim = PlrAnimations.MOVEMENT_RUN, xAxis = plrDirection.x, yAxis = plrDirection.y, controller = currentController });
             return;
         }
         else
         {
-            PlayThisMovementAnim?.Invoke(this, new PlayThisMovementAnimArgs { playThisAnim = PlrAnimations.MOVEMENT_WALK, xAxis = plrDirection.x, yAxis = plrDirection.y });
+            PlayThisMovementAnim?.Invoke(this, new PlayThisMovementAnimArgs { playThisAnim = PlrAnimations.MOVEMENT_WALK, xAxis = plrDirection.x, yAxis = plrDirection.y, controller = currentController });
             return;
         }
     }
@@ -650,6 +651,7 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
     private void InventorySystem_EquipItemEvent(object sender, InventorySystem.EquipItemEventArgs e)
     {
         equippedItem = e.item.TryGetComponent(out ItemUses itemUses) ? itemUses : null;
+        currentController = equippedItem.GetController();
     }
 
 
@@ -676,9 +678,16 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         {
             if(equippedItem != null)
             {
-                equippedItem.MainUse(e.isPressed, transform, centerBody);
+                if(plrState == PlayerStates.Idle || plrState == PlayerStates.Walking) { equippedItem.MainUse(e.isPressed, transform, centerBody);}
             }
         }
+    }
+
+    public event EventHandler<PlayThisAttackAnimArgs> PlayThisAttackAnim;
+    public class PlayThisAttackAnimArgs : EventArgs { public RuntimeAnimatorController controller; public PlrAnimations anim;}
+    public void Mouse1PlayAnim()
+    {
+        PlayThisAttackAnim?.Invoke(this, new PlayThisAttackAnimArgs { controller = currentController, anim = PlrAnimations.ATTACK1});
     }
 
     public void ResetPlayer()

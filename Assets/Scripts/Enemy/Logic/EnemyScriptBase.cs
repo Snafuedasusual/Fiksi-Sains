@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
 
-public class EnemyScriptBase : MonoBehaviour, IHealthInterface, IMakeSound
+public class EnemyScriptBase : MonoBehaviour, IHealthInterface, IMakeSounds
 {
     [Header("Hearing Settings")]
     [SerializeField] float hearingMultiplier;

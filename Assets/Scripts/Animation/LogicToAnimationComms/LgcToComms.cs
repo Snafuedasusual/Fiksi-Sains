@@ -42,7 +42,7 @@ public class LgcToComms : MonoBehaviour
     }
 
     public event EventHandler<PlayerSendMovementAnimEventArgs> PlayerMovementAnimEvent;
-    public class PlayerSendMovementAnimEventArgs : EventArgs { public PlrAnimations playThisAnim; public float xAxis; public float yAxis; }
+    public class PlayerSendMovementAnimEventArgs : EventArgs { public RuntimeAnimatorController controller; public PlrAnimations playThisAnim; public float xAxis; public float yAxis; }
     protected void PlayerSendMovementAnimEvent(PlayerSendMovementAnimEventArgs sendArgs)
     {
         var handler = PlayerMovementAnimEvent;
@@ -50,5 +50,13 @@ public class LgcToComms : MonoBehaviour
         {
             handler?.Invoke(this, sendArgs);
         }
+    }
+
+    public event EventHandler<PlayerAttackAnimEventArgs> PlayerAttackAnimEvent;
+    public class PlayerAttackAnimEventArgs : EventArgs { public RuntimeAnimatorController controllerOverride; public PlayerLogic.PlrAnimations playThisAnim;}
+    protected void PlayerSendAttackAnimEvent(PlayerAttackAnimEventArgs sendArgs)
+    {
+        var handler = PlayerAttackAnimEvent;
+        if(handler != null) handler.Invoke(this, sendArgs);
     }
 }

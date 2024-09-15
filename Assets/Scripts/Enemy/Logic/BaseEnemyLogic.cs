@@ -129,6 +129,18 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         InitializeScript();
     }
 
+    private void OnEnable()
+    {
+        InitializeEnemy();
+        InitializeScript();
+        DelayAudioPlay = null;
+        IsLookingAroundSearching = null;
+        lastCharToHitMe = null;
+        IsSearchingAlert = null;
+        IsSuspicious = null;
+        IsSuspiciousLooking = null;
+    }
+
     private void CalculateCenterBody()
     {
         if(Time.frameCount % 10 == 0)
@@ -856,6 +868,8 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
     }
     //Getting last seen position script ends---------------------
 
+
+    //Reset enemy when Level restarts
     public void ResetEnemy()
     {
         if(defaultState == EnemyStates.FR_Patrol)
@@ -884,6 +898,8 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         }
         baseEnemyAlertBar.ResetEnemyAlertBar();
     }
+    //Reset enemy ends---------------------------------
+
 
 
     public event EventHandler<SendEventToAlertBarScrArgs> SendEventToAlertBarScr;
@@ -994,11 +1010,33 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
     }
 
 
+    public event EventHandler PlayIdleAudioOnUpdateEvent;
+    Coroutine DelayAudioPlay;
+    IEnumerator StartDelayAudio(int randomSeconds)
+    {
+        var timeCount = 0f;
+        var timeRate = (float)randomSeconds;
+        while(timeCount < timeRate)
+        {
+            timeCount += Time.deltaTime;
+            yield return null;
+        }
+        Debug.Log("Play Sound");
+        DelayAudioPlay = null;
+        PlayIdleAudioOnUpdateEvent?.Invoke(this, EventArgs.Empty);
+    }
+    private void PlayAudioOnUpdate()
+    {
+        if (DelayAudioPlay != null) return;
+        DelayAudioPlay = StartCoroutine(StartDelayAudio(Random.Range(10, 15)));
+    }
+
 
     private void Update()
     {
         StateController();
         CalculateCenterBody();
+        PlayAudioOnUpdate();
         //EnemyAnimEvent?.Invoke(this, new EnemyAnimEventArgs { currentState = currentState, currentMoveState = currentMoveState });
     }
 
@@ -1019,16 +1057,12 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
 
     private void OnDisable()
     {
-        baseSight.SendTarget -= SendTargetReceiver;
-        baseEnemyAlertBar.AlertBarIsEmpty -= AlertBarIsEmptyReceiver;
-        baseEnemySoundController.SoundToLogic -= SoundToLogicReceiver;
+        DeInitializeScript();
     }
 
     private void OnDestroy()
     {
-        baseSight.SendTarget -= SendTargetReceiver;
-        baseEnemyAlertBar.AlertBarIsEmpty -= AlertBarIsEmptyReceiver;
-        baseEnemySoundController.SoundToLogic -= SoundToLogicReceiver;
+        DeInitializeScript();
     }
 
 

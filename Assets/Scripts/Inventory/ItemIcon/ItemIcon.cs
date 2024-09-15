@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public class ItemIcon : MonoBehaviour, IInitializeScript, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("Scriptable Objects")]
-    [SerializeField] FirearmSO itemSO;
+    [SerializeField] ItemSO itemSO;
 
     [Header("Variables")]
     [SerializeField] GameObject itemHolder;
@@ -19,7 +19,7 @@ public class ItemIcon : MonoBehaviour, IInitializeScript, IPointerEnterHandler, 
     {
         itemName = itemSO.name;
         itemDesc = itemSO.itemDescription;
-        ammo = itemSO.amountofAmmo;
+        ammo = itemSO.amountAmmo;
     }
 
     public void DeInitializeScript()

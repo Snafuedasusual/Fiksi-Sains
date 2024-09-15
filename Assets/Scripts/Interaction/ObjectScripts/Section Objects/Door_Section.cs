@@ -62,6 +62,8 @@ public class Door_Section : MonoBehaviour, IInteraction, IObjectiveSection
 
     public void ForceDone()
     {
-
+        currentLockStatus = IsLocked.Unlocked;
+        currentStatus = IsFinished.IsDone;
     }
+
 }

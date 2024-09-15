@@ -192,6 +192,7 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
         {
 
         }
+        IsAddItemDebounce = null;
     }
     private void OnAddItemReceiver(object sender, InventorySystem.OnAddItemArgs e)
     {

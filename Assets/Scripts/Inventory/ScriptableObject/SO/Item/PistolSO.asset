@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: PistolSO
   m_EditorClassIdentifier: 
   currentItemEnum: 1
-  prefab: {fileID: 4347763280489565788, guid: 50dc31fadb861f14785b88c094aa2f4b, type: 3}
+  inventoryPrefab: {fileID: 4347763280489565788, guid: 50dc31fadb861f14785b88c094aa2f4b, type: 3}
   uiIcon: {fileID: 2490875092970801987, guid: 258a6a103cde6b0408b320983761a796, type: 3}
   itemName: Pistol
   itemDescription: A 12 round standard issue handgun.
+  amountAmmo: 12
   amountofAmmo: 12
