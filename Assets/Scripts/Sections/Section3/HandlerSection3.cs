@@ -37,10 +37,7 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
         sectionEventComms.OnObjDoneEvent -= OnObjDoneEventReceiver;
     }
 
-    private void Start()
-    {
-        InitializeScript();
-    }
+
     private void OnEnable()
     {
         InitializeScript();
@@ -70,6 +67,16 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
                 objective.ResetObj();
             }
         }
+        if (scriptedEvents.Length > 0)
+        {
+            for (int i = 0; i < scriptedEvents.Length; i++)
+            {
+                if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+                {
+                    events.ResetTrigger();
+                }
+            }
+        }
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
         newObj.Unlocked();
         ObjectiveTextManager.instance.UpdateText(newObj.GetObjText());
@@ -87,6 +94,16 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
             if (objectives[i].TryGetComponent(out IObjectiveSection objective))
             {
                 objective.ResetObj();
+            }
+        }
+        if (scriptedEvents.Length > 0)
+        {
+            for (int i = 0; i < scriptedEvents.Length; i++)
+            {
+                if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+                {
+                    events.ResetTrigger();
+                }
             }
         }
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;

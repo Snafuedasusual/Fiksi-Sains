@@ -18,8 +18,8 @@ public class FinalHandler : BaseHandler, IInitializeScript
     {
         sectEventComms.OnObjDoneEvent += OnObjDoneEventReceiver;
         ambianceClips = new int[2];
-        ambianceClips[0] = (int)AmbianceSO.AmbianceClips.AMBIANCE_SECT3_1;
-        ambianceClips[1] = (int)AmbianceSO.AmbianceClips.AMBIANCE_SECT3_2;
+        ambianceClips[0] = (int)AmbianceSO.AmbianceClips.AMBIANCE_SECT4_1;
+        ambianceClips[1] = (int)AmbianceSO.AmbianceClips.AMBIANCE_SECT4_2;
     }
 
     public void DeInitializeScript()
@@ -51,11 +51,14 @@ public class FinalHandler : BaseHandler, IInitializeScript
                 objective.ResetObj();
             }
         }
-        for (int i = 0; i < scriptedEvents.Length; i++)
+        if (scriptedEvents.Length > 0)
         {
-            if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+            for (int i = 0; i < scriptedEvents.Length; i++)
             {
-                events.ResetTrigger();
+                if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+                {
+                    events.ResetTrigger();
+                }
             }
         }
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
@@ -75,11 +78,14 @@ public class FinalHandler : BaseHandler, IInitializeScript
                 objective.ResetObj();
             }
         }
-        for (int i = 0; i < scriptedEvents.Length; i++)
+        if (scriptedEvents.Length > 0)
         {
-            if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+            for (int i = 0; i < scriptedEvents.Length; i++)
             {
-                events.ResetTrigger();
+                if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+                {
+                    events.ResetTrigger();
+                }
             }
         }
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;

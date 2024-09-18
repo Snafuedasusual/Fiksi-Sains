@@ -19,6 +19,7 @@ public class GameManagers : MonoBehaviour
         Dead,
         OnMenu,
         OnUI,
+        FreeCam,
     }
 
     [Header("Game States")]
@@ -323,7 +324,7 @@ public class GameManagers : MonoBehaviour
         plr = GameObject.FindGameObjectWithTag("Player");
         Screen.SetResolution(640, 360, true);
         handlers[currentLevel - 1].player = plr;
-        StartCoroutine(IsStartingLevel(plr.transform));
+        //StartCoroutine(IsStartingLevel(plr.transform));
     }
 
 }

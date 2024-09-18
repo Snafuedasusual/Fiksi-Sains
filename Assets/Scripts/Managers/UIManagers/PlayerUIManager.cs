@@ -22,7 +22,6 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI visibility;
 
     [Header("StaminaComponents")]
-    [SerializeField] TextMeshProUGUI stamina;
     [SerializeField] Slider bar1;
     [SerializeField] Slider bar2;
     [SerializeField] Image bar1Image;

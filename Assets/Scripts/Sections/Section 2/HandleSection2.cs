@@ -25,11 +25,11 @@ public class HandlerSection2 : BaseHandler, IInitializeScript
     private void Start()
     {
         deadScientist.localPosition = deadScientistLocation[Random.Range(0, deadScientistLocation.Length - 1)];
-        InitializeScript();
     }
 
     private void OnEnable()
     {
+        deadScientist.localPosition = deadScientistLocation[Random.Range(0, deadScientistLocation.Length - 1)];
         InitializeScript();
     }
 
@@ -67,11 +67,14 @@ public class HandlerSection2 : BaseHandler, IInitializeScript
                 objective.ResetObj();
             }
         }
-        for (int i = 0; i < scriptedEvents.Length; i++)
+        if(scriptedEvents.Length > 0)
         {
-            if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+            for (int i = 0; i < scriptedEvents.Length; i++)
             {
-                events.ResetTrigger();
+                if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+                {
+                    events.ResetTrigger();
+                }
             }
         }
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
@@ -93,11 +96,14 @@ public class HandlerSection2 : BaseHandler, IInitializeScript
                 objective.ResetObj();
             }
         }
-        for (int i = 0; i < scriptedEvents.Length; i++)
+        if (scriptedEvents.Length > 0)
         {
-            if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+            for (int i = 0; i < scriptedEvents.Length; i++)
             {
-                events.ResetTrigger();
+                if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+                {
+                    events.ResetTrigger();
+                }
             }
         }
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;

@@ -33,11 +33,6 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
         sectEventComms.OnObjDoneEvent -= OnObjDoneEventReceiver;
     }
 
-    private void Start()
-    {
-        InitializeScript();
-    }
-
     private void OnEnable()
     {
         InitializeScript();
@@ -53,11 +48,6 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
         DeInitializeScript();
     }
 
-    public void UnlockDoorSection()
-    {
-        
-    }
-
     public override void StartLevel()
     {
         currentObj = 0;
@@ -69,11 +59,14 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
                 objective.ResetObj();
             }
         }
-        for(int i = 0; i < scriptedEvents.Length; i++)
+        if (scriptedEvents.Length > 0)
         {
-            if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+            for (int i = 0; i < scriptedEvents.Length; i++)
             {
-                events.ResetTrigger();
+                if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+                {
+                    events.ResetTrigger();
+                }
             }
         }
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
@@ -93,11 +86,14 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
                 objective.ResetObj();
             }
         }
-        for (int i = 0; i < scriptedEvents.Length; i++)
+        if (scriptedEvents.Length > 0)
         {
-            if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+            for (int i = 0; i < scriptedEvents.Length; i++)
             {
-                events.ResetTrigger();
+                if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+                {
+                    events.ResetTrigger();
+                }
             }
         }
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
