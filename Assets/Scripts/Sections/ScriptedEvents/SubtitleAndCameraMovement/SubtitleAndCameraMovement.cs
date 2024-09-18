@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SubtitleAndCameraMovement : MonoBehaviour, IScriptedEvents
 {
-    [SerializeField]private IScriptedEvents.Triggered isTriggered;
+    [SerializeField] private IScriptedEvents.Triggered isTriggered;
     [SerializeField] private CinemachineVirtualCamera cinemachineCam;
     [SerializeField] private TextAsset dialogue;
     private PlayerLogic playerLogic;

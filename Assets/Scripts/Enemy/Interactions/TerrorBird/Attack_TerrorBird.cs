@@ -65,7 +65,7 @@ public class Attack_TerrorBird : Attack, IInitializeScript
 
     private void OnAttackEventReceiver(object sender, BaseEnemyLogic.OnAttackEventArgs e)
     {
-        MainAttack(e.target, transform);
+        MainAttack(e.target, e.sender);
     }
 
     public override void MainAttack(Transform target, Transform sender)
@@ -74,13 +74,13 @@ public class Attack_TerrorBird : Attack, IInitializeScript
         {
             if(Physics.Raycast(sender.position + Vector3.up * 0.75f, target.position - sender.position, out RaycastHit hit, mainDmgRange))
             {
-                if(hit.transform == target.transform)
+                AtkCooling = AtkCooldown();
+                StartCoroutine(AtkCooling);
+                if (hit.transform == target.transform)
                 {
                     if (hit.transform.TryGetComponent(out EntityHealthController trgt))
                     {
                         trgt.DealDamage(mainDmg, sender, mainDmgKnckBck);
-                        AtkCooling = AtkCooldown();
-                        StartCoroutine(AtkCooling);
                     }
                     else
                     {

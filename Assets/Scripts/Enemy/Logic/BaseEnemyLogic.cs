@@ -91,6 +91,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         IDLE,
         WALK,
         RUN,
+        ATTACK,
         NONE,
     }
 
@@ -415,7 +416,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
 
     // Handles Attacking target state and events related.
     public event EventHandler<OnAttackEventArgs> OnAttackEvent;
-    public class OnAttackEventArgs : EventArgs { public Transform target; }
+    public class OnAttackEventArgs : EventArgs { public Transform sender; public Transform target; }
     public virtual void Attack()
     {
         
@@ -428,7 +429,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         {
             StopMove();
             transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z));
-            OnAttackEvent?.Invoke(this, new OnAttackEventArgs { target = target });
+            OnAttackEvent?.Invoke(this, new OnAttackEventArgs { sender = transform, target = target });
         }
         else
         {
@@ -437,6 +438,11 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
     }
     //Attacking script ends---------------------------------------
 
+    //public event EventHandler 
+    public void PlayAttackAnim()
+    {
+
+    }
 
 
 

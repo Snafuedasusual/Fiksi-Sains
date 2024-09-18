@@ -15,11 +15,11 @@ MonoBehaviour:
   attackAudios: []
   footStepsClips: []
   idleClips:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 8300000, guid: cc4dcd111358cc443b2752f44e157722, type: 3}
+  - {fileID: 8300000, guid: e367c75c1d040d44694c979f5ae93bc4, type: 3}
+  - {fileID: 8300000, guid: a65385ef82a834e4791e60583a797996, type: 3}
   chaseClips: []
   hurtClips:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 8300000, guid: 603451e94d9eeb146bae47d908b889c7, type: 3}
+  - {fileID: 8300000, guid: d6a790b161dc4ca44a7fda12ba21c500, type: 3}
   deathClips: []

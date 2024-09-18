@@ -12,6 +12,8 @@ public class PlayerAnimationController : AnimationController, IInitializeScript
         Animator.StringToHash("Attack1")
     };
 
+    [SerializeField] PlrEventsComms eventsComms;
+
     private const int UPPERBODY = 0;
     private const int LWRBODY = 1;
 
@@ -109,5 +111,10 @@ public class PlayerAnimationController : AnimationController, IInitializeScript
         animator.CrossFade(animationHashes[(int)currentPlrAnim[layer]], crossfade, layer);
     }
 
+
+    public void PlayFootstepAudio()
+    {
+        eventsComms.PlayFootstepAudio();
+    }
 
 }

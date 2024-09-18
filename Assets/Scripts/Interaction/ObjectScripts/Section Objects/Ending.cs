@@ -53,7 +53,7 @@ public class Ending : MonoBehaviour, IObjectiveSection
     IEnumerator StartPlayScriptedEvent()
     {
         var playTime = 0f;
-        var playTimeMax = 3.5f;
+        var playTimeMax = 7.5f;
         while (playTime < playTimeMax)
         {
             playTime += Time.deltaTime;

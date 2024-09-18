@@ -11,7 +11,12 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] PlayerToUI plrToUI;
 
     [Header("Health Components")]
-    [SerializeField] TextMeshProUGUI health;
+    [SerializeField] RawImage bloodEdges;
+    [SerializeField] RawImage bloodOverlay;
+    [SerializeField] float bloodEdgesMaxAlpha;
+    [SerializeField] float bloodOverlayMaxAlpha;
+    [SerializeField] private float maxHealth;
+    [SerializeField] private float currentHealth;
 
     [Header("Visibility Components")]
     [SerializeField] TextMeshProUGUI visibility;
@@ -26,8 +31,8 @@ public class PlayerUIManager : MonoBehaviour
     private float bar1ImageAlpha;
     private float bar2ImageAlpha;
     private float circleImageAlpha;
-    [SerializeField] private float maxHealth;
-    [SerializeField] private float currentHealth;
+
+
     public float GetHealthAlpha()
     {
         if (currentHealth == maxHealth)
@@ -98,10 +103,39 @@ public class PlayerUIManager : MonoBehaviour
     {
         //health.text = e.plrHealth.ToString();
         currentHealth = e.plrHealth;
+        UpdateBloodAlpha(currentHealth);
+    }
+
+    private void UpdateBloodAlpha(float health)
+    {
+        var healthLost = maxHealth - health;
+        if (healthLost == 0) 
+        {
+            bloodEdges.color = new Color(bloodEdges.color.r, bloodEdges.color.g, bloodEdges.color.b, 0f);
+            bloodOverlay.color = new Color(bloodOverlay.color.r, bloodOverlay.color.g, bloodOverlay.color.b, 0f);
+            return;
+        }
+        else
+        {
+            CalculateBloodEdgesAlpha(healthLost);
+            CalculateBloodOverlayAlpha(healthLost);
+        }
     }
 
 
-
+    private void CalculateBloodEdgesAlpha(float healthLost)
+    {
+        var calculatedAlpha = (healthLost/100) * bloodEdgesMaxAlpha;
+        var calculateRelativeToMaxAlpha = calculatedAlpha / 225;
+        bloodEdges.color = new Color(bloodEdges.color.r, bloodEdges.color.g, bloodEdges.color.b, calculateRelativeToMaxAlpha);
+    }
+    
+    private void CalculateBloodOverlayAlpha(float healthLost)
+    {
+        var calculatedAlpha = (healthLost / 100) * bloodOverlayMaxAlpha;
+        var calculateRelativeToMaxAlpha = calculatedAlpha / 225;
+        bloodOverlay.color = new Color(bloodOverlay.color.r, bloodOverlay.color.g, bloodOverlay.color.b, calculateRelativeToMaxAlpha);
+    }
 
     private void SendStaminaInfoToPlayerUIReceiver(object sender, PlayerToUI.SendStaminaInfoToPlayerUIArgs e)
     {

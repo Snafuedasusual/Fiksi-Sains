@@ -11,7 +11,7 @@ public class LgcToComms : MonoBehaviour
     public event EventHandler<EnemyMovementAnimSendEventArgs> EnemyMovementAnimSendEvent;
     public class EnemyMovementAnimSendEventArgs : EventArgs { public BaseEnemyLogic.EnemyAnimations anim; }
     
-    protected void EnemyMovement(BaseEnemyLogic.EnemyAnimations newAnim)
+    protected void EnemySendMovementAnimEvent(BaseEnemyLogic.EnemyAnimations newAnim)
     {
         var handler = EnemyMovementAnimSendEvent;
         if(handler != null)
@@ -19,6 +19,16 @@ public class LgcToComms : MonoBehaviour
             handler?.Invoke(this, new EnemyMovementAnimSendEventArgs { anim = newAnim});
         }
     }
+
+
+    public event EventHandler EnemyAttackAnimSendEvent;
+    public class EnemyAttackAnimSendEventArgs : EventArgs { public BaseEnemyLogic.EnemyAnimations anim; }
+    protected void EnemySendAttackAnimEvent(EnemyAttackAnimSendEventArgs sendArgs)
+    {
+        var handler = EnemyAttackAnimSendEvent;
+        if (handler != null) handler?.Invoke(this, sendArgs);
+    }
+
 
 
     protected virtual void EnemySendAnimEvents(BaseEnemyLogic.EnemyAnimEventArgs e)
