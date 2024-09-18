@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlrSoundController : MonoBehaviour, IMakeSound
+public class PlrSoundController : MonoBehaviour, IMakeSounds
 {
     [Header("Script References")]
     [SerializeField] PlayerLogic plrLogic;
@@ -35,7 +35,7 @@ public class PlrSoundController : MonoBehaviour, IMakeSound
         soundListeners = Physics.OverlapSphere(transform.position, 100f, characters);
         for(int i = 0; i < soundListeners.Length; i++)
         {
-            if (soundListeners[i].transform.TryGetComponent(out IMakeSound listener))
+            if (soundListeners[i].transform.TryGetComponent(out IMakeSounds listener))
             {
                 if (soundListeners[i].TryGetComponent(out BaseEnemyLogic enemy))
                 {

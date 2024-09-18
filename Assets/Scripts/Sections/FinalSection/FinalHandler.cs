@@ -51,6 +51,13 @@ public class FinalHandler : BaseHandler, IInitializeScript
                 objective.ResetObj();
             }
         }
+        for (int i = 0; i < scriptedEvents.Length; i++)
+        {
+            if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+            {
+                events.ResetTrigger();
+            }
+        }
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
         newObj.Unlocked();
         ObjectiveTextManager.instance.UpdateText(newObj.GetObjText());
@@ -66,6 +73,13 @@ public class FinalHandler : BaseHandler, IInitializeScript
             if (objectives[i].TryGetComponent(out IObjectiveSection objective))
             {
                 objective.ResetObj();
+            }
+        }
+        for (int i = 0; i < scriptedEvents.Length; i++)
+        {
+            if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+            {
+                events.ResetTrigger();
             }
         }
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
@@ -84,14 +98,12 @@ public class FinalHandler : BaseHandler, IInitializeScript
         {
             if (objectives[i] == gameObject && i < objectives.Length - 1 && i == currentObj)
             {
-                Debug.Log("Next Obj");
                 currentObj = i;
                 UnlockNextObjective();
                 break;
             }
             else if (objectives[i] == gameObject && i < objectives.Length - 1 && i > currentObj)
             {
-                Debug.Log("Next Obj, Skip Obj");
                 currentObj = i;
                 IObjectiveSection pastCurrentObj = objectives[currentObj].TryGetComponent(out IObjectiveSection objSelect) ? objSelect : null;
                 FinishObjectivesBetween(currentObj, i);
@@ -100,7 +112,6 @@ public class FinalHandler : BaseHandler, IInitializeScript
             }
             else if (objectives[i] == gameObject && i == objectives.Length - 1 && i > currentObj)
             {
-                Debug.Log("Next Obj, Skip Obj, Finish Level");
                 currentObj = i;
                 IObjectiveSection pastCurrentObj = objectives[currentObj].TryGetComponent(out IObjectiveSection objSelect) ? objSelect : null;
                 FinishObjectivesBetween(currentObj, i);
@@ -109,7 +120,6 @@ public class FinalHandler : BaseHandler, IInitializeScript
             }
             else
             {
-                Debug.Log("Finish Level");
                 FinishLevel();
             }
         }

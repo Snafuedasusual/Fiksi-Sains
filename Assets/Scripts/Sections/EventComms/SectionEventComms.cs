@@ -12,12 +12,17 @@ public class SectionEventComms : MonoBehaviour
         OnObjDoneEvent?.Invoke(this, new OnObjDoneEventArgs { obj = obj });
     }
 
-    public EventHandler<OnObjActivatedEventArgs> OnObjActivatedEvent;
+    public event EventHandler<OnObjActivatedEventArgs> OnObjActivatedEvent;
     public class OnObjActivatedEventArgs : EventArgs { public GameObject obj; } 
     public void OnObjectiveActivated(GameObject obj)
     {
         OnObjActivatedEvent?.Invoke(this, new OnObjActivatedEventArgs { obj = obj });
     }
 
+    public event EventHandler ScriptedEventNoArgs;
+    public void StartScriptedEventNoArgs()
+    {
+        ScriptedEventNoArgs?.Invoke(this, EventArgs.Empty);
+    }
 
 }

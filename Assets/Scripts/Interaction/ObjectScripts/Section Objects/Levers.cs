@@ -34,6 +34,16 @@ public class Levers : MonoBehaviour, IInteraction
 
     }
 
+    private void OnEnable()
+    {
+        IsInteractDebounce = null;
+    }
+
+    private void OnDisable()
+    {
+        IsInteractDebounce = null;
+    }
+
     private void OnDestroy()
     {
         IsInteractDebounce = null;

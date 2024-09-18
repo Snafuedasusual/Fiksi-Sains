@@ -24,6 +24,9 @@ public class ItemUses : MonoBehaviour
     [SerializeField] protected LayerMask placesToDrop;
     [SerializeField] protected LayerMask characters;
 
+    [SerializeField] protected RuntimeAnimatorController controller;
+    public virtual RuntimeAnimatorController GetController() { return controller; }
+
 
     public virtual string GetDisplayName() { return itemName; }
     public virtual ItemSO.ItemList GetItemEnum() { return itemEnum; }

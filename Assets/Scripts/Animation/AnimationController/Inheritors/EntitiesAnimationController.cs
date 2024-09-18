@@ -85,4 +85,6 @@ public class EntitiesAnimationController : AnimationController, IInitializeScrip
         PlayEntityAnimation(BaseEnemyLogic.EnemyAnimations.IDLE, layer, false, false, 0.2f);
     }
 
+
+
 }

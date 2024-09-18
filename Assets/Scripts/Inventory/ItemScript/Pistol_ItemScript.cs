@@ -7,13 +7,13 @@ using Random = UnityEngine.Random;
 public class Pistol_ItemScript : ItemScript
 {
     [Header("ScriptableObjects")]
-    [SerializeField] FirearmSO itemSO;
+    [SerializeField] ItemSO itemSO;
 
     private void Start()
     {
-        itemName = itemSO.name;
+        itemName = itemSO.itemName;
         itemEnum = itemSO.currentItemEnum;
-        maxAmmo = itemSO.amountofAmmo;
+        maxAmmo = itemSO.amountAmmo;
         if(ammo > maxAmmo)
         {
             maxAmmo = ammo;
@@ -25,7 +25,7 @@ public class Pistol_ItemScript : ItemScript
         if(oneTimeActivation == false)
         {
             itemName = itemSO.name;
-            maxAmmo = itemSO.amountofAmmo;
+            maxAmmo = itemSO.amountAmmo;
             oneTimeActivation = true;
             if (ammo > maxAmmo)
             {
@@ -70,44 +70,35 @@ public class Pistol_ItemScript : ItemScript
             {
                 if(inventory.GetInventory().transform.GetChild(i).transform.TryGetComponent(out item))
                 {
-                    if (item.GetItemEnum() == itemEnum)
+                    if ((int)item.GetItemEnum() == (int)itemEnum)
                     {
-                        var float_randomAmmo = Random.Range(1f, (float)ammo/2f);
+                        var float_randomAmmo = Random.Range(1f, (float)ammo / 2f);
                         var int_intRandomAmmo = Mathf.RoundToInt(float_randomAmmo);
                         ammo -= int_intRandomAmmo;
                         Debug.Log(int_intRandomAmmo);
                         item.RefillAmmo(int_intRandomAmmo);
                         Destroy(transform.gameObject);
-                        break;
-                    }
-                    else
-                    {
-                        if (i == inventory.GetInventory().transform.childCount - 1 && item.GetDisplayName() != itemName)
-                        {
-                            //Instantiate(itemSO.prefab, inventory.GetInventory().transform);
-                            //Destroy(transform.gameObject);
-                            var newItem = Instantiate(itemSO.prefab, inventory.GetInventory().transform);
-                            inventory.AddItem(newItem);
-                            if(newItem.TryGetComponent(out ItemUses itemUses))
-                            {
-                                itemUses.SetAmmo(ammo);
-                            }
-                            Destroy(transform.gameObject);
-
-                        }
-                        else
-                        {
-                            
-                        }
+                        return;
                     }
                 }  
             }
+            //Instantiate(itemSO.prefab, inventory.GetInventory().transform);
+            //Destroy(transform.gameObject);
+            Debug.Log("Found nothing");
+            var newItem = Instantiate(itemSO.inventoryPrefab, inventory.GetInventory().transform);
+            inventory.AddItem(newItem);
+            if (newItem.TryGetComponent(out ItemUses itemUses))
+            {
+                itemUses.SetAmmo(ammo);
+            }
+            Destroy(transform.gameObject);
+            return;
         }
         else
         {
             //Instantiate(itemSO.prefab, inventory.GetInventory().transform);
             //(transform.gameObject);
-            var newItem = Instantiate(itemSO.prefab, inventory.GetInventory().transform);
+            var newItem = Instantiate(itemSO.inventoryPrefab, inventory.GetInventory().transform);
             inventory.AddItem(newItem);
             if (newItem.TryGetComponent(out ItemUses itemUses))
             {

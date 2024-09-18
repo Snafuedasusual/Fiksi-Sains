@@ -7,6 +7,8 @@ public class BaseHandler : MonoBehaviour
     public GameObject player;
     [Header("Objectives")]
     [SerializeField] protected GameObject[] objectives;
+    [Header("ScriptedEvents")]
+    [SerializeField] protected GameObject[] scriptedEvents;
     [SerializeField] protected int currentObj;
 
     public virtual void Restart()

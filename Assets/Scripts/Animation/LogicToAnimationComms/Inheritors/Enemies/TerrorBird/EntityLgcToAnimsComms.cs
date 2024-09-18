@@ -18,7 +18,7 @@ public class EntityLgcToAnimsComms : LgcToComms
 
     private void EnemyMovementAnimEventReceiver(object sender, BaseEnemyLogic.EnemyMovementAnimEventArgs e)
     {
-        EnemyMovement(e.enemyAnims);
+        EnemySendMovementAnimEvent(e.enemyAnims);
     }
 
     private void OnEnable()

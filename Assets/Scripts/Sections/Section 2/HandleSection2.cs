@@ -67,6 +67,13 @@ public class HandlerSection2 : BaseHandler, IInitializeScript
                 objective.ResetObj();
             }
         }
+        for (int i = 0; i < scriptedEvents.Length; i++)
+        {
+            if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+            {
+                events.ResetTrigger();
+            }
+        }
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
         newObj.Unlocked();
         ObjectiveTextManager.instance.UpdateText(newObj.GetObjText());
@@ -84,6 +91,13 @@ public class HandlerSection2 : BaseHandler, IInitializeScript
             if (objectives[i].TryGetComponent(out IObjectiveSection objective))
             {
                 objective.ResetObj();
+            }
+        }
+        for (int i = 0; i < scriptedEvents.Length; i++)
+        {
+            if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+            {
+                events.ResetTrigger();
             }
         }
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;

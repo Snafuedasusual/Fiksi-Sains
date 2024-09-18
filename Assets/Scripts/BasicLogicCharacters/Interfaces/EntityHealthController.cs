@@ -12,9 +12,15 @@ public class EntityHealthController : MonoBehaviour, IHealthInterface
     [SerializeField] protected float health;
 
 
-    private void Start()
+    private void OnEnable()
     {
         health = baseHealth.health;
+        HealthBarToUI?.Invoke(this, new HealthBarToUIArgs { healthBarValue = health });
+    }
+
+    private void Start()
+    {
+        HealthBarToUI?.Invoke(this, new HealthBarToUIArgs { healthBarValue = health });
     }
 
 
@@ -28,6 +34,10 @@ public class EntityHealthController : MonoBehaviour, IHealthInterface
         if(health > 0)
         {
             health -= damage;
+            if(health <= 0)
+            {
+                health = 0;
+            }
         }
         //baseHealth.OnHealthChangedEvent(health);
         SendDmgToLogic?.Invoke(this, new SendDmgToLogicArgs { currentHealth = health, dmg = damage, dmgSender = dmgSender, knckBckPwr = knckBckPwr });

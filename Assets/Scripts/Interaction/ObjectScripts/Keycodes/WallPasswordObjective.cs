@@ -31,28 +31,31 @@ public class WallPasswordObjective : MonoBehaviour, IInteraction, IObjectiveSect
 
     public void OnInteract(Transform plr)
     {
-        if(isInteracting == false && IsInteractionDebounce == null)
+        if(currentLockStatus == IsLocked.Unlocked && currentStatus == IsFinished.NotDone)
         {
-            isInteracting = true;
-            IsInteractionDebounce = InteractionDebounce();
-            StartCoroutine(IsInteractionDebounce);
-            var spawnedUI = Instantiate(wallPasswordUI);
-            InteractableUIManager.instance.ActivateInteractableUI(spawnedUI);
-            GameManagers.instance.SetStateToOnUI();
+            if (isInteracting == false && IsInteractionDebounce == null)
+            {
+                isInteracting = true;
+                IsInteractionDebounce = InteractionDebounce();
+                StartCoroutine(IsInteractionDebounce);
+                var spawnedUI = Instantiate(wallPasswordUI);
+                InteractableUIManager.instance.ActivateInteractableUI(spawnedUI);
+                GameManagers.instance.SetStateToOnUI();
 
-            IUIObjectives iUI = spawnedUI.TryGetComponent(out iUI) ? iUI : null;
-            iUI.AddListener(transform.gameObject);
+                IUIObjectives iUI = spawnedUI.TryGetComponent(out iUI) ? iUI : null;
+                iUI.AddListener(transform.gameObject);
 
-            RectTransform rtUI = spawnedUI.TryGetComponent(out rtUI) ? rtUI : null;
-            rtUI.localScale = Vector3.one;
-        }
-        else if(isInteracting == true && IsInteractionDebounce == null)
-        {
-            isInteracting = false;
-            IsInteractionDebounce = InteractionDebounce();
-            StartCoroutine(IsInteractionDebounce);
-            InteractableUIManager.instance.DeactivateInteractableUI();
-            GameManagers.instance.SetStateToPlaying();
+                RectTransform rtUI = spawnedUI.TryGetComponent(out rtUI) ? rtUI : null;
+                rtUI.localScale = Vector3.one;
+            }
+            else if (isInteracting == true && IsInteractionDebounce == null)
+            {
+                isInteracting = false;
+                IsInteractionDebounce = InteractionDebounce();
+                StartCoroutine(IsInteractionDebounce);
+                InteractableUIManager.instance.DeactivateInteractableUI();
+                GameManagers.instance.SetStateToPlaying();
+            }
         }
     }
 
