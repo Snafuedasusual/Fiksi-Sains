@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,8 @@ public class WallPasswordObjective : MonoBehaviour, IInteraction, IObjectiveSect
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
 
+    public event EventHandler OnInteractActive;
+    public event EventHandler OnInteractDeactive;
 
     IEnumerator IsInteractionDebounce;
     IEnumerator InteractionDebounce()
@@ -28,6 +31,7 @@ public class WallPasswordObjective : MonoBehaviour, IInteraction, IObjectiveSect
     }
 
     private bool isInteracting = false;
+
 
     public void OnInteract(Transform plr)
     {

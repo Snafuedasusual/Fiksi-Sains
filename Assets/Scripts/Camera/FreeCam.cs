@@ -41,7 +41,7 @@ public class FreeCam : MonoBehaviour
         {
             currentSpeed = sprintSpeed;
         }
-        else if (Input.GetKey(KeyCode.LeftAlt))
+        else if (Input.GetKey(KeyCode.LeftControl))
         {
             currentSpeed = slowSpeed;
         }

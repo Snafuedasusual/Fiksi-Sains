@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,9 @@ public class LittleVent : MonoBehaviour, IInteraction
 {
     [SerializeField] Transform plrSpot;
     [SerializeField] BrainVent brainVent;
+
+    public event EventHandler OnInteractActive;
+    public event EventHandler OnInteractDeactive;
 
     public void OnInteract(Transform plr)
     {
@@ -23,6 +27,7 @@ public class LittleVent : MonoBehaviour, IInteraction
     }
 
     IEnumerator IsDebounce;
+
     IEnumerator Debounce()
     {
         var debTime = 0f;

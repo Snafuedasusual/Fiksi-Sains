@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
 public class HandlerSection3 : BaseHandler, IInitializeScript
@@ -14,6 +15,7 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
     [SerializeField] int activatedLevers;
     [SerializeField] Door_Section doorSection;
     [SerializeField] GameObject skinEater;
+    [SerializeField] NavMeshAgent seAgent;
     [SerializeField] Vector3 skinEaterPos;
 
     [Header("Script References")]
@@ -80,7 +82,7 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
         newObj.Unlocked();
         ObjectiveTextManager.instance.UpdateText(newObj.GetObjText());
-        skinEater.transform.position = skinEaterPos;
+        seAgent.Warp(skinEaterPos);
         skinEater.SetActive(false);
         AmbianceManager.instance.RequestPlay(ambianceClips);
     }
@@ -109,7 +111,7 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
         newObj.Unlocked();
         ObjectiveTextManager.instance.UpdateText(newObj.GetObjText());
-        skinEater.transform.position = skinEaterPos;
+        seAgent.Warp(skinEaterPos);
         skinEater.SetActive(false);
     }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,10 @@ public class Door_Section : MonoBehaviour, IInteraction, IObjectiveSection
     [SerializeField] TextAsset ifLockedText;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
+
+    public event EventHandler OnInteractActive;
+    public event EventHandler OnInteractDeactive;
+
     public void OnInteract(Transform plr)
     {
         if (currentLockStatus == IObjectiveSection.IsLocked.Unlocked && currentStatus == IsFinished.NotDone)

@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Hide_Spots : MonoBehaviour, IInteraction
 {
+    public event EventHandler OnInteractActive;
+    public event EventHandler OnInteractDeactive;
     public void OnInteract(Transform plr)
     {
         if(IsDebounce == null)
@@ -35,6 +38,8 @@ public class Hide_Spots : MonoBehaviour, IInteraction
     }
 
     IEnumerator IsDebounce;
+
+
     IEnumerator Debounce()
     {
         var debTime = 0f;

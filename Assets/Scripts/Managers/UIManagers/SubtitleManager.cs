@@ -115,7 +115,7 @@ public class SubtitleManager : MonoBehaviour
     IEnumerator DeleteCountdownStart()
     {
         var countTime = 0f;
-        var countRate = 2.5f;
+        var countRate = 3.5f;
         while (countTime < countRate)
         {
             countTime += Time.deltaTime;

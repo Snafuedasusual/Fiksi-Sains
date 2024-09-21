@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,6 +17,10 @@ public class PodControl : MonoBehaviour, IInteraction, IObjectiveSection
 
     private bool isInteracting = false;
     IEnumerator IsInteractionDebounce;
+
+    public event EventHandler OnInteractActive;
+    public event EventHandler OnInteractDeactive;
+
     IEnumerator InteractionDebounce()
     {
         var debTime = 0f;

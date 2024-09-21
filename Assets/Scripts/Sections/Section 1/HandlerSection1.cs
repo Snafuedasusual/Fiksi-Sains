@@ -190,7 +190,7 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
             AmbianceManager.instance.RefreshAudio();
             IsFinishLevelDebounce = FinishLevelDebounce();
             StartCoroutine(IsFinishLevelDebounce);
-            GameManagers.instance.OnLevelChange(player.transform);
+            GameManagers.instance.NextLevel();
             ObjectiveTextManager.instance.EmptyText();
         }
         

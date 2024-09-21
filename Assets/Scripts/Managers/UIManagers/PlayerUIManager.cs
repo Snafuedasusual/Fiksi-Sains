@@ -10,6 +10,8 @@ public class PlayerUIManager : MonoBehaviour
     [Header("Script References")]
     [SerializeField] PlayerToUI plrToUI;
 
+    [SerializeField] GameObject uiElement;
+
     [Header("Health Components")]
     [SerializeField] RawImage bloodEdges;
     [SerializeField] RawImage bloodOverlay;
@@ -30,7 +32,6 @@ public class PlayerUIManager : MonoBehaviour
     private float bar1ImageAlpha;
     private float bar2ImageAlpha;
     private float circleImageAlpha;
-
 
     public float GetHealthAlpha()
     {
@@ -80,6 +81,16 @@ public class PlayerUIManager : MonoBehaviour
         plrToUI.SendStaminaInfoToPlayerUI -= SendStaminaInfoToPlayerUIReceiver;
         plrToUI.SendVisibilityInfoToPlayerUI -= SendVisibilityInfoToPlayerUIReceiver;
         plrToUI.SendInteractionInfoToPlayerUI -= SendInteractionInfoToPlayerUIReceiver;
+    }
+
+    public void ActivateUI()
+    {
+        uiElement.SetActive(true);
+    }
+
+    public void DeActivateUI()
+    {
+        uiElement.SetActive(false);
     }
 
     private void OnEnable()

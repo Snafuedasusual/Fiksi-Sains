@@ -21,6 +21,13 @@ public class S1_EngConv : MonoBehaviour, IScriptedEvents
     Coroutine CheckIfDialogueFinished;
     IEnumerator CheckDialogueFinish()
     {
+        var timer = 0f;
+        var maxTimer = 0.2f;
+        while (timer < maxTimer)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
         while(SubtitleManager.instance.GetIfDialogueFinished() == false)
         {
             if (SubtitleManager.instance.GetIfDialogueFinished() == true) { break; }

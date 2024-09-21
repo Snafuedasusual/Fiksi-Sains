@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,9 @@ public class DeadScientist : MonoBehaviour, IInteraction, IObjectiveSection
     [SerializeField] string objText;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
+
+    public event EventHandler OnInteractActive;
+    public event EventHandler OnInteractDeactive;
 
     public void OnInteract(Transform plr)
     {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,10 @@ public class Levers : MonoBehaviour, IInteraction
     [SerializeField] HandlerSection3 handler;
 
     IEnumerator IsInteractDebounce;
+
+    public event EventHandler OnInteractActive;
+    public event EventHandler OnInteractDeactive;
+
     IEnumerator InteractDebounce()
     {
         var debTime = 0f;
