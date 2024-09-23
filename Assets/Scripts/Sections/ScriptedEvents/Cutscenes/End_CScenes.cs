@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,6 +15,7 @@ public class End_CScenes : MonoBehaviour, IScriptedEvents
     [SerializeField] Transform tntclPos;
     [SerializeField] Vector3 humanAngle;
     [SerializeField] Vector3 tntclAngle;
+    [SerializeField] GameObject cVC;
 
     private void Awake()
     {
@@ -52,6 +54,7 @@ public class End_CScenes : MonoBehaviour, IScriptedEvents
         if (IsCountdownToDisable != null) return;
         IsCountdownToDisable = StartCoroutine(StartCountdownToDisable());
         SetOriginalPos();
+        cVC.gameObject.SetActive(true);
         human.SetActive(true);
         tntcl.SetActive(true);
     }

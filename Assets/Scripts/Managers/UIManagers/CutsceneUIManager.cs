@@ -18,6 +18,7 @@ public class CutsceneUIManager : MonoBehaviour
         if (isCutsceneActive == true) return;
         isCutsceneActive = true;
         UI.GetComponent<RectTransform>().SetParent(uiCutsceneParent.GetComponent<RectTransform>(), false);
+        UI.GetComponent<RectTransform>().transform.position = uiCutsceneParent.GetComponent<RectTransform>().transform.position;
     }
 
     public void DeactivateCutscene()

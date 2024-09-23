@@ -72,6 +72,8 @@ public class Ending : MonoBehaviour, IObjectiveSection
             if (currentStatus == IsFinished.IsDone) return;
             PlayScriptedEvent = StartCoroutine(StartPlayScriptedEvent());
             sectionEventComms.StartScriptedEventNoArgs();
+            plrLgc.NullifyState();
+            plrLgc.HidePlayer();
         }
     }
 }

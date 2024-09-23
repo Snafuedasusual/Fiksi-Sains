@@ -115,6 +115,7 @@ public class FinalHandler : BaseHandler, IInitializeScript
                 FinishObjectivesBetween(currentObj, i);
                 pastCurrentObj.ForceDone();
                 UnlockNextObjective();
+                return;
             }
             else if (objectives[i] == gameObject && i == objectives.Length - 1 && i > currentObj)
             {
@@ -123,8 +124,9 @@ public class FinalHandler : BaseHandler, IInitializeScript
                 FinishObjectivesBetween(currentObj, i);
                 pastCurrentObj.ForceDone();
                 FinishLevel();
+                return;
             }
-            else
+            else if (objectives[i] == gameObject && i == objectives.Length - 1 && i == currentObj)
             {
                 FinishLevel();
             }
@@ -135,6 +137,7 @@ public class FinalHandler : BaseHandler, IInitializeScript
     {
         if (objectives[currentObj + 1].TryGetComponent(out IObjectiveSection objective))
         {
+            currentObj += 1;
             objective.Unlocked();
             ObjectiveTextManager.instance.UpdateText(objective.GetObjText());
         }
@@ -179,7 +182,6 @@ public class FinalHandler : BaseHandler, IInitializeScript
     {
         if (IsFinishLevelDebounce == null)
         {
-            AmbianceManager.instance.RefreshAudio();
             IsFinishLevelDebounce = FinishLevelDebounce();
             StartCoroutine(IsFinishLevelDebounce);
             GameManagers.instance.NextLevel();

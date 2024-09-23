@@ -87,6 +87,7 @@ public class InteractObjectives : MonoBehaviour, IObjectiveSection, IInitializeS
 
     public void OnDone()
     {
+        currentStatus = IsFinished.IsDone;
         sectionEventComms.OnObjectiveDone(gameObject);
         if (blockade == null) return;
         blockade.SetActive(false);

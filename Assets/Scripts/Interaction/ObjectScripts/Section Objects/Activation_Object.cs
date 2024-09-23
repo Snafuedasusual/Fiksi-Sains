@@ -17,12 +17,26 @@ public class Activation_Object : MonoBehaviour, IInteraction, IObjectiveSection
     public event EventHandler OnInteractActive;
     public event EventHandler OnInteractDeactive;
 
+    Coroutine InteractDebounce;
+    IEnumerator StartInteractDebounce()
+    {
+        var debTime = 0f;
+        var debTimeMax = 0.1f;
+        while(debTime < debTimeMax)
+        {
+            debTime += Time.deltaTime;
+            yield return null;
+        }
+        InteractDebounce = null;
+    }
     public void OnInteract(Transform plr)
     {
+        if (InteractDebounce != null) return;
         if (currentLockStatus == IObjectiveSection.IsLocked.Unlocked && currentStatus == IsFinished.NotDone)
         {
             OnDone();
             currentStatus = IsFinished.IsDone;
+            InteractDebounce = StartCoroutine(StartInteractDebounce());
         }
         else
         {

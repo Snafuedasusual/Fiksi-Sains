@@ -114,25 +114,27 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
             {
                 currentObj = i;
                 UnlockNextObjective();
-                break;
+                return;
             }
-            if (objectives[i] == gameObject && i < objectives.Length - 1 && i > currentObj)
+            else if (objectives[i] == gameObject && i < objectives.Length - 1 && i > currentObj)
             {
                 currentObj = i;
                 IObjectiveSection pastCurrentObj = objectives[currentObj].TryGetComponent(out IObjectiveSection objSelect) ? objSelect : null;
                 FinishObjectivesBetween(currentObj, i);
                 pastCurrentObj.ForceDone();
                 UnlockNextObjective();
+                return;
             }
-            if (objectives[i] == gameObject && i == objectives.Length - 1 && i > currentObj)
+            else if (objectives[i] == gameObject && i == objectives.Length - 1 && i > currentObj)
             {
                 currentObj = i;
                 IObjectiveSection pastCurrentObj = objectives[currentObj].TryGetComponent(out IObjectiveSection objSelect) ? objSelect : null;
                 FinishObjectivesBetween(currentObj, i);
                 pastCurrentObj.ForceDone();
                 FinishLevel();
+                return;
             }
-            else
+            else if (objectives[i] == gameObject && i == objectives.Length - 1 && i == currentObj)
             {
                 FinishLevel();
             }
@@ -143,6 +145,7 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
     {
         if (objectives[currentObj + 1].TryGetComponent(out IObjectiveSection objective))
         {
+            currentObj += 1;
             objective.Unlocked();
             ObjectiveTextManager.instance.UpdateText(objective.GetObjText());
         }

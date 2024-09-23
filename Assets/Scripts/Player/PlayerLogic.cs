@@ -17,6 +17,9 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
     [Header("Components")]
     [SerializeField] InventorySystem inventorySystem;
     [SerializeField] Transform mousePosition;
+    [SerializeField] private Rigidbody rb;
+    [SerializeField] CapsuleCollider bodyCollider;
+    [SerializeField] GameObject visual;
 
     [Header("Variables")]
     [SerializeField] float plrSpdBase = 5f;
@@ -25,7 +28,6 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
     [SerializeField] float plrStamina = 100f;
     [SerializeField] float centerBody = 1.1f;
     [SerializeField] Transform targetInteract;
-    [SerializeField] private Rigidbody rb;
     [SerializeField] private Transform mousPosTrans;
     [SerializeField] private ItemUses equippedItem;
 
@@ -669,6 +671,19 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         plrState = PlayerStates.Idle;
     }
 
+    public void HidePlayer()
+    {
+        bodyCollider.enabled = false;
+        visual.SetActive(false);
+        rb.useGravity = false;
+    }
+
+    public void UnHidePlayer()
+    {
+        bodyCollider.enabled = true;
+        visual.SetActive(true);
+        rb.useGravity = true;
+    }
 
     private void OnMouse1PressedReceiver(object sender, OnMouse1PressedArgs e)
     {
@@ -697,6 +712,7 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         healthController.ResetHealth();
         plrStamina = 100;
         plrState = PlayerStates.Idle;
+        UnHidePlayer();
     }
 
 

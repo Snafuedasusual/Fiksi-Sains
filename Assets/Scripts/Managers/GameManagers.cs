@@ -352,6 +352,7 @@ public class GameManagers : MonoBehaviour
 
     private void LoadScenes()
     {
+        AmbianceManager.instance.RefreshAudio();
         if (currentHandler != null) { currentHandler.player = null; }
         currentHandler = null;
         for(int i = 0; i < SceneManager.sceneCount; i++)
@@ -365,8 +366,6 @@ public class GameManagers : MonoBehaviour
         }
         sceneToLoad.Add(SceneManager.LoadSceneAsync(sectionNames[currentLevel - 1], LoadSceneMode.Additive));
         StartCoroutine(StartLoadingScene());
-        //SceneManager.LoadSceneAsync(sectionNames[currentLevel - 1], LoadSceneMode.Additive);
-        //CheckifSceneLoaded();
     }
 
     IEnumerator StartLoadingScene()
@@ -419,11 +418,15 @@ public class GameManagers : MonoBehaviour
 
     public void StartSection()
     {
-        if(currentHandler == null) { Debug.Log("Null!"); return; }
+        if (currentHandler == null) { Debug.Log("Null!"); return; }
         currentHandler.player = plr;
         currentHandler.StartLevel();
         plr.transform.GetComponent<PlayerLogic>().UnNullifyState();
         SetStateToPlaying();
+        PlayerLogic plrLgc = plr.TryGetComponent(out PlayerLogic logic) ? logic : null;
+        logic.ResetPlayer();
+        logic.UnHidePlayer();
+        logic.UnNullifyState();
     }
 
     public void NextLevel()
@@ -435,7 +438,8 @@ public class GameManagers : MonoBehaviour
         }
         else
         {
-
+            CreditsManager.instance.ActivateCredits();
+            currentLevel = 1;
         }
     }
 
@@ -447,6 +451,8 @@ public class GameManagers : MonoBehaviour
         UnpauseGame();
         PlayerLogic plrLgc = plr.TryGetComponent(out PlayerLogic logic) ? logic : null;
         logic.ResetPlayer();
+        logic.UnHidePlayer();
+        logic.UnNullifyState();
         plr.SetActive(true);
         UIManager.instance.DeactivateGameOver();
         PlayerUIManager.instance.ActivateUI();
