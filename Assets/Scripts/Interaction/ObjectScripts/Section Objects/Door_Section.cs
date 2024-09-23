@@ -9,6 +9,7 @@ public class Door_Section : MonoBehaviour, IInteraction, IObjectiveSection
     [SerializeField] SectionEventComms sectionEventComms;
 
     [SerializeField] string objText;
+    [SerializeField] string notif;
     [SerializeField] TextAsset ifLockedText;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
@@ -71,4 +72,8 @@ public class Door_Section : MonoBehaviour, IInteraction, IObjectiveSection
         currentStatus = IsFinished.IsDone;
     }
 
+    public string UpdateNotif()
+    {
+        return notif; 
+    }
 }

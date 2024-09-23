@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Hide_Spots : MonoBehaviour, IInteraction
 {
+    [SerializeField] string notif;
     public event EventHandler OnInteractActive;
     public event EventHandler OnInteractDeactive;
     public void OnInteract(Transform plr)
@@ -13,7 +14,6 @@ public class Hide_Spots : MonoBehaviour, IInteraction
         {
             IsDebounce = Debounce();
             StartCoroutine(IsDebounce);
-            Debug.Log("Hit!");
             if (plr.localScale != new Vector3(0.001f, 0.001f, 0.001f))
             {
                 plr.localScale = new Vector3(0.001f, 0.001f, 0.001f);
@@ -50,5 +50,10 @@ public class Hide_Spots : MonoBehaviour, IInteraction
             yield return 0;
         }
         IsDebounce = null;
+    }
+
+    public string UpdateNotif()
+    {
+        return notif;
     }
 }

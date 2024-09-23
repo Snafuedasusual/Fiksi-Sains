@@ -6,6 +6,8 @@ using UnityEngine;
 public class InteractSubtitleTrigger : MonoBehaviour, IInteraction
 {
     [SerializeField] TextAsset dialogue;
+    [SerializeField] string notif;
+
     public event EventHandler OnInteractActive;
     public event EventHandler OnInteractDeactive;
 
@@ -33,5 +35,10 @@ public class InteractSubtitleTrigger : MonoBehaviour, IInteraction
         if (IsInteractDebounce != null) return;
         IsInteractDebounce = StartCoroutine(StartInteractDebounce());
         SubtitleManager.instance.ActivateSubtitle(dialogue);
+    }
+
+    public string UpdateNotif()
+    {
+        return notif;
     }
 }

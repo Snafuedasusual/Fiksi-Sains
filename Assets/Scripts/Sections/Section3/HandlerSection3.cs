@@ -210,7 +210,7 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
         {
             IsFinishLevelDebounce = FinishLevelDebounce();
             StartCoroutine(IsFinishLevelDebounce);
-            GameManagers.instance.OnLevelChange(player.transform);
+            GameManagers.instance.NextLevel();
             ObjectiveTextManager.instance.EmptyText();
         }
 

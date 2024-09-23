@@ -6,7 +6,7 @@ using UnityEngine;
 public class NewBehaviour : MonoBehaviour, IInteraction
 {
     [SerializeField] TextAsset text;
-
+    [SerializeField] string notif;
     public event EventHandler OnInteractActive;
     public event EventHandler OnInteractDeactive;
 
@@ -18,5 +18,10 @@ public class NewBehaviour : MonoBehaviour, IInteraction
     public void OnInteract(Transform plr)
     {
         SubtitleManager.instance.ActivateSubtitle(text);
+    }
+
+    public string UpdateNotif()
+    {
+        return notif;
     }
 }

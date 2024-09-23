@@ -527,7 +527,7 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         PlayerInteracts();
     }
     public event EventHandler<InteractNotifArgs> InteractNotif;
-    public class InteractNotifArgs : EventArgs { public Transform target; }
+    public class InteractNotifArgs : EventArgs { public Transform target; public string notif; }
     private void PlayerInteracts()
     {
         if(GameManagers.instance.GetGameState() == GameManagers.GameState.Playing || GameManagers.instance.GetGameState() == GameManagers.GameState.OnUI)
@@ -564,15 +564,17 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         {
             if (RotaryHeart.Lib.PhysicsExtension.Physics.CapsuleCast(transform.position, highestPoint, playerWidth, transform.forward, out RaycastHit hit, playerArmLength, interactableObjs, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.None))
             {
+                var interact = hit.transform.TryGetComponent(out IInteraction interaction) ? interaction : null;
+                if (interact == null) return;
                 targetInteract = hit.transform;
-                InteractNotif?.Invoke(this, new InteractNotifArgs { target = targetInteract });
+                InteractNotif?.Invoke(this, new InteractNotifArgs { target = targetInteract, notif = interact.UpdateNotif() });
 
 
             }
             else
             {
                 targetInteract = null;
-                InteractNotif?.Invoke(this, new InteractNotifArgs { target = null });
+                InteractNotif?.Invoke(this, new InteractNotifArgs { target = null, notif = string.Empty });
             }
         } 
     }

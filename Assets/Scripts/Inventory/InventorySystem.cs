@@ -13,6 +13,7 @@ public class InventorySystem : MonoBehaviour, IInitializeScript
     [SerializeField] private GameObject inventory;
     [SerializeField] GameObject hand;
     [SerializeField] private GameObject currentItem;
+    private int amountOfItems;
 
     public void InitializeScript()
     {
@@ -20,15 +21,25 @@ public class InventorySystem : MonoBehaviour, IInitializeScript
     }
 
 
-    private void Start()
+    private void OnEnable()
     {
         InitializeScript();
+    }
+
+    private void OnDisable()
+    {
+        DeInitializeScript();
+    }
+
+    private void OnDestroy()
+    {
+        DeInitializeScript();
     }
 
 
     public void DeInitializeScript()
     {
-        throw new NotImplementedException();
+        plrToUI.EquipItemEventSenderEvent -= EquipItemEventSenderEventReceiver;
     }
 
     public GameObject GetInventory()
@@ -40,6 +51,7 @@ public class InventorySystem : MonoBehaviour, IInitializeScript
     public class OnAddItemArgs : EventArgs { public GameObject item; }
     public void AddItem(GameObject newItem)
     {
+        if (inventory.transform.childCount == amountOfItems) return;
         newItem.transform.parent = transform;
         OnAddItem?.Invoke(this, new OnAddItemArgs { item = newItem });
         newItem.SetActive(false);
@@ -53,6 +65,19 @@ public class InventorySystem : MonoBehaviour, IInitializeScript
         }
     }
 
+
+
+    Coroutine StickItemToHandle;
+    IEnumerator StartStickItemToHandle()
+    {
+        while(currentItem != null)
+        {
+            currentItem.transform.position = hand.transform.position;
+            currentItem.transform.eulerAngles = new Vector3(hand.transform.eulerAngles.x, hand.transform.eulerAngles.y, hand.transform.eulerAngles.z);
+            yield return null;
+        }
+        StickItemToHandle = null;
+    }
 
     Coroutine EquipDebounce;
     IEnumerator EquipStart()
@@ -79,15 +104,11 @@ public class InventorySystem : MonoBehaviour, IInitializeScript
         EquipItemEvent?.Invoke(this, new EquipItemEventArgs {senderObject = transform.gameObject, item = item });
         if (currentItem != null)
         {
-            currentItem.transform.parent = transform;
             currentItem.transform.position = transform.position;
             currentItem.SetActive(false);
             currentItem.transform.LookAt(transform.forward);
             currentItem = item;
             currentItem.SetActive(true);
-            currentItem.transform.parent = hand.transform;
-            currentItem.transform.position = hand.transform.position;
-            currentItem.transform.eulerAngles = new Vector3(hand.transform.eulerAngles.x, hand.transform.eulerAngles.y, hand.transform.eulerAngles.z);
             //currentItem.transform.LookAt(hand.transform.forward);
             Debug.Log("Replaced");
             return;
@@ -96,9 +117,7 @@ public class InventorySystem : MonoBehaviour, IInitializeScript
         {
             currentItem = item;
             currentItem.SetActive(true);
-            currentItem.transform.parent = hand.transform;
-            currentItem.transform.position = hand.transform.position;
-            currentItem.transform.eulerAngles = new Vector3(hand.transform.eulerAngles.x, hand.transform.eulerAngles.y, hand.transform.eulerAngles.z);
+            StickItemToHandle = StartCoroutine(StartStickItemToHandle());
             //currentItem.transform.LookAt(hand.transform.forward);
             Debug.Log("New Item");
             return;

@@ -11,6 +11,7 @@ public class ItemScript : MonoBehaviour, IInteraction
     [SerializeField] protected string itemName;
     [SerializeField] protected ItemSO.ItemList itemEnum;
     [SerializeField] protected int ammo;
+    [SerializeField] protected string notif;
     [SerializeField] protected int maxAmmo;
     [SerializeField] protected bool oneTimeActivation = false;
 
@@ -22,8 +23,13 @@ public class ItemScript : MonoBehaviour, IInteraction
         
     }
 
-    public void OnDetected(Transform plr)
+    public virtual void OnDetected(Transform plr)
     {
 
+    }
+
+    public virtual string UpdateNotif()
+    {
+        return notif;
     }
 }

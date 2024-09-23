@@ -11,4 +11,6 @@ public interface IInteraction
 
     public void OnDetected(Transform plr);
 
+    public string UpdateNotif();
+
 }

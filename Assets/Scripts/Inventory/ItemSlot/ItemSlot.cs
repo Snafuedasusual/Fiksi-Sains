@@ -35,6 +35,20 @@ public class ItemSlot : MonoBehaviour
         return itemHeld;
     }
 
+    public string GetItemName()
+    {
+        return itemName; 
+    }
+
+    public void DeleteItem()
+    {
+        itemHeld = null;
+        if(itemUI != null) Destroy(itemUI.gameObject);
+        itemUI = null;
+        itemDesc = null;
+        ammo = 0;
+    }
+
     public void OnHoveredItem()
     {
         invComms.OnHoveredItemEvent(itemName, itemDesc, itemHeld);

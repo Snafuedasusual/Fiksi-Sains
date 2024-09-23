@@ -9,6 +9,8 @@ public class Levers : MonoBehaviour, IInteraction
 
     IEnumerator IsInteractDebounce;
 
+    [SerializeField] string notif;
+
     public event EventHandler OnInteractActive;
     public event EventHandler OnInteractDeactive;
 
@@ -54,4 +56,8 @@ public class Levers : MonoBehaviour, IInteraction
         IsInteractDebounce = null;
     }
 
+    public string UpdateNotif()
+    {
+        return notif;
+    }
 }

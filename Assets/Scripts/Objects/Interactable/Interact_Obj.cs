@@ -17,4 +17,9 @@ public class Interact_Obj : MonoBehaviour, IInteraction
     {
 
     }
+
+    public string UpdateNotif()
+    {
+        return string.Empty;
+    }
 }

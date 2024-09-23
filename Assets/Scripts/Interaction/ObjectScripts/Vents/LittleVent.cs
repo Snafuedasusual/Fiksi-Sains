@@ -8,6 +8,8 @@ public class LittleVent : MonoBehaviour, IInteraction
     [SerializeField] Transform plrSpot;
     [SerializeField] BrainVent brainVent;
 
+    [SerializeField] string notif;
+
     public event EventHandler OnInteractActive;
     public event EventHandler OnInteractDeactive;
 
@@ -38,5 +40,10 @@ public class LittleVent : MonoBehaviour, IInteraction
             yield return 0;
         }
         IsDebounce = null;
+    }
+
+    public string UpdateNotif()
+    {
+        return notif;
     }
 }

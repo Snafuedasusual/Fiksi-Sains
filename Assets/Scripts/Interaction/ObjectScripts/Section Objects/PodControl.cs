@@ -8,10 +8,10 @@ public class PodControl : MonoBehaviour, IInteraction, IObjectiveSection
 {
     [SerializeField] FinalHandler handler;
     [SerializeField] SectionEventComms sectionEventComms;
-
     [SerializeField] GameObject wallCodeUI;
 
     [SerializeField] string objText;
+    [SerializeField] string notif;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
 
@@ -101,5 +101,10 @@ public class PodControl : MonoBehaviour, IInteraction, IObjectiveSection
     public void ForceDone()
     {
 
+    }
+
+    public string UpdateNotif()
+    {
+        return notif;
     }
 }

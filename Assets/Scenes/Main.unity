@@ -4643,6 +4643,10 @@ PrefabInstance:
       propertyPath: plrSprintBase
       value: 4.5
       objectReference: {fileID: 0}
+    - target: {fileID: 3380491089370483149, guid: 4a33e743db33fbf4cb0e7aeb11bcfa46, type: 3}
+      propertyPath: hand
+      value: 
+      objectReference: {fileID: 1961260148}
     - target: {fileID: 5105162774177987595, guid: 4a33e743db33fbf4cb0e7aeb11bcfa46, type: 3}
       propertyPath: m_ApplyRootMotion
       value: 0
@@ -5024,6 +5028,11 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!1 &630732575 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4292098021717779181, guid: dd46a396352ba8a45a5f8e3e621be3b6, type: 3}
+  m_PrefabInstance: {fileID: 1125824910}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &658388382
 GameObject:
   m_ObjectHideFlags: 0
@@ -5377,6 +5386,11 @@ MonoBehaviour:
   m_SelectedFaces: 
   m_SelectedEdges: []
   m_SelectedVertices: 
+--- !u!1 &721160998 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6072095944041889353, guid: dd46a396352ba8a45a5f8e3e621be3b6, type: 3}
+  m_PrefabInstance: {fileID: 1125824910}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &753487092
 Mesh:
   m_ObjectHideFlags: 0
@@ -5579,6 +5593,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1125824913}
     - target: {fileID: 724160873377138277, guid: 6278179254d32a24b99fcad97be283ca, type: 3}
+      propertyPath: healthStatus
+      value: 
+      objectReference: {fileID: 1810721110}
+    - target: {fileID: 724160873377138277, guid: 6278179254d32a24b99fcad97be283ca, type: 3}
+      propertyPath: currentItemUI
+      value: 
+      objectReference: {fileID: 721160998}
+    - target: {fileID: 724160873377138277, guid: 6278179254d32a24b99fcad97be283ca, type: 3}
       propertyPath: inventorySlots
       value: 
       objectReference: {fileID: 1125824914}
@@ -5586,6 +5608,10 @@ PrefabInstance:
       propertyPath: inventorySystem
       value: 
       objectReference: {fileID: 447578911}
+    - target: {fileID: 724160873377138277, guid: 6278179254d32a24b99fcad97be283ca, type: 3}
+      propertyPath: inventoryMenuWorld
+      value: 
+      objectReference: {fileID: 630732575}
     - target: {fileID: 2162948509764832760, guid: 6278179254d32a24b99fcad97be283ca, type: 3}
       propertyPath: textUI
       value: 
@@ -10517,6 +10543,7 @@ MonoBehaviour:
   - Section1
   - Section2
   - Section3
+  - Section4
   mainSceneName: Main
   currentHandler: {fileID: 0}
   currentState: 0
@@ -11224,6 +11251,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7437440809583336424, guid: 776f708690b6b1a49bdc0594665f6f67, type: 3}
   m_PrefabInstance: {fileID: 6756751407999198531}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1810721110 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3633901534072243113, guid: dd46a396352ba8a45a5f8e3e621be3b6, type: 3}
+  m_PrefabInstance: {fileID: 1125824910}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1811516406
 GameObject:
   m_ObjectHideFlags: 0
@@ -11430,6 +11468,11 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1 &1961260148 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7274423359759754637, guid: 4a33e743db33fbf4cb0e7aeb11bcfa46, type: 3}
+  m_PrefabInstance: {fileID: 447578910}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2026190811
 GameObject:
   m_ObjectHideFlags: 0

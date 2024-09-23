@@ -11,6 +11,7 @@ public class WallPasswordObjective : MonoBehaviour, IInteraction, IObjectiveSect
 
     [SerializeField] SectionEventComms sectionEventComms;
     [SerializeField] string objText;
+    [SerializeField] string notif;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
 
@@ -104,4 +105,8 @@ public class WallPasswordObjective : MonoBehaviour, IInteraction, IObjectiveSect
 
     }
 
+    public string UpdateNotif()
+    {
+        return notif;
+    }
 }

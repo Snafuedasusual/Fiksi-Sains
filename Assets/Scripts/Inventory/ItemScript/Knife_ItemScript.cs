@@ -6,21 +6,14 @@ using static UnityEditor.Progress;
 public class Knife_ItemScript : ItemScript
 {
     [SerializeField] ItemSO knifeSO;
-    private void Start()
-    {
-        itemName = knifeSO.itemName;
-        itemEnum = knifeSO.currentItemEnum;
-        if (ammo > maxAmmo)
-        {
-            maxAmmo = ammo;
-        }
-    }
+
 
     private void OnEnable()
     {
         if (oneTimeActivation == false)
         {
             itemName = knifeSO.name;
+            notif = knifeSO.notif;
             oneTimeActivation = true;
             if (ammo > maxAmmo)
             {

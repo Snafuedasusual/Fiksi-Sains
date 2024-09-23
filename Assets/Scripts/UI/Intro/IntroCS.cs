@@ -116,7 +116,7 @@ public class IntroCS : MonoBehaviour
     {
         Debug.Log("FinalFade");
         var timer = 0f;
-        var maxTimer0 = 4.5f;
+        var maxTimer0 = 2.5f;
         var maxTimer1 = 2f;
         if (story == storyIntro)
         {

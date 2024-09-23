@@ -10,6 +10,7 @@ public class DeadScientist : MonoBehaviour, IInteraction, IObjectiveSection
 
     [SerializeField] SectionEventComms sectionEventComms;
     [SerializeField] string objText;
+    [SerializeField] string notif;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
 
@@ -68,5 +69,10 @@ public class DeadScientist : MonoBehaviour, IInteraction, IObjectiveSection
     public void ForceDone()
     {
 
+    }
+
+    public string UpdateNotif()
+    {
+        return notif; 
     }
 }

@@ -9,7 +9,7 @@ public class Activation_Object : MonoBehaviour, IInteraction, IObjectiveSection
     [SerializeField] HandlerSection1 handler;
 
     [SerializeField] SectionEventComms sectionEventComms;
-
+    [SerializeField] string notif;
     [SerializeField] string objText;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
@@ -69,5 +69,10 @@ public class Activation_Object : MonoBehaviour, IInteraction, IObjectiveSection
     public void ForceDone()
     {
 
+    }
+
+    public string UpdateNotif()
+    {
+        return notif;
     }
 }

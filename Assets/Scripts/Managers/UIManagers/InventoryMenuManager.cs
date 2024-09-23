@@ -130,22 +130,14 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
             {
                 if (GameManagers.instance.GetGameState() == GameManagers.GameState.Playing)
                 {
-                    if (inventoryMenuWorld == null)
-                    {
-                        IsInventoryDebounce = InventoryDebounce();
-                        StartCoroutine(IsInventoryDebounce);
-                        inventoryMenuWorld = Instantiate(inventoryMenuPrefab, canvas.transform);
-                        inventoryMenuWorld.SetActive(true);
-                        ListSlots();
-                        //HealthStatusUpdate();
-                    }
-                    else if (inventoryMenuWorld != null)
+                    if (inventoryMenuWorld != null)
                     {
                         IsInventoryDebounce = InventoryDebounce();
                         StartCoroutine(IsInventoryDebounce);
                         inventoryMenuWorld.SetActive(true);
                         ListSlots();
                         HealthStatusUpdate();
+                        RefreshInventory();
                     }
                 }
                 else if(GameManagers.instance.GetGameState() == GameManagers.GameState.OnMenu && inventoryMenuWorld.activeSelf == true)
@@ -232,6 +224,48 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
         }
     }
 
+
+    private void RefreshInventory()
+    {
+        ItemUses itemUses;
+        if (inventorySystem.GetInventory().transform.childCount == 0)
+        {
+            for (int i = 0; i < inventorySlots.transform.childCount; i++)
+            {
+                var itemSlot = inventorySlots.transform.GetChild(i).TryGetComponent(out ItemSlot invSlot) ? invSlot : null;
+                if (invSlot != null) invSlot.DeleteItem();
+            }
+            if (currentItem == null)
+            {
+                if (currentItemUI.transform.childCount == 0) return;
+                for (int f = 0; f < currentItemUI.transform.childCount; f++)
+                {
+                    Destroy(currentItemUI.transform.GetChild(f).gameObject);
+                }
+            }
+            return;
+        }
+        for (int i = 0; i < inventorySlots.transform.childCount; i++)
+        {
+            if (inventorySlots.transform.GetChild(i).TryGetComponent(out ItemSlot slot) && slot.GetItemHeld() == null) return;
+            for(int j = 0; j < inventorySystem.GetInventory().transform.childCount; j++)
+            {
+                if (inventorySystem.GetInventory().transform.GetChild(j).TryGetComponent( out itemUses) && itemUses.GetDisplayName() == slot.GetItemName()) break;
+                if (j == inventorySystem.GetInventory().transform.childCount && inventorySystem.GetInventory().transform.GetChild(j).TryGetComponent(out itemUses) && itemUses.GetDisplayName() != slot.GetItemName())
+                {
+                    if(currentItem == null)
+                    {
+                        if (currentItemUI.transform.childCount == 0) return;
+                        for(int f = 0; f < currentItemUI.transform.childCount; f++)
+                        {
+                            Destroy(currentItemUI.transform.GetChild(f).gameObject);
+                        }
+                    }
+                    slot.DeleteItem();
+                }
+            }
+        }
+    }
 
     private void OnHoveredItemUIReceiver(object sender, InventoryComms.OnHoveredItemUIArgs e)
     {

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "KnifeSO", menuName = "Item/KnifeSO")]
+[CreateAssetMenu(fileName = "ItemSO", menuName = "Item/ItemSO")]
 public class ItemSO : ScriptableObject
 {
     public enum ItemList
@@ -18,4 +18,5 @@ public class ItemSO : ScriptableObject
     public string itemName;
     public string itemDescription;
     public int amountAmmo;
+    public string notif;
 }
