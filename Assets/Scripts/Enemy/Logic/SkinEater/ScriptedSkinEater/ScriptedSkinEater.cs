@@ -55,7 +55,6 @@ public class ScriptedSkinEater : BaseEnemyLogic
             coolTime = 0f;
             while(coolTime < coolRate)
             {
-                Debug.Log(coolTime);
                 coolTime += Time.deltaTime;
                 yield return null;
             }

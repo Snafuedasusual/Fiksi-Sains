@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,17 +9,34 @@ public class Activation_Object : MonoBehaviour, IInteraction, IObjectiveSection
     [SerializeField] HandlerSection1 handler;
 
     [SerializeField] SectionEventComms sectionEventComms;
-
+    [SerializeField] string notif;
     [SerializeField] string objText;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
 
+    public event EventHandler OnInteractActive;
+    public event EventHandler OnInteractDeactive;
+
+    Coroutine InteractDebounce;
+    IEnumerator StartInteractDebounce()
+    {
+        var debTime = 0f;
+        var debTimeMax = 0.1f;
+        while(debTime < debTimeMax)
+        {
+            debTime += Time.deltaTime;
+            yield return null;
+        }
+        InteractDebounce = null;
+    }
     public void OnInteract(Transform plr)
     {
+        if (InteractDebounce != null) return;
         if (currentLockStatus == IObjectiveSection.IsLocked.Unlocked && currentStatus == IsFinished.NotDone)
         {
             OnDone();
             currentStatus = IsFinished.IsDone;
+            InteractDebounce = StartCoroutine(StartInteractDebounce());
         }
         else
         {
@@ -65,5 +83,10 @@ public class Activation_Object : MonoBehaviour, IInteraction, IObjectiveSection
     public void ForceDone()
     {
 
+    }
+
+    public string UpdateNotif()
+    {
+        return notif;
     }
 }

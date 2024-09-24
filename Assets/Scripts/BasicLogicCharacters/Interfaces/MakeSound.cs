@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public interface IMakeSound
+public interface IMakeSounds
 {
     void SoundProducer(float soundAdder)
     {
@@ -12,6 +12,11 @@ public interface IMakeSound
     void SoundReceiver(Vector3 soundSrc, float soundSize)
     {
 
+
+    }
+
+    void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    {
 
     }
 }

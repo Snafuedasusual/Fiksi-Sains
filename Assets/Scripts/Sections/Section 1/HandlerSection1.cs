@@ -33,11 +33,6 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
         sectEventComms.OnObjDoneEvent -= OnObjDoneEventReceiver;
     }
 
-    private void Start()
-    {
-        InitializeScript();
-    }
-
     private void OnEnable()
     {
         InitializeScript();
@@ -53,11 +48,6 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
         DeInitializeScript();
     }
 
-    public void UnlockDoorSection()
-    {
-        
-    }
-
     public override void StartLevel()
     {
         currentObj = 0;
@@ -67,6 +57,16 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
             if (objectives[i].TryGetComponent(out IObjectiveSection objective))
             {
                 objective.ResetObj();
+            }
+        }
+        if (scriptedEvents.Length > 0)
+        {
+            for (int i = 0; i < scriptedEvents.Length; i++)
+            {
+                if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+                {
+                    events.ResetTrigger();
+                }
             }
         }
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
@@ -84,6 +84,16 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
             if (objectives[i].TryGetComponent(out IObjectiveSection objective))
             {
                 objective.ResetObj();
+            }
+        }
+        if (scriptedEvents.Length > 0)
+        {
+            for (int i = 0; i < scriptedEvents.Length; i++)
+            {
+                if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+                {
+                    events.ResetTrigger();
+                }
             }
         }
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
@@ -104,25 +114,27 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
             {
                 currentObj = i;
                 UnlockNextObjective();
-                break;
+                return;
             }
-            if (objectives[i] == gameObject && i < objectives.Length - 1 && i > currentObj)
+            else if (objectives[i] == gameObject && i < objectives.Length - 1 && i > currentObj)
             {
                 currentObj = i;
                 IObjectiveSection pastCurrentObj = objectives[currentObj].TryGetComponent(out IObjectiveSection objSelect) ? objSelect : null;
                 FinishObjectivesBetween(currentObj, i);
                 pastCurrentObj.ForceDone();
                 UnlockNextObjective();
+                return;
             }
-            if (objectives[i] == gameObject && i == objectives.Length - 1 && i > currentObj)
+            else if (objectives[i] == gameObject && i == objectives.Length - 1 && i > currentObj)
             {
                 currentObj = i;
                 IObjectiveSection pastCurrentObj = objectives[currentObj].TryGetComponent(out IObjectiveSection objSelect) ? objSelect : null;
                 FinishObjectivesBetween(currentObj, i);
                 pastCurrentObj.ForceDone();
                 FinishLevel();
+                return;
             }
-            else
+            else if (objectives[i] == gameObject && i == objectives.Length - 1 && i == currentObj)
             {
                 FinishLevel();
             }
@@ -133,6 +145,7 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
     {
         if (objectives[currentObj + 1].TryGetComponent(out IObjectiveSection objective))
         {
+            currentObj += 1;
             objective.Unlocked();
             ObjectiveTextManager.instance.UpdateText(objective.GetObjText());
         }
@@ -180,7 +193,7 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
             AmbianceManager.instance.RefreshAudio();
             IsFinishLevelDebounce = FinishLevelDebounce();
             StartCoroutine(IsFinishLevelDebounce);
-            GameManagers.instance.OnLevelChange(player.transform);
+            GameManagers.instance.NextLevel();
             ObjectiveTextManager.instance.EmptyText();
         }
         

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,9 +11,12 @@ public class WallPasswordObjective : MonoBehaviour, IInteraction, IObjectiveSect
 
     [SerializeField] SectionEventComms sectionEventComms;
     [SerializeField] string objText;
+    [SerializeField] string notif;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
 
+    public event EventHandler OnInteractActive;
+    public event EventHandler OnInteractDeactive;
 
     IEnumerator IsInteractionDebounce;
     IEnumerator InteractionDebounce()
@@ -29,30 +33,34 @@ public class WallPasswordObjective : MonoBehaviour, IInteraction, IObjectiveSect
 
     private bool isInteracting = false;
 
+
     public void OnInteract(Transform plr)
     {
-        if(isInteracting == false && IsInteractionDebounce == null)
+        if(currentLockStatus == IsLocked.Unlocked && currentStatus == IsFinished.NotDone)
         {
-            isInteracting = true;
-            IsInteractionDebounce = InteractionDebounce();
-            StartCoroutine(IsInteractionDebounce);
-            var spawnedUI = Instantiate(wallPasswordUI);
-            InteractableUIManager.instance.ActivateInteractableUI(spawnedUI);
-            GameManagers.instance.SetStateToOnUI();
+            if (isInteracting == false && IsInteractionDebounce == null)
+            {
+                isInteracting = true;
+                IsInteractionDebounce = InteractionDebounce();
+                StartCoroutine(IsInteractionDebounce);
+                var spawnedUI = Instantiate(wallPasswordUI);
+                InteractableUIManager.instance.ActivateInteractableUI(spawnedUI);
+                GameManagers.instance.SetStateToOnUI();
 
-            IUIObjectives iUI = spawnedUI.TryGetComponent(out iUI) ? iUI : null;
-            iUI.AddListener(transform.gameObject);
+                IUIObjectives iUI = spawnedUI.TryGetComponent(out iUI) ? iUI : null;
+                iUI.AddListener(transform.gameObject);
 
-            RectTransform rtUI = spawnedUI.TryGetComponent(out rtUI) ? rtUI : null;
-            rtUI.localScale = Vector3.one;
-        }
-        else if(isInteracting == true && IsInteractionDebounce == null)
-        {
-            isInteracting = false;
-            IsInteractionDebounce = InteractionDebounce();
-            StartCoroutine(IsInteractionDebounce);
-            InteractableUIManager.instance.DeactivateInteractableUI();
-            GameManagers.instance.SetStateToPlaying();
+                RectTransform rtUI = spawnedUI.TryGetComponent(out rtUI) ? rtUI : null;
+                rtUI.localScale = Vector3.one;
+            }
+            else if (isInteracting == true && IsInteractionDebounce == null)
+            {
+                isInteracting = false;
+                IsInteractionDebounce = InteractionDebounce();
+                StartCoroutine(IsInteractionDebounce);
+                InteractableUIManager.instance.DeactivateInteractableUI();
+                GameManagers.instance.SetStateToPlaying();
+            }
         }
     }
 
@@ -97,4 +105,8 @@ public class WallPasswordObjective : MonoBehaviour, IInteraction, IObjectiveSect
 
     }
 
+    public string UpdateNotif()
+    {
+        return notif;
+    }
 }

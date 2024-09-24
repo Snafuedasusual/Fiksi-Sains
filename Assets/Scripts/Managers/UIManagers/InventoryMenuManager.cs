@@ -5,6 +5,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllMenus
 {
@@ -25,11 +26,17 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
     [SerializeField] GameObject inventorySlots;
     [SerializeField] TextMeshProUGUI itemName;
     [SerializeField] TextMeshProUGUI itemDesc;
+    [SerializeField] Image healthStatus;
     [SerializeField] GameObject currentDraggingItem;
     [SerializeField] GameObject hoveredItem;
+    [SerializeField] private GameObject currentItemUI;
+    [SerializeField] private GameObject currentItem;
+
 
     [Header("Variables")]
     [SerializeField] List<GameObject> listOfItems = new List<GameObject>();
+    private float maxHealthStat = 150f;
+
 
     private void Awake()
     {
@@ -58,11 +65,6 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
         invComms.OnHoveredItemUI += OnHoveredItemUIReceiver;
         UIinp.OnEInputEventSender += OnEInputEventSenderReceiver;
         invComms.OnExitItemUI += OnExitItemUIReceiver;
-    }
-
-    private void Start()
-    {
-        InitializeScript();
     }
 
     private void OnEnable()
@@ -128,20 +130,14 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
             {
                 if (GameManagers.instance.GetGameState() == GameManagers.GameState.Playing)
                 {
-                    if (inventoryMenuWorld == null)
-                    {
-                        IsInventoryDebounce = InventoryDebounce();
-                        StartCoroutine(IsInventoryDebounce);
-                        inventoryMenuWorld = Instantiate(inventoryMenuPrefab, canvas.transform);
-                        inventoryMenuWorld.SetActive(true);
-                        ListSlots();
-                    }
-                    else if (inventoryMenuWorld != null)
+                    if (inventoryMenuWorld != null)
                     {
                         IsInventoryDebounce = InventoryDebounce();
                         StartCoroutine(IsInventoryDebounce);
                         inventoryMenuWorld.SetActive(true);
                         ListSlots();
+                        HealthStatusUpdate();
+                        RefreshInventory();
                     }
                 }
                 else if(GameManagers.instance.GetGameState() == GameManagers.GameState.OnMenu && inventoryMenuWorld.activeSelf == true)
@@ -188,6 +184,7 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
         {
 
         }
+        IsAddItemDebounce = null;
     }
     private void OnAddItemReceiver(object sender, InventorySystem.OnAddItemArgs e)
     {
@@ -228,10 +225,58 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
     }
 
 
+    private void RefreshInventory()
+    {
+        ItemUses itemUses;
+        if (inventorySystem.GetInventory().transform.childCount == 0)
+        {
+            for (int i = 0; i < inventorySlots.transform.childCount; i++)
+            {
+                var itemSlot = inventorySlots.transform.GetChild(i).TryGetComponent(out ItemSlot invSlot) ? invSlot : null;
+                if (invSlot != null) invSlot.DeleteItem();
+            }
+            if (currentItem == null)
+            {
+                if (currentItemUI.transform.childCount == 0) return;
+                for (int f = 0; f < currentItemUI.transform.childCount; f++)
+                {
+                    Destroy(currentItemUI.transform.GetChild(f).gameObject);
+                }
+            }
+            return;
+        }
+        for (int i = 0; i < inventorySlots.transform.childCount; i++)
+        {
+            if (inventorySlots.transform.GetChild(i).TryGetComponent(out ItemSlot slot) && slot.GetItemHeld() == null) return;
+            for(int j = 0; j < inventorySystem.GetInventory().transform.childCount; j++)
+            {
+                if (inventorySystem.GetInventory().transform.GetChild(j).TryGetComponent( out itemUses) && itemUses.GetDisplayName() == slot.GetItemName()) break;
+                if (j == inventorySystem.GetInventory().transform.childCount && inventorySystem.GetInventory().transform.GetChild(j).TryGetComponent(out itemUses) && itemUses.GetDisplayName() != slot.GetItemName())
+                {
+                    if(currentItem == null)
+                    {
+                        if (currentItemUI.transform.childCount == 0) return;
+                        for(int f = 0; f < currentItemUI.transform.childCount; f++)
+                        {
+                            Destroy(currentItemUI.transform.GetChild(f).gameObject);
+                        }
+                    }
+                    slot.DeleteItem();
+                }
+            }
+        }
+    }
+
     private void OnHoveredItemUIReceiver(object sender, InventoryComms.OnHoveredItemUIArgs e)
     {
         ChangeHoveredItem(e.item);
         ChangeText(e.itemName, e.itemDesc);
+    }
+
+
+    private void OnExitItemUIReceiver(object sender, EventArgs e)
+    {
+        hoveredItem = null;
     }
 
     private void ChangeText(string name, string desc)
@@ -242,8 +287,8 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
 
     private void DeleteText()
     {
-        itemName.text = " ";
-        itemDesc.text = " ";
+        itemName.text = string.Empty;
+        itemDesc.text = string.Empty;
     }
 
     private void ChangeHoveredItem(GameObject item)
@@ -266,11 +311,28 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
         if (hoveredItem != null)
         {
             EquipItemEvent?.Invoke(this, new EquipItemEventArgs { item = hoveredItem });
+            var itemUsesScr = hoveredItem.TryGetComponent(out ItemUses itemUses) ? itemUses : null;
+            var itemUI = Instantiate(itemUsesScr.GetItemUI(), currentItemUI.transform);
+            itemUI.GetComponent<RectTransform>().position = currentItemUI.GetComponent<RectTransform>().position;
+            var itemUIScr = itemUI.TryGetComponent(out ItemIcon itemIcon) ? itemIcon : null;
+            itemUIScr.SetUnInteractable();
         }
     }
 
-    private void OnExitItemUIReceiver(object sender, EventArgs e)
+
+
+    private void HealthStatusUpdate()
     {
-        hoveredItem = null;
+        var healthAlpha = PlayerUIManager.instance.GetHealthAlpha();
+        if(healthAlpha == 0)
+        {
+            healthStatus.color = new Color(healthStatus.color.r, healthStatus.color.g, healthStatus.color.b, healthAlpha);
+        }
+        else
+        {
+            var calculateAlpha = (healthAlpha / 100) * 150;
+            var calculateRelativeToMaxAlpha = calculateAlpha / 225;
+            healthStatus.color = new Color(healthStatus.color.r, healthStatus.color.g, healthStatus.color.b, calculateRelativeToMaxAlpha);
+        }
     }
 }

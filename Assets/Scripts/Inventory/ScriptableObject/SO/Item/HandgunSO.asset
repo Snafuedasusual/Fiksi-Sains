@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19271a5b993f158498caf9b8019e8257, type: 3}
+  m_Name: HandgunSO
+  m_EditorClassIdentifier: 
+  currentItemEnum: 1
+  inventoryPrefab: {fileID: 4347763280489565788, guid: 50dc31fadb861f14785b88c094aa2f4b, type: 3}
+  uiIcon: {fileID: 2490875092970801987, guid: 258a6a103cde6b0408b320983761a796, type: 3}
+  itemName: 9mm Pistol
+  itemDescription: Standard issue nine millimeter caliber handgun.
+  amountAmmo: 12
+  notif: Grab pistol

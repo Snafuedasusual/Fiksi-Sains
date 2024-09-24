@@ -15,12 +15,10 @@ public class PlrLgcToAnimsComms : LgcToComms, IInitializeScript
     public void InitializeScript()
     {
         plrLogic.PlayThisMovementAnim += PlayThisMovementAnimReceiver;
+        plrLogic.PlayThisAttackAnim += PlayThisAttackAnimReceiver;
     }
 
-    private void Start()
-    {
-        InitializeScript();
-    }
+
     private void OnEnable()
     {
         InitializeScript();
@@ -37,6 +35,13 @@ public class PlrLgcToAnimsComms : LgcToComms, IInitializeScript
     private void PlayThisMovementAnimReceiver(object sender, PlayerLogic.PlayThisMovementAnimArgs e)
     {
         //Debug.Log($"{e.xAxis}, {e.yAxis}");
-        PlayerSendMovementAnimEvent(new PlayerSendMovementAnimEventArgs { playThisAnim = e.playThisAnim, xAxis = e.xAxis, yAxis = e.yAxis });
+        PlayerSendMovementAnimEvent(new PlayerSendMovementAnimEventArgs { playThisAnim = e.playThisAnim, xAxis = e.xAxis, yAxis = e.yAxis, controller = e.controller });
     }
+
+    private void PlayThisAttackAnimReceiver(object sender, PlayerLogic.PlayThisAttackAnimArgs e)
+    {
+        PlayerSendAttackAnimEvent(new PlayerAttackAnimEventArgs { controllerOverride = e.controller, playThisAnim = e.anim});
+    }
+
+
 }

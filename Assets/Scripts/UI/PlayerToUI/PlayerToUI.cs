@@ -70,7 +70,7 @@ public class PlayerToUI : MonoBehaviour, IInitializeScript
     public class SendVisibiltiyInfoToPlayerUIArgs : EventArgs { public float plrVis; }
 
     public event EventHandler<SendInteractionInfoToPlayerUIArgs> SendInteractionInfoToPlayerUI;
-    public class SendInteractionInfoToPlayerUIArgs : EventArgs { public Transform target; }
+    public class SendInteractionInfoToPlayerUIArgs : EventArgs { public Transform target; public string notif; }
     
     public event EventHandler OpenInventoryScreen;
 
@@ -92,7 +92,7 @@ public class PlayerToUI : MonoBehaviour, IInitializeScript
 
     private void InteractNotifReceiver(object sender, PlayerLogic.InteractNotifArgs e)
     {
-        SendInteractionInfoToPlayerUI?.Invoke(this, new SendInteractionInfoToPlayerUIArgs { target = e.target });
+        SendInteractionInfoToPlayerUI?.Invoke(this, new SendInteractionInfoToPlayerUIArgs { target = e.target, notif = e.notif });
     }
 
     private void OnOpenInventoryReceiver(object sender, EventArgs e)
@@ -102,7 +102,7 @@ public class PlayerToUI : MonoBehaviour, IInitializeScript
 
     //Receive UI Events
     public event EventHandler<EquipItemEventSenderEventArgs> EquipItemEventSenderEvent;
-    public class EquipItemEventSenderEventArgs : EventArgs { public GameObject item; }
+    public class EquipItemEventSenderEventArgs : EventArgs { public GameObject item; public string notif; }
     private void EquipItemEventReceiver(object sender, InventoryMenuManager.EquipItemEventArgs e)
     {
         EquipItemEventSenderEvent?.Invoke(this, new EquipItemEventSenderEventArgs { item = e.item });

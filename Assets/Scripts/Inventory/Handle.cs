@@ -18,7 +18,7 @@ public class Handle : MonoBehaviour, IInitializeScript
 
     public void InitializeScript()
     {
-        invSys.EquipItemEvent += EquipItemEventReceiver;
+        //invSys.EquipItemEvent += EquipItemEventReceiver;
     }
 
     public void Start()

@@ -14,8 +14,8 @@ public class ItemUses : MonoBehaviour
     [SerializeField] protected float knockBackPwr;
     [SerializeField] protected float damage;
     [SerializeField] protected float range;
-    [SerializeField] protected float ammo;
-    [SerializeField] protected float maxAmmo;
+    [SerializeField] protected int ammo;
+    [SerializeField] protected int maxAmmo;
     [SerializeField] protected string itemDesc;
     [SerializeField] protected GameObject itemUI;
     [SerializeField] protected bool oneTimeActivation = false;
@@ -23,6 +23,9 @@ public class ItemUses : MonoBehaviour
     [Header("LayerMasks")]
     [SerializeField] protected LayerMask placesToDrop;
     [SerializeField] protected LayerMask characters;
+
+    [SerializeField] protected RuntimeAnimatorController controller;
+    public virtual RuntimeAnimatorController GetController() { return controller; }
 
 
     public virtual string GetDisplayName() { return itemName; }

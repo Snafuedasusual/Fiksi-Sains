@@ -91,6 +91,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         IDLE,
         WALK,
         RUN,
+        ATTACK,
         NONE,
     }
 
@@ -127,6 +128,18 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
     {
         InitializeEnemy();
         InitializeScript();
+    }
+
+    private void OnEnable()
+    {
+        InitializeEnemy();
+        InitializeScript();
+        DelayAudioPlay = null;
+        IsLookingAroundSearching = null;
+        lastCharToHitMe = null;
+        IsSearchingAlert = null;
+        IsSuspicious = null;
+        IsSuspiciousLooking = null;
     }
 
     private void CalculateCenterBody()
@@ -403,7 +416,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
 
     // Handles Attacking target state and events related.
     public event EventHandler<OnAttackEventArgs> OnAttackEvent;
-    public class OnAttackEventArgs : EventArgs { public Transform target; }
+    public class OnAttackEventArgs : EventArgs { public Transform sender; public Transform target; }
     public virtual void Attack()
     {
         
@@ -414,13 +427,9 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         }
         else if (target != null && distance < minDistToAttack)
         {
-            var direction = target.position - transform.position;
-            var isObstructed = RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position + Vector3.up * centerBody, direction, minDistToAttack, obstacles);
-            if (!isObstructed)
-            {
-                transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z));
-                OnAttackEvent?.Invoke(this, new OnAttackEventArgs { target = target });
-            }
+            StopMove();
+            transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z));
+            OnAttackEvent?.Invoke(this, new OnAttackEventArgs { sender = transform, target = target });
         }
         else
         {
@@ -429,6 +438,11 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
     }
     //Attacking script ends---------------------------------------
 
+    //public event EventHandler 
+    public void PlayAttackAnim()
+    {
+
+    }
 
 
 
@@ -860,6 +874,8 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
     }
     //Getting last seen position script ends---------------------
 
+
+    //Reset enemy when Level restarts
     public void ResetEnemy()
     {
         if(defaultState == EnemyStates.FR_Patrol)
@@ -888,6 +904,8 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         }
         baseEnemyAlertBar.ResetEnemyAlertBar();
     }
+    //Reset enemy ends---------------------------------
+
 
 
     public event EventHandler<SendEventToAlertBarScrArgs> SendEventToAlertBarScr;
@@ -998,11 +1016,33 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
     }
 
 
+    public event EventHandler PlayIdleAudioOnUpdateEvent;
+    Coroutine DelayAudioPlay;
+    IEnumerator StartDelayAudio(int randomSeconds)
+    {
+        var timeCount = 0f;
+        var timeRate = (float)randomSeconds;
+        while(timeCount < timeRate)
+        {
+            timeCount += Time.deltaTime;
+            yield return null;
+        }
+        Debug.Log("Play Sound");
+        DelayAudioPlay = null;
+        PlayIdleAudioOnUpdateEvent?.Invoke(this, EventArgs.Empty);
+    }
+    private void PlayAudioOnUpdate()
+    {
+        if (DelayAudioPlay != null) return;
+        DelayAudioPlay = StartCoroutine(StartDelayAudio(Random.Range(10, 15)));
+    }
+
 
     private void Update()
     {
         StateController();
         CalculateCenterBody();
+        PlayAudioOnUpdate();
         //EnemyAnimEvent?.Invoke(this, new EnemyAnimEventArgs { currentState = currentState, currentMoveState = currentMoveState });
     }
 
@@ -1023,16 +1063,12 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
 
     private void OnDisable()
     {
-        baseSight.SendTarget -= SendTargetReceiver;
-        baseEnemyAlertBar.AlertBarIsEmpty -= AlertBarIsEmptyReceiver;
-        baseEnemySoundController.SoundToLogic -= SoundToLogicReceiver;
+        DeInitializeScript();
     }
 
     private void OnDestroy()
     {
-        baseSight.SendTarget -= SendTargetReceiver;
-        baseEnemyAlertBar.AlertBarIsEmpty -= AlertBarIsEmptyReceiver;
-        baseEnemySoundController.SoundToLogic -= SoundToLogicReceiver;
+        DeInitializeScript();
     }
 
 

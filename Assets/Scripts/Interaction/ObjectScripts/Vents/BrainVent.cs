@@ -11,15 +11,19 @@ public class BrainVent : MonoBehaviour
     [SerializeField] Transform plr;
     [SerializeField] PlayerLogic plrLogic;
     [SerializeField] int currentIndex;
+    [SerializeField] Vector2 vect2;
 
+    private PlayerInput playerInput;
     public void InitializeVent(Transform vent, Transform plr)
     {
         if(plrLogic != null)
         {
             plrLogic.plrState = PlayerLogic.PlayerStates.Idle;
+            plrLogic.UnHidePlayer();
+            plr.transform.position += transform.up + Vector3.up * 0.25f;
+            if (Physics.Raycast(plr.transform.position, -Vector3.up, out RaycastHit hit)) plr.transform.position = hit.point;
             plrLogic = null;
             currentIndex = 0;
-            plr.localScale = new Vector3(1f, 1f, 1f);
             this.plr = null;
             
         }
@@ -31,9 +35,10 @@ public class BrainVent : MonoBehaviour
                 {
                     currentIndex = i;
                     plrLogic = plr.GetComponent<PlayerLogic>();
+                    playerInput = plr.GetComponent<PlayerInput>();
                     this.plr = plr;
-                    plr.localScale = new Vector3(0.005f, 0.005f, 0.005f);
-                    plrLogic.plrState = PlayerStates.InteractingHold;
+                    plrLogic.HidePlayer();
+                    plrLogic.plrState = PlayerStates.InVent;
                     StartCoroutine(CheckInputs());
                 }
             }
@@ -60,8 +65,10 @@ public class BrainVent : MonoBehaviour
     bool vent_dbounce = false;
     private void ChangeVents()
     {
-        Debug.Log(plrLogic.GetPlayerMovement());
-        if(plrLogic.GetPlayerMovement().x > 0)
+        vect2 = playerInput.GetInputDir();
+        //Debug.Log(vent_dbounce);
+        //Debug.Log(plrLogic.GetPlayerMovement());
+        if (playerInput.GetInputDir().x > 0)
         {
             if (vent_dbounce == false)
             {
@@ -74,16 +81,18 @@ public class BrainVent : MonoBehaviour
                 {
                     currentIndex = 0;
                 }
+
                 plr.position = ventSpots[currentIndex].position;
                 plr.LookAt(new Vector3(vents[currentIndex].position.x, plr.position.y, vents[currentIndex].position.z));
             }
-            if(vent_dbounce == true)
+            else if(vent_dbounce == true)
             {
                 vent_dbounce = true;
             }
         }
         else if(plrLogic.GetPlayerMovement().x < 0)
         {
+            Debug.Log("Play!");
             if (vent_dbounce == false)
             {
                 vent_dbounce = true;
@@ -95,10 +104,11 @@ public class BrainVent : MonoBehaviour
                 {
                     currentIndex = ventSpots.Length - 1;
                 }
+                
                 plr.position = ventSpots[currentIndex].position;
                 plr.LookAt(new Vector3(vents[currentIndex].position.x, plr.position.y, vents[currentIndex].position.z));
             }
-            if (vent_dbounce == true)
+            else if (vent_dbounce == true)
             {
                 vent_dbounce = true;
             }

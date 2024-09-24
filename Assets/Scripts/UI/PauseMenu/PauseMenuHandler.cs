@@ -13,7 +13,7 @@ public class PauseMenuHandler : MonoBehaviour,IInitializeScript
     public void InitializeScript()
     {
         resume.onClick.AddListener(delegate { GameManagers.instance.EscInputReceiver(); });
-        restart.onClick.AddListener(delegate { GameManagers.instance.OnPlayerDeathRestart(); });
+        restart.onClick.AddListener(delegate { GameManagers.instance.RestartSection(); });
         restart.onClick.AddListener(delegate { this.DestroyPauseMenu(); });
         quit.onClick.AddListener(delegate { GameManagers.instance.QuitGame(); });
     }
@@ -21,7 +21,7 @@ public class PauseMenuHandler : MonoBehaviour,IInitializeScript
     public void DeInitializeScript() 
     {
         resume.onClick.RemoveListener(delegate { GameManagers.instance.EscInputReceiver(); });
-        restart.onClick.RemoveListener(delegate {GameManagers.instance.OnPlayerDeathRestart(); });
+        restart.onClick.RemoveListener(delegate {GameManagers.instance.RestartSection(); });
         restart.onClick.RemoveListener(delegate { this.DestroyPauseMenu(); });
         quit.onClick.RemoveListener(delegate { GameManagers.instance.QuitGame(); });
     }

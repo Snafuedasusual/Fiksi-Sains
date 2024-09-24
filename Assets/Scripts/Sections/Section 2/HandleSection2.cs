@@ -25,11 +25,11 @@ public class HandlerSection2 : BaseHandler, IInitializeScript
     private void Start()
     {
         deadScientist.localPosition = deadScientistLocation[Random.Range(0, deadScientistLocation.Length - 1)];
-        InitializeScript();
     }
 
     private void OnEnable()
     {
+        deadScientist.localPosition = deadScientistLocation[Random.Range(0, deadScientistLocation.Length - 1)];
         InitializeScript();
     }
 
@@ -67,6 +67,16 @@ public class HandlerSection2 : BaseHandler, IInitializeScript
                 objective.ResetObj();
             }
         }
+        if(scriptedEvents.Length > 0)
+        {
+            for (int i = 0; i < scriptedEvents.Length; i++)
+            {
+                if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+                {
+                    events.ResetTrigger();
+                }
+            }
+        }
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
         newObj.Unlocked();
         ObjectiveTextManager.instance.UpdateText(newObj.GetObjText());
@@ -84,6 +94,16 @@ public class HandlerSection2 : BaseHandler, IInitializeScript
             if (objectives[i].TryGetComponent(out IObjectiveSection objective))
             {
                 objective.ResetObj();
+            }
+        }
+        if (scriptedEvents.Length > 0)
+        {
+            for (int i = 0; i < scriptedEvents.Length; i++)
+            {
+                if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+                {
+                    events.ResetTrigger();
+                }
             }
         }
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
@@ -119,23 +139,25 @@ public class HandlerSection2 : BaseHandler, IInitializeScript
                 UnlockNextObjective();
                 break;
             }
-            if (objectives[i] == gameObject && i < objectives.Length - 1 && i > currentObj)
+            else if (objectives[i] == gameObject && i < objectives.Length - 1 && i > currentObj)
             {
                 currentObj = i;
                 IObjectiveSection pastCurrentObj = objectives[currentObj].TryGetComponent(out IObjectiveSection objSelect) ? objSelect : null;
                 FinishObjectivesBetween(currentObj, i);
                 pastCurrentObj.ForceDone();
                 UnlockNextObjective();
+                return;
             }
-            if (objectives[i] == gameObject && i == objectives.Length - 1 && i > currentObj)
+            else if (objectives[i] == gameObject && i == objectives.Length - 1 && i > currentObj)
             {
                 currentObj = i;
                 IObjectiveSection pastCurrentObj = objectives[currentObj].TryGetComponent(out IObjectiveSection objSelect) ? objSelect : null;
                 FinishObjectivesBetween(currentObj, i);
                 pastCurrentObj.ForceDone();
                 FinishLevel();
+                return;
             }
-            else
+            else if(objectives[i] == gameObject && i == objectives.Length - 1 && i == currentObj)
             {
                 FinishLevel();
             }
@@ -146,6 +168,7 @@ public class HandlerSection2 : BaseHandler, IInitializeScript
     {
         if (objectives[currentObj + 1].TryGetComponent(out IObjectiveSection objective))
         {
+            currentObj += 1;
             objective.Unlocked();
             ObjectiveTextManager.instance.UpdateText(objective.GetObjText());
         }
@@ -193,7 +216,7 @@ public class HandlerSection2 : BaseHandler, IInitializeScript
             AmbianceManager.instance.RefreshAudio();
             IsFinishLevelDebounce = FinishLevelDebounce();
             StartCoroutine(IsFinishLevelDebounce);
-            GameManagers.instance.OnLevelChange(player.transform);
+            GameManagers.instance.NextLevel();
             ObjectiveTextManager.instance.EmptyText();
         }
 

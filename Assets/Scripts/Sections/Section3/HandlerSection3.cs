@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
 public class HandlerSection3 : BaseHandler, IInitializeScript
@@ -14,6 +15,7 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
     [SerializeField] int activatedLevers;
     [SerializeField] Door_Section doorSection;
     [SerializeField] GameObject skinEater;
+    [SerializeField] NavMeshAgent seAgent;
     [SerializeField] Vector3 skinEaterPos;
 
     [Header("Script References")]
@@ -37,10 +39,7 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
         sectionEventComms.OnObjDoneEvent -= OnObjDoneEventReceiver;
     }
 
-    private void Start()
-    {
-        InitializeScript();
-    }
+
     private void OnEnable()
     {
         InitializeScript();
@@ -70,10 +69,20 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
                 objective.ResetObj();
             }
         }
+        if (scriptedEvents.Length > 0)
+        {
+            for (int i = 0; i < scriptedEvents.Length; i++)
+            {
+                if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+                {
+                    events.ResetTrigger();
+                }
+            }
+        }
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
         newObj.Unlocked();
         ObjectiveTextManager.instance.UpdateText(newObj.GetObjText());
-        skinEater.transform.position = skinEaterPos;
+        seAgent.Warp(skinEaterPos);
         skinEater.SetActive(false);
         AmbianceManager.instance.RequestPlay(ambianceClips);
     }
@@ -89,10 +98,20 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
                 objective.ResetObj();
             }
         }
+        if (scriptedEvents.Length > 0)
+        {
+            for (int i = 0; i < scriptedEvents.Length; i++)
+            {
+                if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+                {
+                    events.ResetTrigger();
+                }
+            }
+        }
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
         newObj.Unlocked();
         ObjectiveTextManager.instance.UpdateText(newObj.GetObjText());
-        skinEater.transform.position = skinEaterPos;
+        seAgent.Warp(skinEaterPos);
         skinEater.SetActive(false);
     }
 
@@ -116,25 +135,27 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
             {
                 currentObj = i;
                 UnlockNextObjective();
-                break;
+                return;
             }
-            if (objectives[i] == gameObject && i < objectives.Length - 1 && i > currentObj)
+            else if (objectives[i] == gameObject && i < objectives.Length - 1 && i > currentObj)
             {
                 currentObj = i;
                 IObjectiveSection pastCurrentObj = objectives[currentObj].TryGetComponent(out IObjectiveSection objSelect) ? objSelect : null;
                 FinishObjectivesBetween(currentObj, i);
                 pastCurrentObj.ForceDone();
                 UnlockNextObjective();
+                return;
             }
-            if (objectives[i] == gameObject && i == objectives.Length - 1 && i > currentObj)
+            else if (objectives[i] == gameObject && i == objectives.Length - 1 && i > currentObj)
             {
                 currentObj = i;
                 IObjectiveSection pastCurrentObj = objectives[currentObj].TryGetComponent(out IObjectiveSection objSelect) ? objSelect : null;
                 FinishObjectivesBetween(currentObj, i);
                 pastCurrentObj.ForceDone();
                 FinishLevel();
+                return;
             }
-            else
+            else if (objectives[i] == gameObject && i == objectives.Length - 1 && i == currentObj)
             {
                 FinishLevel();
             }
@@ -145,6 +166,7 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
     {
         if (objectives[currentObj + 1].TryGetComponent(out IObjectiveSection objective))
         {
+            currentObj += 1;
             objective.Unlocked();
             ObjectiveTextManager.instance.UpdateText(objective.GetObjText());
         }
@@ -191,7 +213,7 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
         {
             IsFinishLevelDebounce = FinishLevelDebounce();
             StartCoroutine(IsFinishLevelDebounce);
-            GameManagers.instance.OnLevelChange(player.transform);
+            GameManagers.instance.NextLevel();
             ObjectiveTextManager.instance.EmptyText();
         }
 

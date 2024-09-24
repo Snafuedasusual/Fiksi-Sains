@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManagers : MonoBehaviour
 {
@@ -13,12 +14,19 @@ public class GameManagers : MonoBehaviour
     [SerializeField] GameObject plr;
     [SerializeField] private bool isPaused = false;
 
+    [SerializeField] private string[] sectionNames;
+    [SerializeField] private string mainSceneName;
+    [SerializeField] private BaseHandler currentHandler;
+    private List<AsyncOperation> sceneToLoad = new List<AsyncOperation>();
+
     public enum GameState
     {
+        MainMenu,
         Playing,
         Dead,
         OnMenu,
         OnUI,
+        FreeCam,
     }
 
     [Header("Game States")]
@@ -76,6 +84,7 @@ public class GameManagers : MonoBehaviour
         PauseGame();
         SetStateToDead();
         UIManager.instance.ActivateGameOver();
+        PlayerUIManager.instance.DeActivateUI();
     }
 
 
@@ -156,7 +165,7 @@ public class GameManagers : MonoBehaviour
     }
     public void EscInputReceiver()
     {
-        if(currentState == GameState.Dead)
+        if(currentState == GameState.Dead || currentState == GameState.MainMenu)
         {
 
         }
@@ -169,13 +178,13 @@ public class GameManagers : MonoBehaviour
                 StartCoroutine(IsEscDebounce);
                 PauseMenuManager.instance.PauseMenuController();
             }
-            else if(currentState == GameState.OnMenu && IsEscDebounce == null)
+            else if (currentState == GameState.OnMenu && IsEscDebounce == null)
             {
                 IsEscDebounce = EscDebounce();
                 StartCoroutine(IsEscDebounce);
                 UIManager.instance.CloseAllMenus();
             }
-            else if(currentState == GameState.OnUI && IsEscDebounce == null)
+            else if (currentState == GameState.OnUI && IsEscDebounce == null)
             {
                 IsEscDebounce = EscDebounce();
                 StartCoroutine(IsEscDebounce);
@@ -214,6 +223,11 @@ public class GameManagers : MonoBehaviour
     public void SetStateToOnUI()
     {
         currentState = GameState.OnUI;
+    }
+
+    public void SetStateToMainMenu()
+    {
+        currentState = GameState.MainMenu;
     }
 
 
@@ -319,11 +333,128 @@ public class GameManagers : MonoBehaviour
     private void Start()
     {
         instance = this;
-        isPaused = false;
+        UnpauseGame();
         plr = GameObject.FindGameObjectWithTag("Player");
         Screen.SetResolution(640, 360, true);
-        handlers[currentLevel - 1].player = plr;
-        StartCoroutine(IsStartingLevel(plr.transform));
+        SetStateToMainMenu();
+        MainMenuManager.instance.ActivateMenu();
+        if (currentState == GameState.FreeCam) return;
+        if (handlers.Length <= 0) return;
+        //handlers[currentLevel - 1].player = plr;
+        //StartCoroutine(IsStartingLevel(plr.transform));
     }
 
+    Coroutine LoadingScene;
+    public void PlayGame()
+    {
+        LoadScenes();
+    }
+
+    private void LoadScenes()
+    {
+        AmbianceManager.instance.RefreshAudio();
+        if (currentHandler != null) { currentHandler.player = null; }
+        currentHandler = null;
+        for(int i = 0; i < SceneManager.sceneCount; i++)
+        {
+            Scene loadedScene = SceneManager.GetSceneAt(i);
+            if (loadedScene.name == mainSceneName) { }
+            if (loadedScene.name != sectionNames[currentLevel - 1] && loadedScene.name != mainSceneName)
+            {
+                SceneManager.UnloadSceneAsync(loadedScene);
+            }
+        }
+        sceneToLoad.Add(SceneManager.LoadSceneAsync(sectionNames[currentLevel - 1], LoadSceneMode.Additive));
+        StartCoroutine(StartLoadingScene());
+    }
+
+    IEnumerator StartLoadingScene()
+    {
+        plr.transform.position = loadingSpot.position;
+        plr.transform.GetComponent<PlayerLogic>().NullifyState();
+        CheckifSceneLoaded();
+        Debug.Log("StartLoadingSceneFunc");
+        for (int i = 0; i < sceneToLoad.Count; i++)
+        {
+            while (!sceneToLoad[i].isDone)
+            {
+                yield return null;
+            }
+        }
+        sceneToLoad.Clear();
+    }
+
+    private void CheckifSceneLoaded()
+    {
+        if (CheckSceneLoaded != null) return;
+        StartCoroutine(StartCheckSceneLoaded());
+    }
+    Coroutine CheckSceneLoaded;
+    IEnumerator StartCheckSceneLoaded()
+    {
+        var timer = 0f;
+        var maxTimer = 3.5f;
+        while (true)
+        {
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+            {
+                Scene loadedScene = SceneManager.GetSceneAt(i);
+                if (loadedScene.name == mainSceneName) { }
+                if (loadedScene.name == sectionNames[currentLevel - 1] && loadedScene.name != mainSceneName)
+                {
+                    while(currentHandler == null)
+                    {
+                        currentHandler = FindObjectOfType<BaseHandler>();
+                        StartSection();
+                        yield return null;
+                    }
+                    CheckSceneLoaded = null;
+                    yield break;
+                }
+            }
+            yield return null;
+        }
+    }
+
+    public void StartSection()
+    {
+        if (currentHandler == null) { Debug.Log("Null!"); return; }
+        currentHandler.player = plr;
+        currentHandler.StartLevel();
+        plr.transform.GetComponent<PlayerLogic>().UnNullifyState();
+        SetStateToPlaying();
+        PlayerLogic plrLgc = plr.TryGetComponent(out PlayerLogic logic) ? logic : null;
+        logic.ResetPlayer();
+        logic.UnHidePlayer();
+        logic.UnNullifyState();
+    }
+
+    public void NextLevel()
+    {
+        if (currentLevel < sectionNames.Length)
+        {
+            currentLevel++;
+            LoadScenes();
+        }
+        else
+        {
+            CreditsManager.instance.ActivateCredits();
+            currentLevel = 1;
+        }
+    }
+
+    public void RestartSection()
+    {
+        if (currentHandler == null) return;
+        currentHandler.Restart();
+        SetStateToPlaying();
+        UnpauseGame();
+        PlayerLogic plrLgc = plr.TryGetComponent(out PlayerLogic logic) ? logic : null;
+        logic.ResetPlayer();
+        logic.UnHidePlayer();
+        logic.UnNullifyState();
+        plr.SetActive(true);
+        UIManager.instance.DeactivateGameOver();
+        PlayerUIManager.instance.ActivateUI();
+    }
 }

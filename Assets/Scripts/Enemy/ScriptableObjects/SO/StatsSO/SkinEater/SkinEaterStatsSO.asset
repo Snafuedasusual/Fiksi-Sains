@@ -16,7 +16,7 @@ MonoBehaviour:
   defaultAccel: 60
   chaseSpeed: 5
   chaseAccel: 120
-  minDistToAttack: 3
+  minDistToAttack: 3.25
   mainDmg: 15
   mainDmgKnckBck: 0
   mainDmgRange: 3.25

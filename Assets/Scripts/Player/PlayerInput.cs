@@ -15,6 +15,7 @@ public class PlayerInput : MonoBehaviour
     [SerializeField] private PlayerLogic playerLogic;
 
     private Vector2 moveDir;
+    public Vector2 GetInputDir() { return moveDir; }
 
     //Handles Move Input and Events Related.
     public event EventHandler<SendMoveInputArgs> OnMoveInput;

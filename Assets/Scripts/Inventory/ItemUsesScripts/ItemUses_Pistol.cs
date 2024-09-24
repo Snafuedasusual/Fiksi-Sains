@@ -74,6 +74,8 @@ public class ItemUses_Pistol : ItemUses, IInitializeScript
     {
         if (isClicked == true && click_debounce == false && HasFired == null && ammo > 0)
         {
+            var plrLgc = source.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
+            if (plrLgc != null) plrLgc.Mouse1PlayAnim();
             HasFired = Cooldown();
             StartCoroutine(HasFired);
             click_debounce = true;
@@ -82,7 +84,6 @@ public class ItemUses_Pistol : ItemUses, IInitializeScript
             height = heightPos;
             if (RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(source.position + transform.up * heightPos, source.forward, out RaycastHit hit, range,RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Game))
             {
-                Debug.Log(hit.transform.name);
                 if(hit.transform.gameObject.TryGetComponent<IHealthInterface>(out IHealthInterface Enemy))
                 {
                     Enemy.DealDamage(damage, source, knockBackPwr);
@@ -140,13 +141,7 @@ public class ItemUses_Pistol : ItemUses, IInitializeScript
     }
     private void Update()
     {
-        if (surce != null)
-        {
-            if (RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(surce.position + transform.up * height, surce.forward, out RaycastHit hit, range, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Both))
-            {
-                Debug.Log(hit.transform.name);
-            }
-        }
+
     }
 
     private void OnDisable()

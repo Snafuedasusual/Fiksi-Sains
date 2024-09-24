@@ -27,11 +27,26 @@ public class ItemSlot : MonoBehaviour
         itemName = newItemUses.GetDisplayName();
         itemDesc = newItemUses.GetItemDesc();
         itemUIScr.ItemHolderAdder(this.gameObject);
+        itemUIScr.SetInteractable();
     }
 
     public GameObject GetItemHeld()
     {
         return itemHeld;
+    }
+
+    public string GetItemName()
+    {
+        return itemName; 
+    }
+
+    public void DeleteItem()
+    {
+        itemHeld = null;
+        if(itemUI != null) Destroy(itemUI.gameObject);
+        itemUI = null;
+        itemDesc = null;
+        ammo = 0;
     }
 
     public void OnHoveredItem()

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,8 +10,12 @@ public class DeadScientist : MonoBehaviour, IInteraction, IObjectiveSection
 
     [SerializeField] SectionEventComms sectionEventComms;
     [SerializeField] string objText;
+    [SerializeField] string notif;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
+
+    public event EventHandler OnInteractActive;
+    public event EventHandler OnInteractDeactive;
 
     public void OnInteract(Transform plr)
     {
@@ -64,5 +69,10 @@ public class DeadScientist : MonoBehaviour, IInteraction, IObjectiveSection
     public void ForceDone()
     {
 
+    }
+
+    public string UpdateNotif()
+    {
+        return notif; 
     }
 }

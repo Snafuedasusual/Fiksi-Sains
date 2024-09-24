@@ -22,8 +22,11 @@ public class InteractableUIManager : MonoBehaviour, ICloseAllMenus
 
     public void ActivateInteractableUI(GameObject ui)
     {
+        if(currentUI != null) return;
         currentUI = ui;
+        //UIManager.instance.AddOpenedMenu(currentUI);
         currentUI.transform.SetParent(interactableUI.transform);
+        currentUI.GetComponent<RectTransform>().SetParent(interactableUI.GetComponent<RectTransform>(), false);
         currentUI.GetComponent<RectTransform>().transform.position = interactableUI.GetComponent<RectTransform>().position;
         GameManagers.instance.SetStateToOnMenu();
     }

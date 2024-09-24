@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,8 +9,14 @@ public class Door_Section : MonoBehaviour, IInteraction, IObjectiveSection
     [SerializeField] SectionEventComms sectionEventComms;
 
     [SerializeField] string objText;
+    [SerializeField] string notif;
+    [SerializeField] TextAsset ifLockedText;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
+
+    public event EventHandler OnInteractActive;
+    public event EventHandler OnInteractDeactive;
+
     public void OnInteract(Transform plr)
     {
         if (currentLockStatus == IObjectiveSection.IsLocked.Unlocked && currentStatus == IsFinished.NotDone)
@@ -19,7 +26,7 @@ public class Door_Section : MonoBehaviour, IInteraction, IObjectiveSection
         }
         else
         {
-
+            if(ifLockedText != null) { SubtitleManager.instance.ActivateSubtitle(ifLockedText); }
         }
     }
 
@@ -61,6 +68,12 @@ public class Door_Section : MonoBehaviour, IInteraction, IObjectiveSection
 
     public void ForceDone()
     {
+        currentLockStatus = IsLocked.Unlocked;
+        currentStatus = IsFinished.IsDone;
+    }
 
+    public string UpdateNotif()
+    {
+        return notif; 
     }
 }
