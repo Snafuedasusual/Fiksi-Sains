@@ -74,6 +74,8 @@ public class ItemUses_Pistol : ItemUses, IInitializeScript
     {
         if (isClicked == true && click_debounce == false && HasFired == null && ammo > 0)
         {
+            var plrLgc = source.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
+            if (plrLgc != null) plrLgc.Mouse1PlayAnim();
             HasFired = Cooldown();
             StartCoroutine(HasFired);
             click_debounce = true;

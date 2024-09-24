@@ -63,7 +63,7 @@ public class PlayerAnimationController : AnimationController, IInitializeScript
     {
         if (e.controllerOverride != null) { controllerOverride = e.controllerOverride; animator.runtimeAnimatorController = controllerOverride; }
         else { controllerOverride = null; animator.runtimeAnimatorController = defaultController; }
-        PlayPlayerAnimation(e.playThisAnim, UPPERBODY, true, false, 0.2f);
+        PlayPlayerAnimation(e.playThisAnim, UPPERBODY, true, false, 0);
     }
 
 

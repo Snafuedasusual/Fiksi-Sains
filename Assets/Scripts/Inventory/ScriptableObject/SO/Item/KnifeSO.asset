@@ -18,3 +18,4 @@ MonoBehaviour:
   itemName: Knife
   itemDescription: Personal defence knife. Standard issue.
   amountAmmo: 0
+  notif: Grab knife

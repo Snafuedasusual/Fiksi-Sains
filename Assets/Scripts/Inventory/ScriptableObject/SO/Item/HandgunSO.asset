@@ -18,4 +18,4 @@ MonoBehaviour:
   itemName: 9mm Pistol
   itemDescription: Standard issue nine millimeter caliber handgun.
   amountAmmo: 12
-  notif: 
+  notif: Grab pistol

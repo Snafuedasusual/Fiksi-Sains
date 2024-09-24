@@ -26,7 +26,27 @@ public class PlrSoundController : MonoBehaviour, IMakeSounds
 
     private void SoundBarUpdater(float value)
     {
-        soundBar = value;
+        if(value == 0)
+        {
+            soundBar = 0;
+            return;
+        }
+        if(soundBar > 0)
+        {
+            if(value > soundBar)
+            {
+                soundBar = value;
+                return;
+            }
+            else
+            {
+
+            }
+        }
+        else if(soundBar == 0)
+        {
+            soundBar = value;
+        }
     }
 
 

@@ -15,6 +15,6 @@ MonoBehaviour:
   itemWorldPrefab: {fileID: 6277831318910746602, guid: ba5053edacbe50643baecdb87978a4c5, type: 3}
   range: 2
   damage: 12
-  coolDown: 0.1
+  coolDown: 0.8
   knckBckPwr: 10
   controller: {fileID: 22100000, guid: aa3389dfb30837b4e88ce5be694d6465, type: 2}

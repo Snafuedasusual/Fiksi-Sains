@@ -8,21 +8,25 @@ public class Hide_Spots : MonoBehaviour, IInteraction
     [SerializeField] string notif;
     public event EventHandler OnInteractActive;
     public event EventHandler OnInteractDeactive;
+    private bool entered = false;
     public void OnInteract(Transform plr)
     {
         if(IsDebounce == null)
         {
             IsDebounce = Debounce();
             StartCoroutine(IsDebounce);
-            if (plr.localScale != new Vector3(0.001f, 0.001f, 0.001f))
+            if (entered == false)
             {
-                plr.localScale = new Vector3(0.001f, 0.001f, 0.001f);
+                entered = true;
                 plr.GetComponent<PlayerLogic>().plrState = PlayerLogic.PlayerStates.Hiding;
+                plr.GetComponent<PlayerLogic>().HidePlayer();
             }
             else
             {
-                plr.localScale = new Vector3(1f, 1f, 1f);
+                entered = false;
+                plr.GetComponent<PlayerLogic>().UnHidePlayer();
                 plr.transform.position += transform.up + Vector3.up * 0.25f;
+                if (Physics.Raycast(plr.transform.position, -Vector3.up, out RaycastHit hit)) plr.transform.position = hit.point; 
                 plr.GetComponent<PlayerLogic>().plrState = PlayerLogic.PlayerStates.Idle;
             }
         }

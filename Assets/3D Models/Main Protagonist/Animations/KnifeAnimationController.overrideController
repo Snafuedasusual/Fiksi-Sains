@@ -9,5 +9,5 @@ AnimatorOverrideController:
   m_Name: KnifeAnimationController
   m_Controller: {fileID: 9100000, guid: fe368c39f376b2a458da331f7e7fba90, type: 2}
   m_Clips:
-  - m_OriginalClip: {fileID: 7400000, guid: d08021880c2fa234181dc8dd804f4fa3, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: 1e33e21e743af8e4fb5032db88975a16, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 0f676aed19fa88343b9b900603c95696, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: b5d98ae3622808a44941199eb3b5ce30, type: 2}

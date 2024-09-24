@@ -124,7 +124,7 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
 
 
     //Handles Movement When Input Detected
-    private Vector2 plrDirection;
+    [SerializeField] private Vector2 plrDirection;
     private void OnMoveInputDetector(object sender, SendMoveInputArgs e)
     {
         PlayerMovement(e.plrDir);
@@ -508,7 +508,7 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         }
         else
         {
-            if (plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold || plrState == PlayerStates.Dead || plrState == PlayerStates.Null)
+            if (plrState == PlayerStates.InteractingToggle || plrState == PlayerStates.Hiding || plrState == PlayerStates.InteractingHold || plrState == PlayerStates.Dead || plrState == PlayerStates.Null || plrState == PlayerStates.InVent)
             {
 
             }
@@ -556,7 +556,7 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
     private void InteractionDetector()
     {
         var highestPoint = transform.position + Vector3.up * 3f;
-        var playerWidth = 0.35f;
+        var playerWidth = 0.175f;
         var playerArmLength = 1.75f;
         if (GameManagers.instance.GetGameState() != GameManagers.GameState.Playing)
         {
@@ -564,7 +564,7 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         }
         else
         {
-            if (RotaryHeart.Lib.PhysicsExtension.Physics.CapsuleCast(transform.position, highestPoint, playerWidth, transform.forward, out RaycastHit hit, playerArmLength, interactableObjs, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.None))
+            if (RotaryHeart.Lib.PhysicsExtension.Physics.CapsuleCast(transform.position, highestPoint, playerWidth, transform.forward, out RaycastHit hit, playerArmLength, interactableObjs, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Editor))
             {
                 var interact = hit.transform.TryGetComponent(out IInteraction interaction) ? interaction : null;
                 if (interact == null) return;
@@ -673,9 +673,9 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
 
     public void HidePlayer()
     {
+        rb.useGravity = false;
         bodyCollider.enabled = false;
         visual.SetActive(false);
-        rb.useGravity = false;
     }
 
     public void UnHidePlayer()

@@ -9,17 +9,6 @@ public class Pistol_ItemScript : ItemScript
     [Header("ScriptableObjects")]
     [SerializeField] ItemSO itemSO;
 
-    private void Start()
-    {
-        itemName = itemSO.itemName;
-        itemEnum = itemSO.currentItemEnum;
-        maxAmmo = itemSO.amountAmmo;
-        if(ammo > maxAmmo)
-        {
-            maxAmmo = ammo;
-        }
-    }
-
     private void OnEnable()
     {
         if(oneTimeActivation == false)
@@ -27,10 +16,13 @@ public class Pistol_ItemScript : ItemScript
             itemName = itemSO.name;
             maxAmmo = itemSO.amountAmmo;
             oneTimeActivation = true;
+            var newAmmo = Random.Range((float)maxAmmo / 2, (float)maxAmmo);
+            ammo = (int)newAmmo;
             if (ammo > maxAmmo)
             {
                 maxAmmo = ammo;
             }
+            notif = itemSO.notif;
         }
         else
         {

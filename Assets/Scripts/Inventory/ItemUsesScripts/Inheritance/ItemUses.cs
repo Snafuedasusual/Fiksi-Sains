@@ -14,8 +14,8 @@ public class ItemUses : MonoBehaviour
     [SerializeField] protected float knockBackPwr;
     [SerializeField] protected float damage;
     [SerializeField] protected float range;
-    [SerializeField] protected float ammo;
-    [SerializeField] protected float maxAmmo;
+    [SerializeField] protected int ammo;
+    [SerializeField] protected int maxAmmo;
     [SerializeField] protected string itemDesc;
     [SerializeField] protected GameObject itemUI;
     [SerializeField] protected bool oneTimeActivation = false;

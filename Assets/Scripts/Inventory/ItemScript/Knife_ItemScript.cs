@@ -19,6 +19,7 @@ public class Knife_ItemScript : ItemScript
             {
                 maxAmmo = ammo;
             }
+            notif = knifeSO.notif;
         }
         else
         {
