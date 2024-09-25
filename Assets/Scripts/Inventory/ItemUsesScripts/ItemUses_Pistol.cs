@@ -37,11 +37,6 @@ public class ItemUses_Pistol : ItemUses, IInitializeScript
         maxAmmo = itemUsesSO.ammo;
     }
 
-    private void Start()
-    {
-        InitializeScript();
-    }
-
     private void OnEnable()
     {
         if(oneTimeActivation == false)

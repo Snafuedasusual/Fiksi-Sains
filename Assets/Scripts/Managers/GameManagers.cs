@@ -197,12 +197,18 @@ public class GameManagers : MonoBehaviour
     {
         isPaused = true;
         Time.timeScale = 0f;
+        var plrLgc = plr.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
+        if (plrLgc == null) return;
+        plrLgc.NullifyState();
     }
 
     public void UnpauseGame()
     {
         isPaused = false;
         Time.timeScale = 1f;
+        var plrLgc = plr.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
+        if (plrLgc == null) return;
+        plrLgc.UnNullifyState();
     }
 
     public void SetStateToOnMenu()
@@ -344,10 +350,42 @@ public class GameManagers : MonoBehaviour
         //StartCoroutine(IsStartingLevel(plr.transform));
     }
 
-    Coroutine LoadingScene;
+    Coroutine PlayDebounce;
+    IEnumerator StartPlayDebounce()
+    {
+        var timer = 0f;
+        var maxTimer = 0.1f;
+        while (timer < maxTimer)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        PlayDebounce = null;
+    }
     public void PlayGame()
     {
+        if (PlayDebounce != null) return;
+        PlayDebounce = StartCoroutine(StartPlayDebounce());
         LoadScenes();
+    }
+
+    Coroutine RestartDebounce;
+    IEnumerator StartRestartDebounce()
+    {
+        var timer = 0f;
+        var maxTimer = 0.1f;
+        while(timer < maxTimer)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        RestartDebounce = null;
+    }
+    public void RestartGame()
+    {
+        if (RestartDebounce != null) return;
+        RestartDebounce = StartCoroutine(StartRestartDebounce());
+        LoadSceneRestart();
     }
 
     private void LoadScenes()
@@ -365,14 +403,29 @@ public class GameManagers : MonoBehaviour
             }
         }
         sceneToLoad.Add(SceneManager.LoadSceneAsync(sectionNames[currentLevel - 1], LoadSceneMode.Additive));
-        StartCoroutine(StartLoadingScene());
+        StartCoroutine(StartLoadingScene(false));
     }
 
-    IEnumerator StartLoadingScene()
+    private void LoadSceneRestart()
+    {
+        if (currentHandler != null) { currentHandler.player = null; }
+        currentHandler = null;
+        for (int i = 0; i < SceneManager.sceneCount; i++)
+        {
+            Scene loadedScene = SceneManager.GetSceneAt(i);
+            if (loadedScene.name == mainSceneName) { }
+            if (loadedScene.name != sectionNames[currentLevel - 1] && loadedScene.name != mainSceneName) SceneManager.UnloadSceneAsync(loadedScene);
+            if (loadedScene.name == sectionNames[currentLevel - 1] && loadedScene.name != mainSceneName) SceneManager.UnloadSceneAsync(loadedScene);
+        }
+        sceneToLoad.Add(SceneManager.LoadSceneAsync(sectionNames[currentLevel - 1], LoadSceneMode.Additive));
+        StartCoroutine(StartLoadingScene(true));
+    }
+
+    IEnumerator StartLoadingScene(bool restart)
     {
         plr.transform.position = loadingSpot.position;
         plr.transform.GetComponent<PlayerLogic>().NullifyState();
-        CheckifSceneLoaded();
+        CheckifSceneLoaded(restart);
         Debug.Log("StartLoadingSceneFunc");
         for (int i = 0; i < sceneToLoad.Count; i++)
         {
@@ -384,13 +437,13 @@ public class GameManagers : MonoBehaviour
         sceneToLoad.Clear();
     }
 
-    private void CheckifSceneLoaded()
+    private void CheckifSceneLoaded(bool restart)
     {
         if (CheckSceneLoaded != null) return;
-        StartCoroutine(StartCheckSceneLoaded());
+        StartCoroutine(StartCheckSceneLoaded(restart));
     }
     Coroutine CheckSceneLoaded;
-    IEnumerator StartCheckSceneLoaded()
+    IEnumerator StartCheckSceneLoaded(bool restart)
     {
         var timer = 0f;
         var maxTimer = 3.5f;
@@ -405,9 +458,10 @@ public class GameManagers : MonoBehaviour
                     while(currentHandler == null)
                     {
                         currentHandler = FindObjectOfType<BaseHandler>();
-                        StartSection();
                         yield return null;
                     }
+                    if (restart == true) RestartSection();
+                    else StartSection();
                     CheckSceneLoaded = null;
                     yield break;
                 }
@@ -445,7 +499,8 @@ public class GameManagers : MonoBehaviour
 
     public void RestartSection()
     {
-        if (currentHandler == null) return;
+        if (currentHandler == null) { Debug.Log("Null!"); return; }
+        currentHandler.player = plr;
         currentHandler.Restart();
         SetStateToPlaying();
         UnpauseGame();

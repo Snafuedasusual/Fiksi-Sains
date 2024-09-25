@@ -14,6 +14,7 @@ public class Knife_ItemScript : ItemScript
         {
             itemName = knifeSO.name;
             notif = knifeSO.notif;
+            itemEnum = knifeSO.currentItemEnum;
             oneTimeActivation = true;
             if (ammo > maxAmmo)
             {
@@ -46,11 +47,12 @@ public class Knife_ItemScript : ItemScript
         {
             IsInteractDebounce = InteractDebounce();
             StartCoroutine(IsInteractDebounce);
-            CheckInventoryForItem(inventory);
+            var plrLgc = plr.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
+            CheckInventoryForItem(inventory, lgc);
         }
     }
 
-    void CheckInventoryForItem(InventorySystem inventory)
+    void CheckInventoryForItem(InventorySystem inventory, PlayerLogic Lgc)
     {
         if (inventory.GetInventory().transform.childCount > 0)
         {
@@ -61,6 +63,7 @@ public class Knife_ItemScript : ItemScript
                 {
                     if ((int)item.GetItemEnum() == (int)itemEnum)
                     {
+                        Lgc.PlayAudioEvent(new PlayerLogic.PlayAudioClipEventArgs { audioType = EntityAudioClipsSO.AudioTypes.Pickup });
                         var float_randomAmmo = Random.Range(1f, (float)ammo / 2f);
                         var int_intRandomAmmo = Mathf.RoundToInt(float_randomAmmo);
                         ammo -= int_intRandomAmmo;
@@ -73,6 +76,7 @@ public class Knife_ItemScript : ItemScript
             }
             //Instantiate(itemSO.prefab, inventory.GetInventory().transform);
             //Destroy(transform.gameObject);
+            Lgc.PlayAudioEvent(new PlayerLogic.PlayAudioClipEventArgs { audioType = EntityAudioClipsSO.AudioTypes.Pickup });
             Debug.Log("Found nothing");
             var newItem = Instantiate(knifeSO.inventoryPrefab, inventory.GetInventory().transform);
             inventory.AddItem(newItem);
@@ -82,6 +86,7 @@ public class Knife_ItemScript : ItemScript
         {
             //Instantiate(itemSO.prefab, inventory.GetInventory().transform);
             //(transform.gameObject);
+            Lgc.PlayAudioEvent(new PlayerLogic.PlayAudioClipEventArgs { audioType = EntityAudioClipsSO.AudioTypes.Pickup });
             var newItem = Instantiate(knifeSO.inventoryPrefab, inventory.GetInventory().transform);
             inventory.AddItem(newItem);
             Destroy(transform.gameObject);

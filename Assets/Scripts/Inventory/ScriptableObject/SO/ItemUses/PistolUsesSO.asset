@@ -16,6 +16,6 @@ MonoBehaviour:
   range: 30
   ammo: 12
   damage: 9.5
-  coolDown: 0.22
+  coolDown: 0.5
   knckBckPwr: 5
   controller: {fileID: 0}

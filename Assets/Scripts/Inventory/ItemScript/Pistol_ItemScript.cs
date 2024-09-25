@@ -9,12 +9,15 @@ public class Pistol_ItemScript : ItemScript
     [Header("ScriptableObjects")]
     [SerializeField] ItemSO itemSO;
 
+
+
     private void OnEnable()
     {
         if(oneTimeActivation == false)
         {
             itemName = itemSO.name;
             maxAmmo = itemSO.amountAmmo;
+            itemEnum = itemSO.currentItemEnum;
             oneTimeActivation = true;
             var newAmmo = Random.Range((float)maxAmmo / 2, (float)maxAmmo);
             ammo = (int)newAmmo;
@@ -49,11 +52,12 @@ public class Pistol_ItemScript : ItemScript
         {
             IsInteractDebounce = InteractDebounce();
             StartCoroutine(IsInteractDebounce);
-            CheckInventoryForItem(inventory);
+            var plrLgc = plr.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
+            CheckInventoryForItem(inventory, lgc);
         }
     }
 
-    void CheckInventoryForItem(InventorySystem inventory)
+    void CheckInventoryForItem(InventorySystem inventory, PlayerLogic Lgc)
     {
         if(inventory.GetInventory().transform.childCount > 0)
         {
@@ -64,6 +68,7 @@ public class Pistol_ItemScript : ItemScript
                 {
                     if ((int)item.GetItemEnum() == (int)itemEnum)
                     {
+                        Lgc.PlayAudioEvent(new PlayerLogic.PlayAudioClipEventArgs { audioType = EntityAudioClipsSO.AudioTypes.Pickup });
                         var float_randomAmmo = Random.Range(1f, (float)ammo / 2f);
                         var int_intRandomAmmo = Mathf.RoundToInt(float_randomAmmo);
                         ammo -= int_intRandomAmmo;
@@ -77,6 +82,7 @@ public class Pistol_ItemScript : ItemScript
             //Instantiate(itemSO.prefab, inventory.GetInventory().transform);
             //Destroy(transform.gameObject);
             Debug.Log("Found nothing");
+            Lgc.PlayAudioEvent(new PlayerLogic.PlayAudioClipEventArgs { audioType = EntityAudioClipsSO.AudioTypes.Pickup });
             var newItem = Instantiate(itemSO.inventoryPrefab, inventory.GetInventory().transform);
             inventory.AddItem(newItem);
             if (newItem.TryGetComponent(out ItemUses itemUses))
@@ -90,11 +96,13 @@ public class Pistol_ItemScript : ItemScript
         {
             //Instantiate(itemSO.prefab, inventory.GetInventory().transform);
             //(transform.gameObject);
+            Lgc.PlayAudioEvent(new PlayerLogic.PlayAudioClipEventArgs { audioType = EntityAudioClipsSO.AudioTypes.Pickup });
             var newItem = Instantiate(itemSO.inventoryPrefab, inventory.GetInventory().transform);
             inventory.AddItem(newItem);
             if (newItem.TryGetComponent(out ItemUses itemUses))
             {
                 itemUses.SetAmmo(ammo);
+                Debug.Log(itemUses.GetAmmo());
             }
             Destroy(transform.gameObject);
             return;

@@ -7,6 +7,11 @@ public class ObjectiveTextManager : MonoBehaviour
 {
     public static ObjectiveTextManager instance;
     [SerializeField] TextMeshProUGUI objectiveText;
+    public string GetObjectiveText()
+    {
+        if (objectiveText.text != string.Empty) return objectiveText.text;
+        else return string.Empty;
+    }
 
     private void Awake()
     {

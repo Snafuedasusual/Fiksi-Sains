@@ -20,6 +20,7 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
     [SerializeField] private Rigidbody rb;
     [SerializeField] CapsuleCollider bodyCollider;
     [SerializeField] GameObject visual;
+    [SerializeField] GameObject specialActor;
 
     [Header("Variables")]
     [SerializeField] float plrSpdBase = 5f;
@@ -37,6 +38,8 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
 
     [Header("Animation")]
     [SerializeField] RuntimeAnimatorController currentController;
+    [SerializeField] RuntimeAnimatorController defaultSAController;
+    [SerializeField] RuntimeAnimatorController overrideSAController;
 
     float playerDirection;
 
@@ -307,6 +310,35 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
     }
 
 
+    public void PlaySpecialActor(RuntimeAnimatorController overrideController)
+    {
+        var animator = specialActor.TryGetComponent(out Animator anim) ? anim : null;
+        if (animator == null) return;
+        if (overrideController == overrideSAController && overrideSAController != null && specialActor.activeSelf == true) return;
+        if (overrideController == null && overrideSAController == null && specialActor.activeSelf == true) return;
+        overrideSAController = overrideController;
+        specialActor.transform.position = transform.position;
+        if(overrideSAController == null)
+        {
+            animator.runtimeAnimatorController = defaultSAController;
+            specialActor.SetActive(true);
+            visual.SetActive(false);
+        }
+        else
+        {
+            animator.runtimeAnimatorController = overrideSAController;
+            specialActor.SetActive(true);
+            visual.SetActive(false);
+        }
+    }
+
+    void DisableSpecialActor()
+    {
+        visual.SetActive(true);
+        specialActor.SetActive(false);
+        specialActor.transform.position = transform.position;
+    }
+
     //Handles Stamina Bar Drain and Regen.
     public event EventHandler<StaminaBarToUIArgs> StaminaBarToUI;
     public class StaminaBarToUIArgs : EventArgs { public float staminaBarValue; }
@@ -544,7 +576,6 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
                 if (targetInteract.TryGetComponent(out IInteraction interact))
                 {
                     interact.OnInteract(transform);
-
                 }
             }
         }
@@ -564,8 +595,13 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         }
         else
         {
+            if (plrState == PlayerStates.Null) return;
             if (RotaryHeart.Lib.PhysicsExtension.Physics.CapsuleCast(transform.position, highestPoint, playerWidth, transform.forward, out RaycastHit hit, playerArmLength, interactableObjs, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Editor))
             {
+                if(RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(transform.position + Vector3.up * centerBody, hit.transform.position - (transform.position + Vector3.up * centerBody), out RaycastHit checkHit, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Editor))
+                {
+                    if (checkHit.transform != hit.transform) return;
+                }
                 var interact = hit.transform.TryGetComponent(out IInteraction interaction) ? interaction : null;
                 if (interact == null) return;
                 targetInteract = hit.transform;
@@ -600,8 +636,8 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
             if (health <= 0)
             {
                 plrState = PlayerStates.Dead;
-                transform.gameObject.SetActive(false);
-                GameManagers.instance.OnPlayerDeath();
+                KillPlayer();
+                OnDeath();
                 ForceStopAllCoroutines();
             }
             else
@@ -611,6 +647,33 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         } 
     }
     //End of Check status-------------------------------------
+
+    Coroutine DeathDelay;
+    IEnumerator StartDeathDelay()
+    {
+        var timer = 0f;
+        var maxTimer = 2f;
+        while(timer < maxTimer)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        GameManagers.instance.OnPlayerDeath();
+        DeathDelay = null;
+    }
+    
+    private void OnDeath()
+    {
+        if (DeathDelay != null) return;
+        DeathDelay = StartCoroutine(StartDeathDelay());
+    }
+    
+    
+    void KillPlayer()
+    {
+        PlaySpecialActor(null);
+    }
+
 
     // Allows outside script to get player states.
     public PlayerStates GetStates()
@@ -628,7 +691,13 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         ProduceSound?.Invoke(this, new ProduceSoundArgs { soundSize = soundVolume });
     }
 
-
+    public event EventHandler<PlayAudioClipEventArgs> PlayAudioClip;
+    public class PlayAudioClipEventArgs : EventArgs { public EntityAudioClipsSO.AudioTypes audioType; }
+    public void PlayAudioEvent(PlayAudioClipEventArgs sendArgs)
+    {
+        var handler = PlayAudioClip;
+        if(handler != null) handler?.Invoke(this, sendArgs);
+    }
 
     //Handles Flashlight Input
     private void OnFlashlightInputDetector(object sender, EventArgs e)
@@ -658,17 +727,20 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         currentController = equippedItem.GetController();
     }
 
-
+    public event EventHandler<NullifyStateEventArgs> NullifyStateEvent;
+    public class NullifyStateEventArgs : EventArgs { public bool nullifyState; }
     public void NullifyState()
     {
         plrState = PlayerStates.Null;
         plrDirection = Vector3.zero;
         PlayMovementAnim();
+        NullifyStateEvent?.Invoke(this, new NullifyStateEventArgs { nullifyState = true });
     }
 
     public void UnNullifyState()
     {
         plrState = PlayerStates.Idle;
+        NullifyStateEvent?.Invoke(this, new NullifyStateEventArgs { nullifyState = false });
     }
 
     public void HidePlayer()
@@ -712,6 +784,7 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         healthController.ResetHealth();
         plrStamina = 100;
         plrState = PlayerStates.Idle;
+        DisableSpecialActor();
         UnHidePlayer();
     }
 

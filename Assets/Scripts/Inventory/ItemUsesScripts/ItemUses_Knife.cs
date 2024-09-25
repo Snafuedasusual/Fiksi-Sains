@@ -50,7 +50,7 @@ public class ItemUses_Knife : ItemUses, IInitializeScript
             if(attackAnim != null) { attackAnim.Mouse1PlayAnim(); }
             debounce = true;
             Cooldown = StartCoroutine(CoolingDown(fireCooldown));
-            var colliders = RotaryHeart.Lib.PhysicsExtension.Physics.OverlapBox(source.position + transform.up * heightPos, new Vector3(range, 0.5f, range), source.transform.rotation, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Game);
+            var colliders = RotaryHeart.Lib.PhysicsExtension.Physics.OverlapBox(source.position + transform.up * heightPos, new Vector3(range, 0.5f, range), source.transform.rotation, RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Editor);
             for(int i = 0; i < colliders.Length; i++)
             {
                 IHealthInterface healthCtrl;

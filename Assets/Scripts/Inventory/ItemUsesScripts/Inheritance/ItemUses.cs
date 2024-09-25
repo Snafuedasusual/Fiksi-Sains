@@ -32,6 +32,7 @@ public class ItemUses : MonoBehaviour
     public virtual ItemSO.ItemList GetItemEnum() { return itemEnum; }
     public virtual string GetItemDesc() { return itemDesc; }
     public virtual GameObject GetItemUI() { return itemUI; }
+    public virtual int GetAmmo() { return ammo; }
 
     public virtual void MainUse(bool isClicked, Transform source, float heightPos)
     {

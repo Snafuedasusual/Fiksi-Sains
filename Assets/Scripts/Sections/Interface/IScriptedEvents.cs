@@ -10,13 +10,7 @@ public interface IScriptedEvents
         HasTriggered,
     }
 
-    public void ResetTrigger()
-    {
+    public void ResetTrigger();
 
-    }
-
-    public void Trigger()
-    {
-
-    }
+    public void Trigger();
 }

@@ -11,23 +11,52 @@ public class ItemSlot : MonoBehaviour
 
     [Header("Variables")]
     [SerializeField] GameObject itemHeld;
+    [SerializeField] ItemSO.ItemList itemEnum;
     [SerializeField] GameObject itemUI;
     [SerializeField] string itemName;
     [SerializeField] string itemDesc;
     [SerializeField] int ammo;
+    public ItemSO.ItemList GetItemEnum() { return itemEnum; }
+    public int GetAmmoForUI() { return ammo; }
 
-    public void AddItem(GameObject newItem)
+    public void AddItemUnInteractable(GameObject newItem)
     {
         itemHeld = newItem;
         var newItemUses = itemHeld.GetComponent<ItemUses>();
         var newItemUI = Instantiate(newItemUses.GetItemUI(), transform);
+        itemEnum = newItemUses.GetItemEnum();
         itemUI = newItemUI;
-        ItemIcon itemUIScr = newItemUI.TryGetComponent(out ItemIcon item) ? itemUIScr = item : itemUIScr = null;
+        ItemIcon itemUIScr = newItemUI.TryGetComponent(out ItemIcon item) ? item : itemUIScr = null;
+        newItemUI.GetComponent<RectTransform>().position = transform.GetComponent<RectTransform>().position;
+        itemName = newItemUses.GetDisplayName();
+        itemDesc = newItemUses.GetItemDesc();
+        itemUIScr.ItemHolderAdder(this.gameObject);
+        itemUIScr.SetUnInteractable();
+        if (newItemUses.GetItemEnum() == ItemSO.ItemList.Pistol) ammo = newItemUses.GetAmmo();
+    }
+
+    public void AddItemInteractable(GameObject newItem)
+    {
+        itemHeld = newItem;
+        var newItemUses = itemHeld.GetComponent<ItemUses>();
+        var newItemUI = Instantiate(newItemUses.GetItemUI(), transform);
+        itemEnum = newItemUses.GetItemEnum();
+        itemUI = newItemUI;
+        ItemIcon itemUIScr = newItemUI.TryGetComponent(out ItemIcon item) ? item : itemUIScr = null;
         newItemUI.GetComponent<RectTransform>().position = transform.GetComponent<RectTransform>().position;
         itemName = newItemUses.GetDisplayName();
         itemDesc = newItemUses.GetItemDesc();
         itemUIScr.ItemHolderAdder(this.gameObject);
         itemUIScr.SetInteractable();
+        if (newItemUses.GetItemEnum() == ItemSO.ItemList.Pistol) ammo = newItemUses.GetAmmo();
+    }
+
+    public void UpdateItem()
+    {
+        if (itemHeld == null) return;
+        ItemIcon icon = itemHeld.TryGetComponent(out ItemIcon itemIcon) ? itemIcon : null;
+        if (icon == null) return;
+        icon.SetAmmoForUI(gameObject);
     }
 
     public GameObject GetItemHeld()
@@ -44,6 +73,7 @@ public class ItemSlot : MonoBehaviour
     {
         itemHeld = null;
         if(itemUI != null) Destroy(itemUI.gameObject);
+        itemEnum = 0;
         itemUI = null;
         itemDesc = null;
         ammo = 0;

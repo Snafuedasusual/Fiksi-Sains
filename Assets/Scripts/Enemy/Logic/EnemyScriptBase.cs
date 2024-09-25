@@ -548,4 +548,9 @@ public class EnemyScriptBase : MonoBehaviour, IHealthInterface, IMakeSounds
         m_Material.color = Color.red;
         state = defaultState;
     }
+
+    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    {
+        throw new System.NotImplementedException();
+    }
 }

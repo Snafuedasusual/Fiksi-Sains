@@ -1027,7 +1027,6 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
             timeCount += Time.deltaTime;
             yield return null;
         }
-        Debug.Log("Play Sound");
         DelayAudioPlay = null;
         PlayIdleAudioOnUpdateEvent?.Invoke(this, EventArgs.Empty);
     }

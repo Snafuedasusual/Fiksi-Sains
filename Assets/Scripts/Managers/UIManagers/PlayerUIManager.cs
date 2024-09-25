@@ -13,6 +13,7 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] GameObject uiElement;
 
     [Header("Health Components")]
+    [SerializeField] GameObject healthComponent;
     [SerializeField] RawImage bloodEdges;
     [SerializeField] RawImage bloodOverlay;
     [SerializeField] float bloodEdgesMaxAlpha;
@@ -21,14 +22,20 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private float currentHealth;
 
     [Header("Visibility Components")]
+    [SerializeField] GameObject visibiltyComponent;
     [SerializeField] TextMeshProUGUI visibility;
 
     [Header("StaminaComponents")]
+    [SerializeField] GameObject staminaComponent;
     [SerializeField] Slider bar1;
     [SerializeField] Slider bar2;
     [SerializeField] Image bar1Image;
     [SerializeField] Image bar2Image;
     [SerializeField] Image circle;
+
+    [Header("ObjectiveText")]
+    [SerializeField] GameObject objText;
+
     private float bar1ImageAlpha;
     private float bar2ImageAlpha;
     private float circleImageAlpha;
@@ -50,8 +57,8 @@ public class PlayerUIManager : MonoBehaviour
     private float currentStamina;
     private float GetCurrentStamina() { return currentStamina; }
 
-
     [Header("Interaction Notification")]
+    [SerializeField] GameObject interactionNotifObj;
     [SerializeField] TextMeshProUGUI interactionNotif;
 
     private void Awake()
@@ -72,6 +79,7 @@ public class PlayerUIManager : MonoBehaviour
         plrToUI.SendStaminaInfoToPlayerUI += SendStaminaInfoToPlayerUIReceiver;
         plrToUI.SendVisibilityInfoToPlayerUI += SendVisibilityInfoToPlayerUIReceiver;
         plrToUI.SendInteractionInfoToPlayerUI += SendInteractionInfoToPlayerUIReceiver;
+        plrToUI.SendNullifyStateEvent += SendNullifyStateEventReceiver;
     }
 
 
@@ -108,6 +116,27 @@ public class PlayerUIManager : MonoBehaviour
     {
         DeInitializeScript();
     }
+
+    private void SendNullifyStateEventReceiver(object sender, PlayerToUI.SendNullifyStateEventArgs e)
+    {
+        if(e.nullifyState == true)
+        {
+            healthComponent.gameObject.SetActive(false);
+            visibiltyComponent.gameObject.SetActive(false);
+            staminaComponent.gameObject.SetActive(false);
+            objText.gameObject.SetActive(false);
+            interactionNotifObj.gameObject.SetActive(false);
+        }
+        else
+        {
+            healthComponent.gameObject.SetActive(true);
+            visibiltyComponent.gameObject.SetActive(true);
+            staminaComponent.gameObject.SetActive(true);
+            objText.gameObject.SetActive(true);
+            interactionNotifObj.gameObject.SetActive(true);
+        }
+    }
+
 
     private void SendHealthInfoToPlayerUIReceiver(object sender, PlayerToUI.SendHealthInfoToPlayerUIArgs e)
     {

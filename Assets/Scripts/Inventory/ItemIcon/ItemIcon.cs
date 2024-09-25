@@ -27,10 +27,6 @@ public class ItemIcon : MonoBehaviour, IInitializeScript, IPointerEnterHandler, 
         throw new System.NotImplementedException();
     }
 
-    private void Start()
-    {
-        InitializeScript();
-    }
 
     private void OnEnable()
     {
@@ -45,6 +41,15 @@ public class ItemIcon : MonoBehaviour, IInitializeScript, IPointerEnterHandler, 
     public void ItemHolderAdder(GameObject itemHold)
     {
         itemHolder = itemHold;
+    }
+
+    public void SetAmmoForUI(GameObject itemHolder)
+    {
+        if(itemHolder.TryGetComponent(out ItemSlot slot))
+        {
+            if (slot.GetItemEnum() != ItemSO.ItemList.Pistol) return; 
+            ammo = slot.GetAmmoForUI();
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
