@@ -11,6 +11,13 @@ public class BaseHandler : MonoBehaviour
     [SerializeField] protected GameObject[] scriptedEvents;
     [SerializeField] protected int currentObj;
 
+    protected int[] ambianceClips;
+    protected int chaseClips;
+    public virtual int GetChaseMusicClip()
+    {
+        return chaseClips;
+    }
+
     public virtual void Restart()
     {
         

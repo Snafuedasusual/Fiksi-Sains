@@ -23,7 +23,7 @@ public class PlayerUIManager : MonoBehaviour
 
     [Header("Visibility Components")]
     [SerializeField] GameObject visibiltyComponent;
-    [SerializeField] TextMeshProUGUI visibility;
+    [SerializeField] Slider sliderVis;
 
     [Header("StaminaComponents")]
     [SerializeField] GameObject staminaComponent;
@@ -260,7 +260,7 @@ public class PlayerUIManager : MonoBehaviour
     private void SendVisibilityInfoToPlayerUIReceiver(object sender, PlayerToUI.SendVisibiltiyInfoToPlayerUIArgs e)
     {
         var newVis = Mathf.RoundToInt(e.plrVis);
-        visibility.text = newVis.ToString();
+        sliderVis.value = e.plrVis;
     }
 
     private void SendInteractionInfoToPlayerUIReceiver(object sender, PlayerToUI.SendInteractionInfoToPlayerUIArgs e)

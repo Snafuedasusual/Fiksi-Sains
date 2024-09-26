@@ -22,7 +22,7 @@ public class PlayerToUI : MonoBehaviour, IInitializeScript
         visibilityController.VisBarToUI += VisBarToUIReceiver;
         plrLogic.InteractNotif += InteractNotifReceiver;
         inventoryMenuManager.EquipItemEvent += EquipItemEventReceiver;
-        plrLogic.NullifyStateEvent += NullifyStateEventReceiver;
+        plrLogic.HideUIEvent += HideUIEventReceiver;
     }
 
 
@@ -32,7 +32,7 @@ public class PlayerToUI : MonoBehaviour, IInitializeScript
         healthController.HealthBarToUI -= HealthBarToUIReceiver;
         visibilityController.VisBarToUI -= VisBarToUIReceiver;
         plrLogic.InteractNotif -= InteractNotifReceiver;
-        plrLogic.NullifyStateEvent -= NullifyStateEventReceiver;
+        plrLogic.HideUIEvent -= HideUIEventReceiver;
     }
 
 
@@ -78,9 +78,9 @@ public class PlayerToUI : MonoBehaviour, IInitializeScript
     public event EventHandler OpenInventoryScreen;
 
 
-    private void NullifyStateEventReceiver(object sender, PlayerLogic.NullifyStateEventArgs e)
+    private void HideUIEventReceiver(object sender, PlayerLogic.HideUIEventArgs e)
     {
-        SendNullifyStateEvent?.Invoke(this, new SendNullifyStateEventArgs { nullifyState = e.nullifyState });
+        SendNullifyStateEvent?.Invoke(this, new SendNullifyStateEventArgs { nullifyState = e.hideornot });
     }
 
 

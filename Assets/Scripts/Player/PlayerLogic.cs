@@ -730,20 +730,27 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         currentController = equippedItem.GetController();
     }
 
-    public event EventHandler<NullifyStateEventArgs> NullifyStateEvent;
-    public class NullifyStateEventArgs : EventArgs { public bool nullifyState; }
+    public event EventHandler<HideUIEventArgs> HideUIEvent;
+    public class HideUIEventArgs : EventArgs { public bool hideornot; }
+
+
+    public void HideUI(bool hide)
+    {
+        HideUIEvent?.Invoke(this, new HideUIEventArgs { hideornot = hide });
+    }
+
     public void NullifyState()
     {
         plrState = PlayerStates.Null;
         plrDirection = Vector3.zero;
         PlayMovementAnim();
-        NullifyStateEvent?.Invoke(this, new NullifyStateEventArgs { nullifyState = true });
+        HideUIEvent?.Invoke(this, new HideUIEventArgs { hideornot = true });
     }
 
     public void UnNullifyState()
     {
         plrState = PlayerStates.Idle;
-        NullifyStateEvent?.Invoke(this, new NullifyStateEventArgs { nullifyState = false });
+        HideUIEvent?.Invoke(this, new HideUIEventArgs { hideornot = false });
     }
 
     public void HidePlayer()

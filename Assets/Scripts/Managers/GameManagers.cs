@@ -177,18 +177,27 @@ public class GameManagers : MonoBehaviour
                 IsEscDebounce = EscDebounce();
                 StartCoroutine(IsEscDebounce);
                 PauseMenuManager.instance.PauseMenuController();
+                var plrLgc = plr.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
+                if (plrLgc == null) return;
+                plrLgc.HideUI(true);
             }
             else if (currentState == GameState.OnMenu && IsEscDebounce == null)
             {
                 IsEscDebounce = EscDebounce();
                 StartCoroutine(IsEscDebounce);
                 UIManager.instance.CloseAllMenus();
+                var plrLgc = plr.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
+                if (plrLgc == null) return;
+                plrLgc.HideUI(false);
             }
             else if (currentState == GameState.OnUI && IsEscDebounce == null)
             {
                 IsEscDebounce = EscDebounce();
                 StartCoroutine(IsEscDebounce);
                 UIManager.instance.CloseAllMenus();
+                var plrLgc = plr.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
+                if (plrLgc == null) return;
+                plrLgc.HideUI(false);
             }
         }
     }
@@ -198,8 +207,6 @@ public class GameManagers : MonoBehaviour
         isPaused = true;
         Time.timeScale = 0f;
         var plrLgc = plr.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
-        if (plrLgc == null) return;
-        plrLgc.NullifyState();
     }
 
     public void UnpauseGame()
@@ -207,8 +214,6 @@ public class GameManagers : MonoBehaviour
         isPaused = false;
         Time.timeScale = 1f;
         var plrLgc = plr.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
-        if (plrLgc == null) return;
-        plrLgc.UnNullifyState();
     }
 
     public void SetStateToOnMenu()
@@ -235,7 +240,6 @@ public class GameManagers : MonoBehaviour
     {
         currentState = GameState.MainMenu;
     }
-
 
     public void OnLevelChange(Transform plr)
     {
@@ -475,6 +479,7 @@ public class GameManagers : MonoBehaviour
     {
         if (currentHandler == null) { Debug.Log("Null!"); return; }
         UIManager.instance.CloseAllMenus();
+        ChaseMusicManager.instance.StopMusic();
         currentHandler.player = plr;
         currentHandler.StartLevel();
         plr.transform.GetComponent<PlayerLogic>().UnNullifyState();
@@ -502,6 +507,7 @@ public class GameManagers : MonoBehaviour
     {
         if (currentHandler == null) { Debug.Log("Null!"); return; }
         UIManager.instance.CloseAllMenus();
+        ChaseMusicManager.instance.StopMusic();
         currentHandler.player = plr;
         currentHandler.Restart();
         SetStateToPlaying();

@@ -3,10 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class End_CScenes : MonoBehaviour, IScriptedEvents
+public class End_CScenes : MonoBehaviour, IScriptedEvents, IMakeSounds
 {
     [SerializeField] SectionEventComms sectionEventComms;
     [SerializeField] private IScriptedEvents.Triggered isTriggered;
+
+    [SerializeField] AudioSource audSrc;
+    [SerializeField] AudioClip audClip;
 
     [Header("Components")]
     [SerializeField] GameObject human;
@@ -57,6 +60,7 @@ public class End_CScenes : MonoBehaviour, IScriptedEvents
         cVC.gameObject.SetActive(true);
         human.SetActive(true);
         tntcl.SetActive(true);
+        RequestPlayAudioClip(audSrc, audClip);
     }
 
     void SetOriginalPos()
@@ -65,5 +69,10 @@ public class End_CScenes : MonoBehaviour, IScriptedEvents
         human.transform.eulerAngles = humanAngle;
         tntcl.transform.position = tntclPos.position;
         tntcl.transform.eulerAngles = tntclAngle;
+    }
+
+    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    {
+        SFXManager.instance.PlayAudio(audSrc, audClip);
     }
 }

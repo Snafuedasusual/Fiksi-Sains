@@ -368,6 +368,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
     {
         if(target != null)
         {
+            AddEnemyToAlertList();
             SendInfoToAlertBar(20f);
             RunToPos(target.position);
             transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z));
@@ -927,6 +928,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         lastCharToHitMe = null;
         currentState = defaultState;
         target = null;
+        RemoveEnemyFromAlertList();
     }
     //Alert bar communication script ends-----------------------------
 
@@ -954,6 +956,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
             else if(alertLevel == highAlertLevel)
             {
                 SendInfoToAlertBar(30f);
+                AddEnemyToAlertList();
                 currentState = EnemyStates.SuspiciousRunTowards;
                 location = new Vector3(target.x, transform.position.y, target.z);
             }
@@ -1037,6 +1040,15 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         DelayAudioPlay = StartCoroutine(StartDelayAudio(Random.Range(10, 15)));
     }
 
+    private void AddEnemyToAlertList()
+    {
+        ChaseMusicManager.instance.AddEnemyAlert(gameObject);
+    }
+
+    private void RemoveEnemyFromAlertList()
+    {
+        ChaseMusicManager.instance.RemoveEnemyAlert(gameObject);
+    }
 
     private void Update()
     {
