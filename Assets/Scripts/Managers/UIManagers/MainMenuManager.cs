@@ -39,6 +39,7 @@ public class MainMenuManager : MonoBehaviour
     public void ActivateMenu()
     {
         if(DelayBeforeShow == null) { DelayBeforeShow = StartCoroutine(StartDelayBeforeShow()); }
+        blocker.raycastTarget = true;
         blocker.color = new Color(blocker.color.r, blocker.color.g, blocker.color.b, 1);
         mainPrefabWorld.SetActive(true);
         SceneManager.LoadSceneAsync(mainMenuScene, LoadSceneMode.Additive);
@@ -66,6 +67,7 @@ public class MainMenuManager : MonoBehaviour
             yield return null;
         }
         blocker.color = new Color(blocker.color.r, blocker.color.g, blocker.color.b, 0);
+        blocker.raycastTarget = false;
         DelayBeforeShow = null;
     }
 }
