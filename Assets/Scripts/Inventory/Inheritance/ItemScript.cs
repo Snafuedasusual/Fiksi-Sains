@@ -15,6 +15,8 @@ public class ItemScript : MonoBehaviour, IInteraction
     [SerializeField] protected int maxAmmo;
     [SerializeField] protected bool oneTimeActivation = false;
 
+    [SerializeField] protected TextAsset ifSameItemFound;
+
     protected Transform interactor;
 
     public event EventHandler OnInteractActive;

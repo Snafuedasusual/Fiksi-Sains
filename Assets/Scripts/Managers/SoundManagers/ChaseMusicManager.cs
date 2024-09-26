@@ -58,6 +58,7 @@ public class ChaseMusicManager : MonoBehaviour
             if (FadeOutChaseMusic != null) return;
             if (audSrc.volume < 1f) audSrc.volume = 1f;
             if (isChaseMusic == true) return;
+            AmbianceManager.instance.PauseAudio();
             audSrc.clip = musicSO.chaseMusic[0]; 
             audSrc.Play();
             audSrc.loop = true;
@@ -69,6 +70,7 @@ public class ChaseMusicManager : MonoBehaviour
             if(FadeOutChaseMusic != null) return;
             if (audSrc.volume < 1f) audSrc.volume = 1f;
             if (isChaseMusic == true) return;
+            AmbianceManager.instance.PauseAudio();
             audSrc.clip = musicSO.chaseMusic[handler.GetChaseMusicClip()]; 
             audSrc.Play(); 
             audSrc.loop = true; 
@@ -91,6 +93,7 @@ public class ChaseMusicManager : MonoBehaviour
         audSrc.clip = null;
         isChaseMusic = false;
         FadeOutChaseMusic = null;
+        AmbianceManager.instance.UnPauseAudio();
     }
 
 

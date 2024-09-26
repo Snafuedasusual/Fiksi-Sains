@@ -63,13 +63,6 @@ public class Knife_ItemScript : ItemScript
                 {
                     if ((int)item.GetItemEnum() == (int)itemEnum)
                     {
-                        Lgc.PlayAudioEvent(new PlayerLogic.PlayAudioClipEventArgs { audioType = EntityAudioClipsSO.AudioTypes.Pickup });
-                        var float_randomAmmo = Random.Range(1f, (float)ammo / 2f);
-                        var int_intRandomAmmo = Mathf.RoundToInt(float_randomAmmo);
-                        ammo -= int_intRandomAmmo;
-                        Debug.Log(int_intRandomAmmo);
-                        item.RefillAmmo(int_intRandomAmmo);
-                        Destroy(transform.gameObject);
                         break;
                     }
                 }
