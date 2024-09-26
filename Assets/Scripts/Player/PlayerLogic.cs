@@ -41,6 +41,9 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
     [SerializeField] RuntimeAnimatorController defaultSAController;
     [SerializeField] RuntimeAnimatorController overrideSAController;
 
+    [SerializeField] Transform attackSource;
+    public Transform AttackSource() { return attackSource; }
+
     float playerDirection;
 
 
@@ -686,7 +689,7 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
 
     public event EventHandler<ProduceSoundArgs> ProduceSound;
     public class ProduceSoundArgs : EventArgs { public float soundSize; }
-    private void MakeSound(float soundVolume)
+    public void MakeSound(float soundVolume)
     {
         ProduceSound?.Invoke(this, new ProduceSoundArgs { soundSize = soundVolume });
     }
@@ -784,6 +787,7 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         healthController.ResetHealth();
         plrStamina = 100;
         plrState = PlayerStates.Idle;
+        plrSprintApplied = 0f;
         DisableSpecialActor();
         UnHidePlayer();
     }

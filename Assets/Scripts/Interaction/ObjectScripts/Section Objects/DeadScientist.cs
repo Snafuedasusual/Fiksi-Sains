@@ -14,19 +14,74 @@ public class DeadScientist : MonoBehaviour, IInteraction, IObjectiveSection
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
 
+    private float currentProgress = 0f;
+    private float maxProgress = 100f;
+
     public event EventHandler OnInteractActive;
     public event EventHandler OnInteractDeactive;
 
+    private PlayerInput plrInp;
+    private PlayerLogic plrLogic;
+
+
+    Coroutine CutHand;
+    IEnumerator StartCutHand()
+    {
+        WaitBarManager.instance.ActivateWaitBar();
+        WaitBarManager.instance.UpdateBarValue(0);
+        var timer = 0f;
+        var maxTimer = 0.075f;
+        while(currentProgress < maxProgress)
+        {
+            timer = 0f;
+            while(timer < maxTimer)
+            {
+                if (plrInp.GetInputDir() != Vector2.zero) { StopCoroutine(CutHand); CutHand = null; WaitBarManager.instance.DeactivateWaitBar(); yield break; }
+                timer += Time.deltaTime;
+                yield return null;
+            }
+            currentProgress++;
+            WaitBarManager.instance.UpdateBarValue(currentProgress);
+        }
+        if (currentProgress >= maxProgress) { OnDone(); currentStatus = IsFinished.IsDone; CutHand = null; }
+        if (plrLogic != null) { plrLogic.plrState = PlayerLogic.PlayerStates.Idle; }
+        WaitBarManager.instance.DeactivateWaitBar();
+        CutHand = null;
+
+    }
+    Coroutine InteractDebounce;
+    IEnumerator StartInteractDebounce()
+    {
+        var timer = 0f;
+        var maxTimer = 0.1f;
+        while (timer < maxTimer)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        InteractDebounce = null;
+    }
     public void OnInteract(Transform plr)
     {
-        if(currentLockStatus == IsLocked.Unlocked && currentStatus == IsFinished.NotDone)
-        {
-            OnDone();
-            currentStatus = IsFinished.IsDone;
+        if (currentLockStatus == IsLocked.Locked || currentStatus == IsFinished.IsDone) return;
+        if (InteractDebounce != null) return;
+        InteractDebounce = StartCoroutine(StartInteractDebounce());
+        if (CutHand != null) 
+        { 
+            StopCoroutine(CutHand); 
+            CutHand = null; 
+            WaitBarManager.instance.DeactivateWaitBar();
+            if (plrLogic != null)  plrLogic.plrState = PlayerLogic.PlayerStates.Idle; 
         }
-        else
-        {
-
+        else 
+        { 
+            plrInp = plr.TryGetComponent(out PlayerInput inp) ? inp : null;
+            plrLogic = plr.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
+            if (plrInp == null) return;
+            if (plrLogic == null) return;
+            plrLogic.plrState = PlayerLogic.PlayerStates.InteractingHold;
+            CutHand = StartCoroutine(StartCutHand()); 
+            Debug.Log("Haven't played"); 
         }
     }
 

@@ -984,6 +984,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         var cooldownRate = 0.5f;
         while (cooldownTime < cooldownRate)
         {
+            StopMove();
             cooldownTime += Time.deltaTime;
             yield return 0;
         }

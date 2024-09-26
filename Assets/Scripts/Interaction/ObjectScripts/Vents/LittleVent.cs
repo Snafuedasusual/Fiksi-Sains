@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LittleVent : MonoBehaviour, IInteraction
+public class LittleVent : MonoBehaviour, IInteraction, IMakeSounds
 {
     [SerializeField] Transform plrSpot;
     [SerializeField] BrainVent brainVent;
+    [SerializeField] AudioSource audSrc;
+    [SerializeField] AudioClip enterExit;
 
     [SerializeField] string notif;
 
@@ -20,6 +22,7 @@ public class LittleVent : MonoBehaviour, IInteraction
             IsDebounce = Debounce();
             StartCoroutine(IsDebounce);
             brainVent.InitializeVent(plrSpot, plr);
+            RequestPlayAudioClip(audSrc, enterExit);
         }
     }
 
@@ -45,5 +48,10 @@ public class LittleVent : MonoBehaviour, IInteraction
     public string UpdateNotif()
     {
         return notif;
+    }
+
+    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    {
+        SFXManager.instance.PlayAudio(audSrc, audClip);
     }
 }

@@ -341,6 +341,7 @@ public class GameManagers : MonoBehaviour
         instance = this;
         UnpauseGame();
         plr = GameObject.FindGameObjectWithTag("Player");
+        plr.GetComponent<PlayerLogic>().NullifyState();
         Screen.SetResolution(640, 360, true);
         SetStateToMainMenu();
         MainMenuManager.instance.ActivateMenu();
@@ -473,12 +474,12 @@ public class GameManagers : MonoBehaviour
     public void StartSection()
     {
         if (currentHandler == null) { Debug.Log("Null!"); return; }
+        UIManager.instance.CloseAllMenus();
         currentHandler.player = plr;
         currentHandler.StartLevel();
         plr.transform.GetComponent<PlayerLogic>().UnNullifyState();
         SetStateToPlaying();
         PlayerLogic plrLgc = plr.TryGetComponent(out PlayerLogic logic) ? logic : null;
-        logic.ResetPlayer();
         logic.UnHidePlayer();
         logic.UnNullifyState();
     }
@@ -500,6 +501,7 @@ public class GameManagers : MonoBehaviour
     public void RestartSection()
     {
         if (currentHandler == null) { Debug.Log("Null!"); return; }
+        UIManager.instance.CloseAllMenus();
         currentHandler.player = plr;
         currentHandler.Restart();
         SetStateToPlaying();

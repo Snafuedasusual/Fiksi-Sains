@@ -4,11 +4,14 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using static Unity.VisualScripting.Member;
 
-public class ItemUses_Pistol : ItemUses, IInitializeScript
+public class ItemUses_Pistol : ItemUses, IInitializeScript, IMakeSounds
 {
     [Header("ScriptableObjects")]
     [SerializeField] ItemSO itemSO;
     [SerializeField] FirearmUsesSO itemUsesSO;
+
+    [SerializeField] Light light;
+
 
     bool click_debounce = false;
 
@@ -25,6 +28,8 @@ public class ItemUses_Pistol : ItemUses, IInitializeScript
         maxAmmo = itemUsesSO.ammo;
         itemUI = itemSO.uiIcon;
         itemDesc = itemSO.itemDescription;
+        soundRange = itemUsesSO.soundRange;
+        light.enabled = false;
     }
 
     public void DeInitializeScript()
@@ -55,11 +60,16 @@ public class ItemUses_Pistol : ItemUses, IInitializeScript
     {
         var coolDownTime = 0f;
         var coolDownRate = fireCooldown;
+        light.enabled = true;
         while (coolDownTime < coolDownRate)
         {
+            if(coolDownTime > 0.2) light.enabled = false;
+            if (playerLogic != null) playerLogic.MakeSound(soundRange);
             coolDownTime += Time.deltaTime;
             yield return null;
         }
+        if (playerLogic != null) playerLogic.MakeSound(0);
+        playerLogic = null;
         HasFired = null;
     }
 
@@ -69,15 +79,15 @@ public class ItemUses_Pistol : ItemUses, IInitializeScript
     {
         if (isClicked == true && click_debounce == false && HasFired == null && ammo > 0)
         {
-            var plrLgc = source.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
-            if (plrLgc != null) plrLgc.Mouse1PlayAnim();
+            playerLogic = source.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
+            if (playerLogic != null) { playerLogic.Mouse1PlayAnim(); AttackSound(); }
             HasFired = Cooldown();
             StartCoroutine(HasFired);
             click_debounce = true;
             ammo--;
-            surce = source;
+            surce = playerLogic.AttackSource();
             height = heightPos;
-            if (RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(source.position + transform.up * heightPos, source.forward, out RaycastHit hit, range,RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Game))
+            if (RotaryHeart.Lib.PhysicsExtension.Physics.Raycast(surce.position, surce.forward, out RaycastHit hit, range,RotaryHeart.Lib.PhysicsExtension.PreviewCondition.Editor))
             {
                 if(hit.transform.gameObject.TryGetComponent<IHealthInterface>(out IHealthInterface Enemy))
                 {
@@ -142,5 +152,22 @@ public class ItemUses_Pistol : ItemUses, IInitializeScript
     private void OnDisable()
     {
         DeInitializeScript();
+    }
+
+    public override void AttackSound()
+    {
+        if (itemUsesSO.attackClips == null) return;
+        if (itemUsesSO.attackClips.Length <= 0) return;
+        if (itemUsesSO.attackClips.Length == 1) RequestPlayAudioClip(audSrc, itemUsesSO.attackClips[0]);
+        else
+        {
+            var selectedAudioClip = Random.Range(0, itemUsesSO.attackClips.Length);
+            RequestPlayAudioClip(audSrc, itemUsesSO.attackClips[selectedAudioClip]);
+        }
+    }
+
+    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    {
+        SFXManager.instance.PlayAudio(audSrc, audClip);
     }
 }

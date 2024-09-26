@@ -39,7 +39,7 @@ public class IntroCS : MonoBehaviour, IMakeSounds
                 typeTime = 0f;
                 while (typeTime < typeRate)
                 {
-                    typeTime += Time.deltaTime * 10f;
+                    typeTime += Time.deltaTime * 20f;
                     yield return null;
                 }
             }
@@ -54,7 +54,7 @@ public class IntroCS : MonoBehaviour, IMakeSounds
                 typeTime = 0f;
                 while (typeTime < typeRate)
                 {
-                    typeTime += Time.deltaTime * 10f;
+                    typeTime += Time.deltaTime * 20f;
                     yield return null;
                 }
             }
@@ -68,8 +68,8 @@ public class IntroCS : MonoBehaviour, IMakeSounds
     IEnumerator StartDelayAndFadeout(Story story)
     {
         var timer = 0f;
-        var maxTimerMain = 4.5f;
-        var maxTimerIntro = 2.5f;
+        var maxTimerMain = 2.5f;
+        var maxTimerIntro = 1.25f;
         if(story == storyMain)
         {
             if (currentIndex == textsMain.Length - 1)
