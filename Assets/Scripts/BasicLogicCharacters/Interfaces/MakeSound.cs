@@ -15,7 +15,9 @@ public interface IMakeSounds
 
     }
 
-    void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip);
+
+    public void RequestStopAudioSource(AudioSource audSrc)
     {
 
     }

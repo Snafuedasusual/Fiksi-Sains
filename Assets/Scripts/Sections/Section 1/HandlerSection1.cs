@@ -16,12 +16,12 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
     [SerializeField] Activation_Object activator;
     [SerializeField] Door_Section doorSection;
 
-    private int[] ambianceClips;
 
     public void InitializeScript()
     {
         sectEventComms.OnObjDoneEvent += OnObjDoneEventReceiver;
         ambianceClips = new int[2];
+        chaseClips = 1000;
         ambianceClips[0] = (int)AmbianceSO.AmbianceClips.AMBIANCE_SECT1_1;
         ambianceClips[1] = (int)AmbianceSO.AmbianceClips.AMBIANCE_SECT1_2;
     }

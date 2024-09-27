@@ -15,8 +15,6 @@ public class HandlerSection2 : BaseHandler, IInitializeScript
 
     [SerializeField] GameObject Enemies;
 
-    private int[] ambianceClips;
-
     public void CanFinish()
     {
         //Section.canFinish = true;
@@ -47,6 +45,7 @@ public class HandlerSection2 : BaseHandler, IInitializeScript
     {
         sectionEventComms.OnObjDoneEvent += OnObjDoneEventReceiver;
         ambianceClips = new int[2];
+        chaseClips = (int)MusicSO.ChaseMusic.CHASE_SECT_2;
         ambianceClips[0] = (int)AmbianceSO.AmbianceClips.AMBIANCE_SECT2_1;
         ambianceClips[1] = (int)AmbianceSO.AmbianceClips.AMBIANCE_SECT2_2;
     }

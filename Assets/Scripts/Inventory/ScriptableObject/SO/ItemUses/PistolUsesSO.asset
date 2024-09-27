@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: PistolUsesSO
   m_EditorClassIdentifier: 
   itemWorldPrefab: {fileID: 8598253723878143824, guid: c3129228e541ec3498ef02f3a4699e7a, type: 3}
+  attackClips:
+  - {fileID: 8300000, guid: 817cf3967eb83fe45b230f225e735025, type: 3}
+  soundRange: 45
   range: 30
   ammo: 12
   damage: 9.5
-  coolDown: 0.22
+  coolDown: 0.5
   knckBckPwr: 5
-  controller: {fileID: 0}
+  controller: {fileID: 22100000, guid: 8181539f7cf2df84fb498718a3c5d0f8, type: 2}

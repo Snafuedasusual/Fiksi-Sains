@@ -4,13 +4,17 @@ using UnityEngine;
 using Ink.Runtime;
 using TMPro;
 
-public class SubtitleManager : MonoBehaviour
+public class SubtitleManager : MonoBehaviour, IMakeSounds
 {
     public static SubtitleManager instance;
 
+    [SerializeField] private AudioSource audSrc;
+    [SerializeField] private AudioClip typing;
     [SerializeField] private TextMeshProUGUI textUI;
     private Story currentStory;
     private bool dialogueFinished = true;
+
+
     public bool GetIfDialogueFinished()
     {
         return dialogueFinished;
@@ -94,6 +98,8 @@ public class SubtitleManager : MonoBehaviour
     IEnumerator IsTypingStarted;
     IEnumerator TypingStart(string text)
     {
+        audSrc.loop = true;
+        RequestPlayAudioClip(audSrc, typing);
         var typeTime = 0f;
         var typeRate = 0.001f;
         for (int i = 0; i < text.ToCharArray().Length; i++)
@@ -108,6 +114,7 @@ public class SubtitleManager : MonoBehaviour
             }
         }
         IsTypingStarted = null;
+        RequestStopAudioSource(audSrc);
         StartCoroutine(IsDeleteCountdownStarted);
     }
 
@@ -138,4 +145,16 @@ public class SubtitleManager : MonoBehaviour
         textUI.text = string.Empty;
         textUI.gameObject.SetActive(false);
     }
+
+    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    {
+        SFXManager.instance.PlayAudio(audSrc, audClip);
+
+    }
+
+    public void RequestStopAudioSource(AudioSource audSrc)
+    {
+        SFXManager.instance.StopAudio(audSrc);
+    }
+
 }

@@ -18,4 +18,10 @@ public class SFXManager : MonoBehaviour
         audSrc.clip = audClip;
         audSrc.Play();
     }
+
+    public void StopAudio(AudioSource audSrc)
+    {
+        audSrc.Stop();
+        audSrc.clip = null;
+    }
 }

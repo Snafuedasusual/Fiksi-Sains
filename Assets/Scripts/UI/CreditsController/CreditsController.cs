@@ -104,6 +104,7 @@ public class CreditsController : MonoBehaviour
             GameManagers.instance.SetStateToMainMenu();
             MainMenuManager.instance.ActivateMenu();
             TextFadingOut = null;
+            Destroy(gameObject);
             yield break;
         }
         else

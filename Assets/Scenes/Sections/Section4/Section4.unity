@@ -2181,6 +2181,14 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 478591570}
+    - target: {fileID: 5789897417052371677, guid: fcded02cbe678524594010d7db3132d9, type: 3}
+      propertyPath: audSrc
+      value: 
+      objectReference: {fileID: 333127607}
+    - target: {fileID: 5789897417052371677, guid: fcded02cbe678524594010d7db3132d9, type: 3}
+      propertyPath: audClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 98053d7dc24431d49a60560acf406973, type: 3}
     - target: {fileID: 5817470747445246943, guid: fcded02cbe678524594010d7db3132d9, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -2422,6 +2430,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fcded02cbe678524594010d7db3132d9, type: 3}
+--- !u!82 &333127607 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 3081573774358094255, guid: fcded02cbe678524594010d7db3132d9, type: 3}
+  m_PrefabInstance: {fileID: 333127605}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &452779265
 Mesh:
   m_ObjectHideFlags: 0
