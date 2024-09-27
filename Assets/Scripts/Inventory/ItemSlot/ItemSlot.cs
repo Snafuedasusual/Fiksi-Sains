@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -32,7 +33,7 @@ public class ItemSlot : MonoBehaviour
         itemDesc = newItemUses.GetItemDesc();
         itemUIScr.ItemHolderAdder(this.gameObject);
         itemUIScr.SetUnInteractable();
-        if (newItemUses.GetItemEnum() == ItemSO.ItemList.Pistol) ammo = newItemUses.GetAmmo();
+        UpdateItem();
     }
 
     public void AddItemInteractable(GameObject newItem)
@@ -48,14 +49,17 @@ public class ItemSlot : MonoBehaviour
         itemDesc = newItemUses.GetItemDesc();
         itemUIScr.ItemHolderAdder(this.gameObject);
         itemUIScr.SetInteractable();
-        if (newItemUses.GetItemEnum() == ItemSO.ItemList.Pistol) ammo = newItemUses.GetAmmo();
+        UpdateItem();
     }
 
     public void UpdateItem()
     {
         if (itemHeld == null) return;
-        ItemIcon icon = itemHeld.TryGetComponent(out ItemIcon itemIcon) ? itemIcon : null;
+        ItemIcon icon = itemUI.TryGetComponent(out ItemIcon itemIcon) ? itemIcon : null;
+        var newItemUses = itemHeld.GetComponent<ItemUses>();
+        ammo = newItemUses.GetAmmo();
         if (icon == null) return;
+        if (newItemUses.GetItemEnum() != ItemSO.ItemList.Pistol) return;
         icon.SetAmmoForUI(gameObject);
     }
 

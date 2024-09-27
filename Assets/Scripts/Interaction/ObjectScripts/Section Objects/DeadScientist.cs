@@ -13,6 +13,7 @@ public class DeadScientist : MonoBehaviour, IInteraction, IObjectiveSection
     [SerializeField] string notif;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
+    [SerializeField] RuntimeAnimatorController controller;
 
     private float currentProgress = 0f;
     private float maxProgress = 100f;
@@ -27,6 +28,7 @@ public class DeadScientist : MonoBehaviour, IInteraction, IObjectiveSection
     Coroutine CutHand;
     IEnumerator StartCutHand()
     {
+        if (plrLogic != null) { plrLogic.PlaySpecialActor(controller); }
         WaitBarManager.instance.ActivateWaitBar();
         WaitBarManager.instance.UpdateBarValue(0);
         var timer = 0f;
@@ -36,7 +38,7 @@ public class DeadScientist : MonoBehaviour, IInteraction, IObjectiveSection
             timer = 0f;
             while(timer < maxTimer)
             {
-                if (plrInp.GetInputDir() != Vector2.zero) { StopCoroutine(CutHand); CutHand = null; WaitBarManager.instance.DeactivateWaitBar(); yield break; }
+                if (plrInp.GetInputDir() != Vector2.zero) { StopCoroutine(CutHand); CutHand = null; WaitBarManager.instance.DeactivateWaitBar(); plrLogic.DisableSpecialActor(); yield break; }
                 timer += Time.deltaTime;
                 yield return null;
             }
@@ -44,7 +46,7 @@ public class DeadScientist : MonoBehaviour, IInteraction, IObjectiveSection
             WaitBarManager.instance.UpdateBarValue(currentProgress);
         }
         if (currentProgress >= maxProgress) { OnDone(); currentStatus = IsFinished.IsDone; CutHand = null; }
-        if (plrLogic != null) { plrLogic.plrState = PlayerLogic.PlayerStates.Idle; }
+        if (plrLogic != null) { plrLogic.plrState = PlayerLogic.PlayerStates.Idle; plrLogic.DisableSpecialActor(); }
         WaitBarManager.instance.DeactivateWaitBar();
         CutHand = null;
 
@@ -71,7 +73,7 @@ public class DeadScientist : MonoBehaviour, IInteraction, IObjectiveSection
             StopCoroutine(CutHand); 
             CutHand = null; 
             WaitBarManager.instance.DeactivateWaitBar();
-            if (plrLogic != null)  plrLogic.plrState = PlayerLogic.PlayerStates.Idle; 
+            if (plrLogic != null)  { plrLogic.plrState = PlayerLogic.PlayerStates.Idle; plrLogic.DisableSpecialActor(); } 
         }
         else 
         { 

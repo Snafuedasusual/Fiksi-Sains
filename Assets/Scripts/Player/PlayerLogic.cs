@@ -335,7 +335,7 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         }
     }
 
-    void DisableSpecialActor()
+    public void DisableSpecialActor()
     {
         visual.SetActive(true);
         specialActor.SetActive(false);

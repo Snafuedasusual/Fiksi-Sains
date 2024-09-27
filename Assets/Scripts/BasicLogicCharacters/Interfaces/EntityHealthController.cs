@@ -10,7 +10,14 @@ public class EntityHealthController : MonoBehaviour, IHealthInterface
 
     [Header("Variables")]
     [SerializeField] protected float health;
-
+    public float GetCurrentHealth()
+    {
+        return health;
+    }
+    public float GetCurrentMaxHealth()
+    {
+        return baseHealth.maxHealth;
+    }
 
     private void OnEnable()
     {

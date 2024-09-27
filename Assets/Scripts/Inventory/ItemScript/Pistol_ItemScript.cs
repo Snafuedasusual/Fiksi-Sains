@@ -69,7 +69,7 @@ public class Pistol_ItemScript : ItemScript
                     if ((int)item.GetItemEnum() == (int)itemEnum)
                     {
                         Lgc.PlayAudioEvent(new PlayerLogic.PlayAudioClipEventArgs { audioType = EntityAudioClipsSO.AudioTypes.Pickup });
-                        var float_randomAmmo = Random.Range(1f, (float)ammo / 2f);
+                        var float_randomAmmo = Random.Range(3f, (float)ammo / 2f);
                         var int_intRandomAmmo = Mathf.RoundToInt(float_randomAmmo);
                         ammo -= int_intRandomAmmo;
                         Debug.Log(int_intRandomAmmo);

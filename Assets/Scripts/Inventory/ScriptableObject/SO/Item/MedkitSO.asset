@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: MedkitSO
   m_EditorClassIdentifier: 
   currentItemEnum: 3
-  inventoryPrefab: {fileID: 0}
+  inventoryPrefab: {fileID: 758554172293813017, guid: 41e29f45980d55845bcc1a20dd6e9622, type: 3}
   uiIcon: {fileID: 3274152564065024651, guid: d0fb1c8880e069743a0222f92ecd73e8, type: 3}
   itemName: Medkit
   itemDescription: A red cross first aid kit.
