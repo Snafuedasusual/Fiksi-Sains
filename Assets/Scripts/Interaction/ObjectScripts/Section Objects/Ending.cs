@@ -71,7 +71,7 @@ public class Ending : MonoBehaviour, IObjectiveSection
             if (currentLockStatus == IsLocked.Locked) return;
             if (currentStatus == IsFinished.IsDone) return;
             PlayScriptedEvent = StartCoroutine(StartPlayScriptedEvent());
-            sectionEventComms.StartScriptedEventNoArgs();
+            sectionEventComms.StartScriptedEventPlayer(other.gameObject);
             plrLgc.NullifyState();
             plrLgc.HidePlayer();
         }

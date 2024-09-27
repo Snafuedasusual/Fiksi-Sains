@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class End_CScenes : MonoBehaviour, IScriptedEvents, IMakeSounds
+public class End_CScenes : MonoBehaviour, IScriptedEvents, IMakeSounds, IInitializeScript
 {
     [SerializeField] SectionEventComms sectionEventComms;
     [SerializeField] private IScriptedEvents.Triggered isTriggered;
@@ -14,19 +14,42 @@ public class End_CScenes : MonoBehaviour, IScriptedEvents, IMakeSounds
     [Header("Components")]
     [SerializeField] GameObject human;
     [SerializeField] GameObject tntcl;
+    [SerializeField] GameObject hole;
     [SerializeField] Transform humanPos;
     [SerializeField] Transform tntclPos;
     [SerializeField] Vector3 humanAngle;
     [SerializeField] Vector3 tntclAngle;
     [SerializeField] GameObject cVC;
+    [SerializeField] ParticleSystem partclSys;
 
-    private void Awake()
+
+    private PlayerLogic playerLogic;
+
+
+    public void InitializeScript()
     {
-        sectionEventComms.ScriptedEventNoArgs += ScriptedEventNoArgsReceiver; 
+        sectionEventComms.ScriptedEventPlayer += ScriptedEventPlayerReceiver;
     }
 
-    private void ScriptedEventNoArgsReceiver(object sender, System.EventArgs e)
+    public void DeInitializeScript()
     {
+        sectionEventComms.ScriptedEventPlayer -= ScriptedEventPlayerReceiver;
+    }
+
+    void OnEnable()
+    {
+        InitializeScript();
+    }
+
+    private void OnDisable()
+    {
+        DeInitializeScript();
+    }
+
+    private void ScriptedEventPlayerReceiver(object sender, SectionEventComms.ScriptedEventPlayerArgs e)
+    {
+        if (!e.obj.TryGetComponent(out PlayerLogic plrLgc)) return;
+        playerLogic = plrLgc;
         Trigger();
     }
 
@@ -52,14 +75,17 @@ public class End_CScenes : MonoBehaviour, IScriptedEvents, IMakeSounds
     }
     public void Trigger()
     {
-        Debug.Log("Played");
         if (isTriggered == IScriptedEvents.Triggered.HasTriggered) return;
         if (IsCountdownToDisable != null) return;
+        if (playerLogic != null) playerLogic.NullifyState();
         IsCountdownToDisable = StartCoroutine(StartCountdownToDisable());
+        partclSys.time = 0f;
+        partclSys.Play();
         SetOriginalPos();
         cVC.gameObject.SetActive(true);
         human.SetActive(true);
         tntcl.SetActive(true);
+        hole.SetActive(true);
         RequestPlayAudioClip(audSrc, audClip);
     }
 

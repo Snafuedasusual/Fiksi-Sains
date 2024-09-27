@@ -12,7 +12,6 @@ public class FinalHandler : BaseHandler, IInitializeScript
     [SerializeField] Transform plrStart;
     [SerializeField] Door_Section end;
 
-    private int[] ambianceClips;
 
     public void InitializeScript()
     {
