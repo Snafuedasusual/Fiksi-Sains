@@ -548,7 +548,7 @@ public class EnemyScriptBase : MonoBehaviour, IHealthInterface, IMakeSounds
         state = defaultState;
     }
 
-    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
     {
         throw new System.NotImplementedException();
     }

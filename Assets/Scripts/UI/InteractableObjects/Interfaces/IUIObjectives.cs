@@ -4,8 +4,5 @@ using UnityEngine;
 
 public interface IUIObjectives
 {
-    public void AddListener(GameObject listener)
-    {
-
-    }
+    public void AddListener(GameObject listener);
 }

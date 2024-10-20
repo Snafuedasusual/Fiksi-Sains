@@ -21,7 +21,7 @@ public class LgcToComms : MonoBehaviour
     }
 
 
-    public event EventHandler EnemyAttackAnimSendEvent;
+    public event EventHandler<EnemyAttackAnimSendEventArgs> EnemyAttackAnimSendEvent;
     public class EnemyAttackAnimSendEventArgs : EventArgs { public BaseEnemyLogic.EnemyAnimations anim; }
     protected void EnemySendAttackAnimEvent(EnemyAttackAnimSendEventArgs sendArgs)
     {

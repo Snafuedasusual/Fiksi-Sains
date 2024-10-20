@@ -8,7 +8,8 @@ public class EntitiesAnimationController : AnimationController, IInitializeScrip
     {
         Animator.StringToHash("Idle"),
         Animator.StringToHash("Walk"),
-        Animator.StringToHash("Run")
+        Animator.StringToHash("Run"),
+        Animator.StringToHash("Attack")
     };
 
     private int currentAnimState;
@@ -25,9 +26,8 @@ public class EntitiesAnimationController : AnimationController, IInitializeScrip
         InitializeEntityAnimations(animator.layerCount, BaseEnemyLogic.EnemyAnimations.IDLE, animator);
         DefaultAnimation(0);
         lgcToComms.EnemyMovementAnimSendEvent += EnemyMovementAnimSendEventReceiver;
+        lgcToComms.EnemyAttackAnimSendEvent += EnemyAttackAnimSendEventReceiver;
     }
-
-
 
 
     private void OnEnable()
@@ -35,6 +35,11 @@ public class EntitiesAnimationController : AnimationController, IInitializeScrip
         InitializeScript();
     }
 
+
+    private void EnemyAttackAnimSendEventReceiver(object sender, LgcToComms.EnemyAttackAnimSendEventArgs e)
+    {
+        PlayEntityAnimation(e.anim , 0, true, false, 0f);
+    }
 
 
     private void EnemyMovementAnimSendEventReceiver(object sender, LgcToComms.EnemyMovementAnimSendEventArgs e)

@@ -62,7 +62,7 @@ public class Medkit_ItemScript : ItemScript
                 {
                     if ((int)item.GetItemEnum() == (int)itemEnum)
                     {
-                        break;
+                        return;
                     }
                 }
             }

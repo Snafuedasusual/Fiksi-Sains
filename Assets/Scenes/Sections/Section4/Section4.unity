@@ -2173,6 +2173,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 4.05
       objectReference: {fileID: 0}
+    - target: {fileID: 5246892814662462602, guid: fcded02cbe678524594010d7db3132d9, type: 3}
+      propertyPath: notif
+      value: Enter keycode
+      objectReference: {fileID: 0}
     - target: {fileID: 5264804187480627111, guid: fcded02cbe678524594010d7db3132d9, type: 3}
       propertyPath: m_Mesh
       value: 

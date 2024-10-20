@@ -4,13 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using static IObjectiveSection;
 
-public class DeadScientist : MonoBehaviour, IInteraction, IObjectiveSection
+public class DeadScientist : MonoBehaviour, IInteraction, IObjectiveSection, IMakeSounds
 {
     [SerializeField] HandlerSection2 handle;
 
     [SerializeField] SectionEventComms sectionEventComms;
     [SerializeField] string objText;
     [SerializeField] string notif;
+    [SerializeField] AudioSource audSrc;
+    [SerializeField] AudioClip audClip;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
     [SerializeField] RuntimeAnimatorController controller;
@@ -82,6 +84,7 @@ public class DeadScientist : MonoBehaviour, IInteraction, IObjectiveSection
             if (plrInp == null) return;
             if (plrLogic == null) return;
             plrLogic.plrState = PlayerLogic.PlayerStates.InteractingHold;
+            RequestPlaySFXAudioClip(audSrc, audClip);
             CutHand = StartCoroutine(StartCutHand()); 
             Debug.Log("Haven't played"); 
         }
@@ -131,5 +134,10 @@ public class DeadScientist : MonoBehaviour, IInteraction, IObjectiveSection
     public string UpdateNotif()
     {
         return notif; 
+    }
+
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
+    {
+        SFXManager.instance.PlayAudio(audSrc, audClip);
     }
 }

@@ -28,7 +28,7 @@ public class InteractableUIManager : MonoBehaviour, ICloseAllMenus
         currentUI.transform.SetParent(interactableUI.transform);
         currentUI.GetComponent<RectTransform>().SetParent(interactableUI.GetComponent<RectTransform>(), false);
         currentUI.GetComponent<RectTransform>().transform.position = interactableUI.GetComponent<RectTransform>().position;
-        GameManagers.instance.SetStateToOnMenu();
+        GameManagers.instance.SetStateToOnUI();
     }
 
     public void DeactivateInteractableUI()
@@ -41,5 +41,27 @@ public class InteractableUIManager : MonoBehaviour, ICloseAllMenus
     public void CloseMenu()
     {
         DeactivateInteractableUI();
+    }
+
+    Coroutine DebounceActiveText;
+    IEnumerator StartDebounceActivetext()
+    {
+        var debTime = 0f;
+        var debRate = 0.1f;
+        while(debTime < debRate)
+        {
+            debTime += Time.deltaTime;
+            yield return null;
+        }
+        DebounceActiveText = null;
+    }
+    public void ReadableText()
+    {
+        Debug.Log("ReadableTextStarted");
+        if (currentUI == null) return;
+        if (!currentUI.TryGetComponent(out IReadableUI readable))  return;
+        if (DebounceActiveText != null) return;
+        if (readable.GetTextVersion().activeSelf == false) { DebounceActiveText = StartCoroutine(StartDebounceActivetext()); readable.GetTextVersion().SetActive(true); return; }
+        if (readable.GetTextVersion().activeSelf == true) { DebounceActiveText = StartCoroutine(StartDebounceActivetext()); ; readable.GetTextVersion().SetActive(false); return; }
     }
 }

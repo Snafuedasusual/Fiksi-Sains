@@ -21,6 +21,8 @@ public class IntroCS : MonoBehaviour, IMakeSounds
     [SerializeField] AudioClip radioTrans;
     [SerializeField] AudioClip typing;
 
+    [SerializeField] AudioClip music;
+
     private Story storyMain;
     private Story storyIntro;
 
@@ -31,7 +33,7 @@ public class IntroCS : MonoBehaviour, IMakeSounds
         var typeRate = 0.75f;
         if(story == storyMain)
         {
-            RequestPlayAudioClip(audSrc, radioTrans);
+            RequestPlaySFXAudioClip(audSrc, radioTrans);
             for (int i = 0; i < text.ToCharArray().Length; i++)
             {
                 textsMain[currentIndex].text += text.ToCharArray()[i];
@@ -46,7 +48,7 @@ public class IntroCS : MonoBehaviour, IMakeSounds
         }
         else
         {
-            RequestPlayAudioClip(audSrc, typing);
+            RequestPlaySFXAudioClip(audSrc, typing);
             for (int i = 0; i < text.ToCharArray().Length; i++)
             {
                 textIntro.text += text.ToCharArray()[i];
@@ -167,6 +169,7 @@ public class IntroCS : MonoBehaviour, IMakeSounds
             }
             FinalDelayAndFadeout = null;
             ShowControls();
+            RequestStopGenericMusicAudioClip();
         }
     }
 
@@ -175,7 +178,7 @@ public class IntroCS : MonoBehaviour, IMakeSounds
     IEnumerator StartControlShow()
     {
         var timer = 0f;
-        var maxTimer = 8f;
+        var maxTimer = 10f;
         controlsUI.gameObject.SetActive(true);
         while(timer < maxTimer)
         {
@@ -198,6 +201,7 @@ public class IntroCS : MonoBehaviour, IMakeSounds
     {
         storyMain = new Story(textAssetMain.text);
         storyIntro = new Story(textAssetIntro.text);
+        RequestPlayGenericMusicAudioClip(music);
         ContinueStoryIntro();   
     }
 
@@ -247,7 +251,7 @@ public class IntroCS : MonoBehaviour, IMakeSounds
         StartTheProcess();
     }
 
-    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
     {
         SFXManager.instance.PlayAudio(audSrc, audClip);
     }
@@ -255,5 +259,15 @@ public class IntroCS : MonoBehaviour, IMakeSounds
     public void RequestStopAudioSource(AudioSource audSrc)
     {
         SFXManager.instance.StopAudio(audSrc);
+    }
+
+    public void RequestPlayGenericMusicAudioClip(AudioClip audClip)
+    {
+        GenericMusicManager.instance.PlayGenericMusic(audClip);
+    }
+
+    public void RequestStopGenericMusicAudioClip()
+    {
+        GenericMusicManager.instance.StopMusic();
     }
 }

@@ -6,6 +6,8 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
     [SerializeField] GameObject manyUIManagers;
+    [SerializeField] GameObject canvas;
+    public GameObject GetCanvas() { return canvas; }
     private List<GameObject> openedMenu;
     private int currentMenuIndex;
 

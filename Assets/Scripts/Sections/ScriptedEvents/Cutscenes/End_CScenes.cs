@@ -86,7 +86,7 @@ public class End_CScenes : MonoBehaviour, IScriptedEvents, IMakeSounds, IInitial
         human.SetActive(true);
         tntcl.SetActive(true);
         hole.SetActive(true);
-        RequestPlayAudioClip(audSrc, audClip);
+        RequestPlaySFXAudioClip(audSrc, audClip);
     }
 
     void SetOriginalPos()
@@ -97,7 +97,7 @@ public class End_CScenes : MonoBehaviour, IScriptedEvents, IMakeSounds, IInitial
         tntcl.transform.eulerAngles = tntclAngle;
     }
 
-    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
     {
         SFXManager.instance.PlayAudio(audSrc, audClip);
     }

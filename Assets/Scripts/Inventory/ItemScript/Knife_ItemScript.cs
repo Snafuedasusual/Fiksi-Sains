@@ -62,7 +62,7 @@ public class Knife_ItemScript : ItemScript
                 {
                     if ((int)item.GetItemEnum() == (int)itemEnum)
                     {
-                        break;
+                        return;
                     }
                 }
             }

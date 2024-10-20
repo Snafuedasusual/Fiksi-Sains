@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class CreditsController : MonoBehaviour
+public class CreditsController : MonoBehaviour, IMakeSounds
 {
     [SerializeField] TextMeshProUGUI[] titleText;
     [SerializeField] TextMeshProUGUI[] creditsText0;
@@ -14,6 +14,7 @@ public class CreditsController : MonoBehaviour
     private TextMeshProUGUI[][] listText = new TextMeshProUGUI[6][];
     private int currentElement = 0;
 
+    [SerializeField] AudioClip music;
 
     Coroutine DelayBeforeStart;
     IEnumerator StartDelayBeforeStart()
@@ -131,6 +132,22 @@ public class CreditsController : MonoBehaviour
         listText[5] = thankYouText;
         TextFadingIn = null;
         TextFadingOut = null;
+        RequestPlayGenericMusicAudioClip(music);
         DelayBeforeStart = StartCoroutine(StartDelayBeforeStart());
+    }
+
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void RequestPlayGenericMusicAudioClip(AudioClip audClip)
+    {
+        GenericMusicManager.instance.PlayGenericMusic(audClip);
+    }
+
+    public void RequestStopGenericMusicAudioClip()
+    {
+        GenericMusicManager.instance.StopMusic();
     }
 }

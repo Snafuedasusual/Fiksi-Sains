@@ -99,7 +99,7 @@ public class SubtitleManager : MonoBehaviour, IMakeSounds
     IEnumerator TypingStart(string text)
     {
         audSrc.loop = true;
-        RequestPlayAudioClip(audSrc, typing);
+        RequestPlaySFXAudioClip(audSrc, typing);
         var typeTime = 0f;
         var typeRate = 0.001f;
         for (int i = 0; i < text.ToCharArray().Length; i++)
@@ -146,7 +146,7 @@ public class SubtitleManager : MonoBehaviour, IMakeSounds
         textUI.gameObject.SetActive(false);
     }
 
-    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
     {
         SFXManager.instance.PlayAudio(audSrc, audClip);
 

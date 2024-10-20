@@ -243,25 +243,25 @@ public class WallCodeController : MonoBehaviour, IUIObjectives, IInitializeScrip
 
     private void PlayOnEnter()
     {
-        RequestPlayAudioClip(audSrc, enter);
+        RequestPlaySFXAudioClip(audSrc, enter);
     }
 
     private void ButtonPressAudioEventReceiver(object sender, System.EventArgs e)
     {
-        RequestPlayAudioClip(audSrc, buttonpress);
+        RequestPlaySFXAudioClip(audSrc, buttonpress);
     }
 
     private void OnErrorPlaySound()
     {
-        RequestPlayAudioClip(audSrc, error);
+        RequestPlaySFXAudioClip(audSrc, error);
     }
 
     private void OnCompletePlaySound()
     {
-        RequestPlayAudioClip(audSrc, correct);
+        RequestPlaySFXAudioClip(audSrc, correct);
     }
 
-    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
     {
         SFXManager.instance.PlayAudio(audSrc, audClip);
     }

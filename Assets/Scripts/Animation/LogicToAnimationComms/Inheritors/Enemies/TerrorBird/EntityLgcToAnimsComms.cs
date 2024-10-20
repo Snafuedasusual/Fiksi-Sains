@@ -14,6 +14,12 @@ public class EntityLgcToAnimsComms : LgcToComms
     public void InitializeScript()
     {
         enemyLogic.EnemyMovementAnimEvent += EnemyMovementAnimEventReceiver;
+        enemyLogic.PlayAttackAnimEvent += PlayAttackAnimEventReceiver;
+    }
+
+    private void PlayAttackAnimEventReceiver(object sender, BaseEnemyLogic.PlayAttackAnimEventArgs e)
+    {
+        EnemySendAttackAnimEvent(new EnemyAttackAnimSendEventArgs { anim = e.anim });
     }
 
     private void EnemyMovementAnimEventReceiver(object sender, BaseEnemyLogic.EnemyMovementAnimEventArgs e)

@@ -76,6 +76,8 @@ public class Attack_TerrorBird : Attack, IInitializeScript
             {
                 AtkCooling = AtkCooldown();
                 StartCoroutine(AtkCooling);
+                BaseEnemyLogic enemyLgc = sender.TryGetComponent(out BaseEnemyLogic lgc) ? lgc : null;
+                lgc.PlayAttackAnim();
                 if (hit.transform == target.transform)
                 {
                     if (hit.transform.TryGetComponent(out EntityHealthController trgt))

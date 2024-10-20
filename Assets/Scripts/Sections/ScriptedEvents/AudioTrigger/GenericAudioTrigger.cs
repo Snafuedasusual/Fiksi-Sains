@@ -10,7 +10,7 @@ public class GenericAudioTrigger : MonoBehaviour, IScriptedEvents, IMakeSounds
     [SerializeField] float delayTime;
     [SerializeField] IScriptedEvents.Triggered isTriggered;
 
-    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
     {
         SFXManager.instance.PlayAudio(audSrc, audClip);
     }
@@ -41,7 +41,7 @@ public class GenericAudioTrigger : MonoBehaviour, IScriptedEvents, IMakeSounds
         if (DelayTime != null) return;
         DelayTime = StartCoroutine(StartDelayTime());
         isTriggered = IScriptedEvents.Triggered.HasTriggered;
-        RequestPlayAudioClip(audSrc, audClip);
+        RequestPlaySFXAudioClip(audSrc, audClip);
     }
 
     private void OnTriggerEnter(Collider other)

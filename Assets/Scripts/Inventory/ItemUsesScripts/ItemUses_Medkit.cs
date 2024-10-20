@@ -143,15 +143,15 @@ public class ItemUses_Medkit : ItemUses, IMakeSounds
         audSrc.loop = true;
         if (medKitUsesSO.attackClips == null) return;
         if (medKitUsesSO.attackClips.Length <= 0) return;
-        if (medKitUsesSO.attackClips.Length == 1) RequestPlayAudioClip(audSrc, medKitUsesSO.attackClips[0]);
+        if (medKitUsesSO.attackClips.Length == 1) RequestPlaySFXAudioClip(audSrc, medKitUsesSO.attackClips[0]);
         else
         {
             var selectedAudioClip = Random.Range(0, medKitUsesSO.attackClips.Length);
-            RequestPlayAudioClip(audSrc, medKitUsesSO.attackClips[selectedAudioClip]);
+            RequestPlaySFXAudioClip(audSrc, medKitUsesSO.attackClips[selectedAudioClip]);
         }
     }
 
-    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
     {
         SFXManager.instance.PlayAudio(audSrc, audClip);
     }
