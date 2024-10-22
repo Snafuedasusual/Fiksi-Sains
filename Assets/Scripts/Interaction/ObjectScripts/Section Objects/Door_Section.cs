@@ -15,6 +15,7 @@ public class Door_Section : MonoBehaviour, IInteraction, IObjectiveSection, IMak
     [SerializeField] AudioClip lockedSound;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
+    [SerializeField] IObjectiveSection.HasIndicator canIndicate;
 
     public event EventHandler OnInteractActive;
     public event EventHandler OnInteractDeactive;
@@ -82,5 +83,10 @@ public class Door_Section : MonoBehaviour, IInteraction, IObjectiveSection, IMak
     public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
     {
         SFXManager.instance.PlayAudio(audSrc, audClip);
+    }
+
+    public HasIndicator CanHaveIndicator()
+    {
+        return canIndicate;
     }
 }

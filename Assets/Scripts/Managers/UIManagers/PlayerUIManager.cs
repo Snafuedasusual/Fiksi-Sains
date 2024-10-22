@@ -267,11 +267,11 @@ public class PlayerUIManager : MonoBehaviour
     {
         if(e.target == null)
         {
-            interactionNotif.transform.gameObject.gameObject.SetActive(false);
+            interactionNotifObj.SetActive(false);
         }
         else
         {
-            interactionNotif.transform.gameObject.gameObject.SetActive(true);
+            interactionNotifObj.SetActive(true);
             if (e.notif == string.Empty) return;
             interactionNotif.text = e.notif;
         }

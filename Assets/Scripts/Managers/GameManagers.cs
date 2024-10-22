@@ -38,6 +38,8 @@ public class GameManagers : MonoBehaviour
     {
         return isPaused;
     }
+    public GameObject GetPlayer() { return plr; }
+
 
     public void OnPlayerDeathRestart()
     {

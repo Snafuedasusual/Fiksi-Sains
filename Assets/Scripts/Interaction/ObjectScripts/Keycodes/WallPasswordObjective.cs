@@ -14,6 +14,7 @@ public class WallPasswordObjective : MonoBehaviour, IInteraction, IObjectiveSect
     [SerializeField] string notif;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
+    [SerializeField] IObjectiveSection.HasIndicator canIndicate;
 
     public event EventHandler OnInteractActive;
     public event EventHandler OnInteractDeactive;
@@ -106,5 +107,10 @@ public class WallPasswordObjective : MonoBehaviour, IInteraction, IObjectiveSect
     public string UpdateNotif()
     {
         return notif;
+    }
+
+    public HasIndicator CanHaveIndicator()
+    {
+        return canIndicate;
     }
 }

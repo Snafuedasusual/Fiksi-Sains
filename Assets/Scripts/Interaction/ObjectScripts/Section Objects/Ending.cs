@@ -11,6 +11,7 @@ public class Ending : MonoBehaviour, IObjectiveSection
     [SerializeField] TextAsset ifLockedText;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
+    [SerializeField] IObjectiveSection.HasIndicator canIndicate;
 
     public void Unlocked()
     {
@@ -75,5 +76,10 @@ public class Ending : MonoBehaviour, IObjectiveSection
             plrLgc.NullifyState();
             plrLgc.HidePlayer();
         }
+    }
+
+    public HasIndicator CanHaveIndicator()
+    {
+        return canIndicate;
     }
 }

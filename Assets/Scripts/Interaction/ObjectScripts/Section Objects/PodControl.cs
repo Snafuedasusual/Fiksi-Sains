@@ -14,6 +14,7 @@ public class PodControl : MonoBehaviour, IInteraction, IObjectiveSection
     [SerializeField] string notif;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
+    [SerializeField] IObjectiveSection.HasIndicator canIndicate;
 
     private bool isInteracting = false;
     IEnumerator IsInteractionDebounce;
@@ -106,5 +107,10 @@ public class PodControl : MonoBehaviour, IInteraction, IObjectiveSection
     public string UpdateNotif()
     {
         return notif;
+    }
+
+    public HasIndicator CanHaveIndicator()
+    {
+        return canIndicate;
     }
 }

@@ -15,6 +15,7 @@ public class DeadScientist : MonoBehaviour, IInteraction, IObjectiveSection, IMa
     [SerializeField] AudioClip audClip;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
+    [SerializeField] IObjectiveSection.HasIndicator canIndicate;
     [SerializeField] RuntimeAnimatorController controller;
 
     private float currentProgress = 0f;
@@ -139,5 +140,10 @@ public class DeadScientist : MonoBehaviour, IInteraction, IObjectiveSection, IMa
     public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
     {
         SFXManager.instance.PlayAudio(audSrc, audClip);
+    }
+
+    public HasIndicator CanHaveIndicator()
+    {
+        return canIndicate;
     }
 }

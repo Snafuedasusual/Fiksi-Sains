@@ -15,6 +15,7 @@ public class Activation_Object : MonoBehaviour, IInteraction, IObjectiveSection,
     [SerializeField] AudioClip audioClip;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
+    [SerializeField] IObjectiveSection.HasIndicator canIndicate; 
 
     public event EventHandler OnInteractActive;
     public event EventHandler OnInteractDeactive;
@@ -98,5 +99,10 @@ public class Activation_Object : MonoBehaviour, IInteraction, IObjectiveSection,
         if (audSrc == null) return;
         if (audClip == null) return;
         SFXManager.instance.PlayAudio(audSrc, audClip);
+    }
+
+    public HasIndicator CanHaveIndicator()
+    {
+        return canIndicate;
     }
 }

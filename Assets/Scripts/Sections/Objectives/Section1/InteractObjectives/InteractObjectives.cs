@@ -16,6 +16,7 @@ public class InteractObjectives : MonoBehaviour, IObjectiveSection, IInitializeS
 
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
+    [SerializeField] IObjectiveSection.HasIndicator canIndicate;
 
     [SerializeField] string objText;
 
@@ -121,4 +122,8 @@ public class InteractObjectives : MonoBehaviour, IObjectiveSection, IInitializeS
 
     }
 
+    public HasIndicator CanHaveIndicator()
+    {
+        return canIndicate;
+    }
 }
