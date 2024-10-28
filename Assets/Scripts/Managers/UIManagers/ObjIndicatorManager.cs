@@ -15,11 +15,11 @@ public class ObjIndicatorManager : MonoBehaviour
     [SerializeField] GameObject arrow;
 
     RectTransform arrowLogicRect;
-    [SerializeField] RectTransform arrowVisRect;
+    RectTransform arrowVisRect;
 
 
-    float defaultDeltaSize = 45f;
-    float onScreenDeltaSize = 30f;
+    float defaultDeltaSize = 35f;
+    float onScreenDeltaSize = 25f;
 
     public void SetTargetObj(Transform targetObj)
     {
@@ -68,7 +68,7 @@ public class ObjIndicatorManager : MonoBehaviour
 
             arrowLogicRect.eulerAngles = Vector3.forward * angle;
 
-            var borderSize = 50f;
+            var borderSize = 85f;
             Vector3 targetToScreen = Camera.main.WorldToScreenPoint(targetObj.position);
             bool isOffScreen = targetToScreen.x <= (Screen.width - Screen.width) + borderSize || targetToScreen.x >= Screen.width - borderSize || targetToScreen.y <= (Screen.height - Screen.height) + borderSize || targetToScreen.y >= Screen.height - borderSize;
 
@@ -87,6 +87,7 @@ public class ObjIndicatorManager : MonoBehaviour
             else
             {
                 arrowVisRect.sizeDelta = new Vector2(onScreenDeltaSize, onScreenDeltaSize);
+                arrowLogicRect.eulerAngles = Vector3.forward * 180;
                 arrowLogicRect.position = targetToScreen;
             }
 

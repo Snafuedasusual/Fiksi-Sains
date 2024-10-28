@@ -36,6 +36,9 @@ public class PlayerUIManager : MonoBehaviour
     [Header("ObjectiveText")]
     [SerializeField] GameObject objText;
 
+    [Header("ObjIndicator")]
+    [SerializeField] GameObject arrow;
+
     private float bar1ImageAlpha;
     private float bar2ImageAlpha;
     private float circleImageAlpha;
@@ -89,6 +92,7 @@ public class PlayerUIManager : MonoBehaviour
         plrToUI.SendStaminaInfoToPlayerUI -= SendStaminaInfoToPlayerUIReceiver;
         plrToUI.SendVisibilityInfoToPlayerUI -= SendVisibilityInfoToPlayerUIReceiver;
         plrToUI.SendInteractionInfoToPlayerUI -= SendInteractionInfoToPlayerUIReceiver;
+        plrToUI.SendNullifyStateEvent -= SendNullifyStateEventReceiver;
     }
 
     public void ActivateUI()
@@ -126,6 +130,7 @@ public class PlayerUIManager : MonoBehaviour
             staminaComponent.gameObject.SetActive(false);
             objText.gameObject.SetActive(false);
             interactionNotifObj.gameObject.SetActive(false);
+            arrow.gameObject.SetActive(false);
         }
         else
         {
@@ -134,6 +139,7 @@ public class PlayerUIManager : MonoBehaviour
             staminaComponent.gameObject.SetActive(true);
             objText.gameObject.SetActive(true);
             interactionNotifObj.gameObject.SetActive(true);
+            arrow.gameObject.SetActive(true);
         }
     }
 
@@ -175,6 +181,10 @@ public class PlayerUIManager : MonoBehaviour
         var calculateRelativeToMaxAlpha = calculatedAlpha / 225;
         bloodOverlay.color = new Color(bloodOverlay.color.r, bloodOverlay.color.g, bloodOverlay.color.b, calculateRelativeToMaxAlpha);
     }
+
+
+
+
 
     private void SendStaminaInfoToPlayerUIReceiver(object sender, PlayerToUI.SendStaminaInfoToPlayerUIArgs e)
     {
@@ -262,6 +272,10 @@ public class PlayerUIManager : MonoBehaviour
         var newVis = Mathf.RoundToInt(e.plrVis);
         sliderVis.value = e.plrVis;
     }
+
+
+
+
 
     private void SendInteractionInfoToPlayerUIReceiver(object sender, PlayerToUI.SendInteractionInfoToPlayerUIArgs e)
     {

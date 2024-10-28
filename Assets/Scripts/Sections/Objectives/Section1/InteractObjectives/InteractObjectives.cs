@@ -72,7 +72,6 @@ public class InteractObjectives : MonoBehaviour, IObjectiveSection, IInitializeS
         if (ReceiveDebounce != null) return;
         ReceiveDebounce = StartCoroutine(StartReceiveDebounce());
         interactionCount++;
-        Debug.Log(interactionCount);
         if (interactionCount >= amountOfInteractions) OnDone();
     }
 

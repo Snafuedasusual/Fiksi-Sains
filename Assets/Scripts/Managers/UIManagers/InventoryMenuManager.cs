@@ -26,6 +26,7 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
     [SerializeField] GameObject inventorySlots;
     [SerializeField] TextMeshProUGUI itemName;
     [SerializeField] TextMeshProUGUI itemDesc;
+    [SerializeField] TextMeshProUGUI equipText;
     [SerializeField] Image healthStatus;
     [SerializeField] GameObject currentDraggingItem;
     [SerializeField] GameObject hoveredItem;
@@ -289,17 +290,24 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
         hoveredItem = null;
     }
 
+
+
+
     private void ChangeText(string name, string desc)
     {
         itemName.text = name;
         itemDesc.text = desc;
+        equipText.text = "Press Mouse1 to equip " + name;
     }
 
     private void DeleteText()
     {
         itemName.text = string.Empty;
         itemDesc.text = string.Empty;
+        equipText.text = string.Empty;
     }
+
+
 
     private void ChangeHoveredItem(GameObject item)
     {
@@ -309,6 +317,10 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
     {
         hoveredItem = null;
     }
+
+
+
+
 
     private void OnEInputEventSenderReceiver(object sender, EventArgs e)
     {
