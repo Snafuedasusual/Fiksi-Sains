@@ -3,13 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Levers : MonoBehaviour, IInteraction
+public class Levers : MonoBehaviour, IInteraction, IMakeSounds
 {
     [SerializeField] HandlerSection3 handler;
 
     IEnumerator IsInteractDebounce;
 
     [SerializeField] string notif;
+    [SerializeField] AudioSource audSrc;
+    [SerializeField] AudioClip audClip;
 
     public event EventHandler OnInteractActive;
     public event EventHandler OnInteractDeactive;
@@ -32,6 +34,7 @@ public class Levers : MonoBehaviour, IInteraction
         {
             IsInteractDebounce = InteractDebounce();
             StartCoroutine(IsInteractDebounce);
+            RequestPlaySFXAudioClip(audSrc, audClip);
             leverObj.InteractedLever();
         }
     }
@@ -59,5 +62,10 @@ public class Levers : MonoBehaviour, IInteraction
     public string UpdateNotif()
     {
         return notif;
+    }
+
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
+    {
+        SFXManager.instance.PlayAudio(audSrc, audClip);
     }
 }

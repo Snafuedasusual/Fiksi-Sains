@@ -16,6 +16,17 @@ public interface IObjectiveSection
         Unlocked
     }
 
+    public enum HasIndicator
+    {
+        Yes,
+        No
+    }
+
+
+
+    public HasIndicator CanHaveIndicator();
+
+
     public void Unlocked()
     {
 

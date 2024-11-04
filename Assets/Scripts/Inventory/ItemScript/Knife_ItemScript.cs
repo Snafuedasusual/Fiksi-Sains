@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class Knife_ItemScript : ItemScript
 {
@@ -63,7 +62,7 @@ public class Knife_ItemScript : ItemScript
                 {
                     if ((int)item.GetItemEnum() == (int)itemEnum)
                     {
-                        break;
+                        return;
                     }
                 }
             }

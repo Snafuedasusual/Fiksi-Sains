@@ -4,15 +4,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using static IObjectiveSection;
 
-public class Door_Section : MonoBehaviour, IInteraction, IObjectiveSection
+public class Door_Section : MonoBehaviour, IInteraction, IObjectiveSection, IMakeSounds
 {
     [SerializeField] SectionEventComms sectionEventComms;
 
     [SerializeField] string objText;
     [SerializeField] string notif;
     [SerializeField] TextAsset ifLockedText;
+    [SerializeField] AudioSource audSrc;
+    [SerializeField] AudioClip lockedSound;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
+    [SerializeField] IObjectiveSection.HasIndicator canIndicate;
 
     public event EventHandler OnInteractActive;
     public event EventHandler OnInteractDeactive;
@@ -26,7 +29,7 @@ public class Door_Section : MonoBehaviour, IInteraction, IObjectiveSection
         }
         else
         {
-            if(ifLockedText != null) { SubtitleManager.instance.ActivateSubtitle(ifLockedText); }
+            if(ifLockedText != null) { SubtitleManager.instance.ActivateSubtitle(ifLockedText); RequestPlaySFXAudioClip(audSrc, lockedSound); }
         }
     }
 
@@ -75,5 +78,15 @@ public class Door_Section : MonoBehaviour, IInteraction, IObjectiveSection
     public string UpdateNotif()
     {
         return notif; 
+    }
+
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
+    {
+        SFXManager.instance.PlayAudio(audSrc, audClip);
+    }
+
+    public HasIndicator CanHaveIndicator()
+    {
+        return canIndicate;
     }
 }

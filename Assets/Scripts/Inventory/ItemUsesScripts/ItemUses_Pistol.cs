@@ -158,15 +158,15 @@ public class ItemUses_Pistol : ItemUses, IInitializeScript, IMakeSounds
     {
         if (itemUsesSO.attackClips == null) return;
         if (itemUsesSO.attackClips.Length <= 0) return;
-        if (itemUsesSO.attackClips.Length == 1) RequestPlayAudioClip(audSrc, itemUsesSO.attackClips[0]);
+        if (itemUsesSO.attackClips.Length == 1) RequestPlaySFXAudioClip(audSrc, itemUsesSO.attackClips[0]);
         else
         {
             var selectedAudioClip = Random.Range(0, itemUsesSO.attackClips.Length);
-            RequestPlayAudioClip(audSrc, itemUsesSO.attackClips[selectedAudioClip]);
+            RequestPlaySFXAudioClip(audSrc, itemUsesSO.attackClips[selectedAudioClip]);
         }
     }
 
-    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
     {
         SFXManager.instance.PlayAudio(audSrc, audClip);
     }

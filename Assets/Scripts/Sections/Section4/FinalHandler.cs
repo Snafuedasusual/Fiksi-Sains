@@ -12,7 +12,6 @@ public class FinalHandler : BaseHandler, IInitializeScript
     [SerializeField] Transform plrStart;
     [SerializeField] Door_Section end;
 
-    private int[] ambianceClips;
 
     public void InitializeScript()
     {
@@ -66,6 +65,7 @@ public class FinalHandler : BaseHandler, IInitializeScript
         newObj.Unlocked();
         ObjectiveTextManager.instance.UpdateText(newObj.GetObjText());
         AmbianceManager.instance.RequestPlay(ambianceClips);
+        ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
     }
 
     public override void Restart()
@@ -92,6 +92,7 @@ public class FinalHandler : BaseHandler, IInitializeScript
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
         newObj.Unlocked();
         ObjectiveTextManager.instance.UpdateText(newObj.GetObjText());
+        ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
     }
 
     private void OnObjDoneEventReceiver(object sender, SectionEventComms.OnObjDoneEventArgs e)
@@ -107,6 +108,7 @@ public class FinalHandler : BaseHandler, IInitializeScript
             {
                 currentObj = i;
                 UnlockNextObjective();
+                ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
                 break;
             }
             else if (objectives[i] == gameObject && i < objectives.Length - 1 && i > currentObj)
@@ -116,6 +118,7 @@ public class FinalHandler : BaseHandler, IInitializeScript
                 FinishObjectivesBetween(currentObj, i);
                 pastCurrentObj.ForceDone();
                 UnlockNextObjective();
+                ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
                 return;
             }
             else if (objectives[i] == gameObject && i == objectives.Length - 1 && i > currentObj)
@@ -187,6 +190,7 @@ public class FinalHandler : BaseHandler, IInitializeScript
             StartCoroutine(IsFinishLevelDebounce);
             GameManagers.instance.NextLevel();
             ObjectiveTextManager.instance.EmptyText();
+            ObjIndicatorManager.instance.NullifyTargetObj();
         }
 
     }

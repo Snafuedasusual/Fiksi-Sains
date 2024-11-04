@@ -1,0 +1,13 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: SA_PlrCutHandAnimController
+  m_Controller: {fileID: 9100000, guid: 5ee1667a665a6e1469c32afff9835158, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 93d6de7766cee1f4ca2b0cf5e79ab8b1, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 32066ab3ac486474e93189d0d779dbc0, type: 2}

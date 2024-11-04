@@ -38,6 +38,8 @@ public class GameManagers : MonoBehaviour
     {
         return isPaused;
     }
+    public GameObject GetPlayer() { return plr; }
+
 
     public void OnPlayerDeathRestart()
     {
@@ -398,6 +400,7 @@ public class GameManagers : MonoBehaviour
         AmbianceManager.instance.RefreshAudio();
         if (currentHandler != null) { currentHandler.player = null; }
         currentHandler = null;
+        LoadingScreenManager.instance.ActivateLoading();
         for(int i = 0; i < SceneManager.sceneCount; i++)
         {
             Scene loadedScene = SceneManager.GetSceneAt(i);
@@ -415,6 +418,7 @@ public class GameManagers : MonoBehaviour
     {
         if (currentHandler != null) { currentHandler.player = null; }
         currentHandler = null;
+        LoadingScreenManager.instance.ActivateLoading();
         for (int i = 0; i < SceneManager.sceneCount; i++)
         {
             Scene loadedScene = SceneManager.GetSceneAt(i);
@@ -478,8 +482,10 @@ public class GameManagers : MonoBehaviour
     public void StartSection()
     {
         if (currentHandler == null) { Debug.Log("Null!"); return; }
+        LoadingScreenManager.instance.DeactivateLoading();
         UIManager.instance.CloseAllMenus();
         ChaseMusicManager.instance.StopMusic();
+        GenericMusicManager.instance.StopMusic();
         currentHandler.player = plr;
         currentHandler.StartLevel();
         plr.transform.GetComponent<PlayerLogic>().UnNullifyState();
@@ -506,8 +512,10 @@ public class GameManagers : MonoBehaviour
     public void RestartSection()
     {
         if (currentHandler == null) { Debug.Log("Null!"); return; }
+        LoadingScreenManager.instance.DeactivateLoading();
         UIManager.instance.CloseAllMenus();
         ChaseMusicManager.instance.StopMusic();
+        GenericMusicManager.instance.StopMusic();
         currentHandler.player = plr;
         currentHandler.Restart();
         SetStateToPlaying();

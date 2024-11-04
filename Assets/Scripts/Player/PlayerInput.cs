@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -119,27 +118,46 @@ public class PlayerInput : MonoBehaviour
     //End of Shift Input Detection-------------------------------------------------
 
 
+    private bool SpaceInput()
+    {
+        if (Input.GetKey(KeyCode.Space)) { return true; }
+        else { return false; }
+    }
 
-
+    public bool GetSpaceInput()
+    {
+        return SpaceInput();
+    }
 
     //Handles Esc input and events related.
     public event EventHandler EscInputEvent;
-    private bool esc_Deboune = false;
-    private void EscInputDetector()
+    private bool esc_Debounce = false;
+    private bool EscInputDetector()
     {
-        if (Input.GetKey(KeyCode.Escape) && esc_Deboune == false)
+        if (Input.GetKey(KeyCode.Escape) && esc_Debounce == false)
         {
-            esc_Deboune = true;
+            esc_Debounce = true;
             EscInputEvent?.Invoke(this, EventArgs.Empty);
+            return false;
         }
-        if(Input.GetKey(KeyCode.Escape) && esc_Deboune == true)
+        if(Input.GetKey(KeyCode.Escape) && esc_Debounce == true)
         {
-
+            return false;
         }
         else if(!Input.GetKeyDown(KeyCode.Escape))
         {
-            esc_Deboune= false;
+            esc_Debounce= false;
+            return false;
         }
+        else
+        {
+            return false;
+        }
+    }
+
+    public bool GetEscInput()
+    {
+        return EscInputDetector();
     }
     //Esc input ends------------------------------------------------
 
@@ -190,6 +208,7 @@ public class PlayerInput : MonoBehaviour
         FlashlightInput();
         EscInputDetector();
         TabInput();
+        SpaceInput();
         Mouse1Pressed();
     }
 

@@ -19,6 +19,8 @@ public class ChaseMusicManager : MonoBehaviour
 
     private float fadeTime = 5f;
 
+    private float originalVolume = 0.7f;
+
     public void AddEnemyAlert(GameObject enemy)
     {
         if (enemiesAlert.Count <= 0) { enemiesAlert.Add(enemy); PlayChaseMusic(); }
@@ -56,7 +58,7 @@ public class ChaseMusicManager : MonoBehaviour
         if (musicSO.chaseMusic.Length == 1 && handler.GetChaseMusicClip() == 0) 
         {
             if (FadeOutChaseMusic != null) return;
-            if (audSrc.volume < 1f) audSrc.volume = 1f;
+            if (audSrc.volume < originalVolume) audSrc.volume = originalVolume;
             if (isChaseMusic == true) return;
             AmbianceManager.instance.PauseAudio();
             audSrc.clip = musicSO.chaseMusic[0]; 
@@ -68,7 +70,7 @@ public class ChaseMusicManager : MonoBehaviour
         else 
         {
             if(FadeOutChaseMusic != null) return;
-            if (audSrc.volume < 1f) audSrc.volume = 1f;
+            if (audSrc.volume < originalVolume) audSrc.volume = originalVolume;
             if (isChaseMusic == true) return;
             AmbianceManager.instance.PauseAudio();
             audSrc.clip = musicSO.chaseMusic[handler.GetChaseMusicClip()]; 
@@ -109,5 +111,6 @@ public class ChaseMusicManager : MonoBehaviour
         audSrc.clip = null;
         isChaseMusic = false;
         enemiesAlert.Clear();
+        AmbianceManager.instance.UnPauseAudio();
     }
 }

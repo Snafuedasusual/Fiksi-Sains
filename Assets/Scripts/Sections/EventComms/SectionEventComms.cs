@@ -25,4 +25,10 @@ public class SectionEventComms : MonoBehaviour
         ScriptedEventNoArgs?.Invoke(this, EventArgs.Empty);
     }
 
+    public event EventHandler<ScriptedEventPlayerArgs> ScriptedEventPlayer;
+    public class ScriptedEventPlayerArgs : EventArgs { public GameObject obj; }
+    public void StartScriptedEventPlayer(GameObject plr)
+    {
+        ScriptedEventPlayer?.Invoke(this, new ScriptedEventPlayerArgs { obj = plr });
+    }
 }

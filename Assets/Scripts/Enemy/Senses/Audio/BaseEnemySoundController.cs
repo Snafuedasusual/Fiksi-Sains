@@ -62,7 +62,7 @@ public class BaseEnemySoundController : MonoBehaviour, IMakeSounds
     }
 
 
-    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
     {
 
     }

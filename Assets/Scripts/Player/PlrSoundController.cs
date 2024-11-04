@@ -50,16 +50,16 @@ public class PlrSoundController : MonoBehaviour, IMakeSounds, IInitializeScript
         {
             if (entityClipsSO == null) return;
             if (entityClipsSO.pickupClips.Length <= 0) return;
-            if (entityClipsSO.pickupClips.Length == 1) RequestPlayAudioClip(audSrc, entityClipsSO.pickupClips[0]);
+            if (entityClipsSO.pickupClips.Length == 1) RequestPlaySFXAudioClip(audSrc, entityClipsSO.pickupClips[0]);
             else
             {
                 var selectedAudioClip = Random.Range(0, entityClipsSO.pickupClips.Length);
-                RequestPlayAudioClip(audSrc, entityClipsSO.pickupClips[selectedAudioClip]);
+                RequestPlaySFXAudioClip(audSrc, entityClipsSO.pickupClips[selectedAudioClip]);
             }
         }
     }
 
-    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
     {
         SFXManager.instance.PlayAudio(audSrc, audClip);
     }

@@ -13,6 +13,7 @@ public class AmbianceManager : MonoBehaviour
 
     float fadeTime = 5f;
 
+    float originalVolume = 0.2f;
 
     private void Awake()
     {
@@ -29,6 +30,7 @@ public class AmbianceManager : MonoBehaviour
     private void Start()
     {
         ambianceClips = ambianceSO.audioClips;
+        audioSrc.volume = originalVolume;
     }
 
     public void RequestPlay(int[] clips)
@@ -64,12 +66,12 @@ public class AmbianceManager : MonoBehaviour
     IEnumerator StartFadeIn()
     {
 
-        while(audioSrc.volume < 1f)
+        while(audioSrc.volume < originalVolume)
         {
             audioSrc.volume += Time.deltaTime / fadeTime;
             yield return null;
         }
-        audioSrc.volume = 1f;
+        audioSrc.volume = originalVolume;
         audioSrc.UnPause();
         FadeIn = null;
     }

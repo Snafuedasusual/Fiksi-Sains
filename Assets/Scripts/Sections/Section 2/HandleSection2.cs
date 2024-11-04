@@ -81,6 +81,7 @@ public class HandlerSection2 : BaseHandler, IInitializeScript
         ObjectiveTextManager.instance.UpdateText(newObj.GetObjText());
         ResetTheEnemies();
         AmbianceManager.instance.RequestPlay(ambianceClips);
+        ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
     }
 
     public override void Restart()
@@ -109,6 +110,7 @@ public class HandlerSection2 : BaseHandler, IInitializeScript
         newObj.Unlocked();
         ObjectiveTextManager.instance.UpdateText(newObj.GetObjText());
         ResetTheEnemies();
+        ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
     }
 
     private void ResetTheEnemies()
@@ -136,6 +138,7 @@ public class HandlerSection2 : BaseHandler, IInitializeScript
             {
                 currentObj = i;
                 UnlockNextObjective();
+                ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
                 break;
             }
             else if (objectives[i] == gameObject && i < objectives.Length - 1 && i > currentObj)
@@ -145,6 +148,7 @@ public class HandlerSection2 : BaseHandler, IInitializeScript
                 FinishObjectivesBetween(currentObj, i);
                 pastCurrentObj.ForceDone();
                 UnlockNextObjective();
+                ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
                 return;
             }
             else if (objectives[i] == gameObject && i == objectives.Length - 1 && i > currentObj)
@@ -217,6 +221,7 @@ public class HandlerSection2 : BaseHandler, IInitializeScript
             StartCoroutine(IsFinishLevelDebounce);
             GameManagers.instance.NextLevel();
             ObjectiveTextManager.instance.EmptyText();
+            ObjIndicatorManager.instance.NullifyTargetObj();
         }
 
     }

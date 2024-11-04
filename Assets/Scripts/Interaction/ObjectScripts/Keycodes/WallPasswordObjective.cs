@@ -14,6 +14,7 @@ public class WallPasswordObjective : MonoBehaviour, IInteraction, IObjectiveSect
     [SerializeField] string notif;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
+    [SerializeField] IObjectiveSection.HasIndicator canIndicate;
 
     public event EventHandler OnInteractActive;
     public event EventHandler OnInteractDeactive;
@@ -43,9 +44,8 @@ public class WallPasswordObjective : MonoBehaviour, IInteraction, IObjectiveSect
                 isInteracting = true;
                 IsInteractionDebounce = InteractionDebounce();
                 StartCoroutine(IsInteractionDebounce);
-                var spawnedUI = Instantiate(wallPasswordUI);
+                var spawnedUI = Instantiate(wallPasswordUI, UIManager.instance.GetCanvas().transform);
                 InteractableUIManager.instance.ActivateInteractableUI(spawnedUI);
-                GameManagers.instance.SetStateToOnUI();
 
                 IUIObjectives iUI = spawnedUI.TryGetComponent(out iUI) ? iUI : null;
                 iUI.AddListener(transform.gameObject);
@@ -59,7 +59,6 @@ public class WallPasswordObjective : MonoBehaviour, IInteraction, IObjectiveSect
                 IsInteractionDebounce = InteractionDebounce();
                 StartCoroutine(IsInteractionDebounce);
                 InteractableUIManager.instance.DeactivateInteractableUI();
-                GameManagers.instance.SetStateToPlaying();
             }
         }
     }
@@ -108,5 +107,10 @@ public class WallPasswordObjective : MonoBehaviour, IInteraction, IObjectiveSect
     public string UpdateNotif()
     {
         return notif;
+    }
+
+    public HasIndicator CanHaveIndicator()
+    {
+        return canIndicate;
     }
 }

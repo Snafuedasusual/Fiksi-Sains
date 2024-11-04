@@ -10,10 +10,10 @@ public class SA_VisualAudio : MonoBehaviour, IMakeSounds
     public void GenericSingleAudioPlay()
     {
         if (genericSingleAudClip == null) return;
-        RequestPlayAudioClip(audSrc, genericSingleAudClip);
+        RequestPlaySFXAudioClip(audSrc, genericSingleAudClip);
     }
 
-    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
     {
         SFXManager.instance.PlayAudio(audSrc, audClip);
     }

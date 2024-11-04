@@ -65,15 +65,15 @@ public class Hide_Spots : MonoBehaviour, IInteraction, IMakeSounds
     {
         if (audSrc == null) return;
         if (audClips.Length <= 0) return;
-        if (audClips.Length == 1) RequestPlayAudioClip(audSrc, audClips[0]);
+        if (audClips.Length == 1) RequestPlaySFXAudioClip(audSrc, audClips[0]);
         else
         {
             var selectedAudioClip = Random.Range(0, audClips.Length);
-            RequestPlayAudioClip(audSrc, audClips[selectedAudioClip]);
+            RequestPlaySFXAudioClip(audSrc, audClips[selectedAudioClip]);
         }
     }
 
-    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
     {
         SFXManager.instance.PlayAudio(audSrc, audClip);
     }

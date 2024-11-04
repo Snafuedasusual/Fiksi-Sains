@@ -22,7 +22,7 @@ public class LittleVent : MonoBehaviour, IInteraction, IMakeSounds
             IsDebounce = Debounce();
             StartCoroutine(IsDebounce);
             brainVent.InitializeVent(plrSpot, plr);
-            RequestPlayAudioClip(audSrc, enterExit);
+            RequestPlaySFXAudioClip(audSrc, enterExit);
         }
     }
 
@@ -50,7 +50,7 @@ public class LittleVent : MonoBehaviour, IInteraction, IMakeSounds
         return notif;
     }
 
-    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
     {
         SFXManager.instance.PlayAudio(audSrc, audClip);
     }

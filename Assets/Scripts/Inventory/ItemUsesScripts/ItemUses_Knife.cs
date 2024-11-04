@@ -98,15 +98,15 @@ public class ItemUses_Knife : ItemUses, IInitializeScript, IMakeSounds
     {
         if (knifeUsesSO.attackClips == null) return;
         if (knifeUsesSO.attackClips.Length <= 0) return;
-        if (knifeUsesSO.attackClips.Length == 1) RequestPlayAudioClip(audSrc, knifeUsesSO.attackClips[0]);
+        if (knifeUsesSO.attackClips.Length == 1) RequestPlaySFXAudioClip(audSrc, knifeUsesSO.attackClips[0]);
         else
         {
             var selectedAudioClip = Random.Range(0, knifeUsesSO.attackClips.Length);
-            RequestPlayAudioClip(audSrc, knifeUsesSO.attackClips[selectedAudioClip]);
+            RequestPlaySFXAudioClip(audSrc, knifeUsesSO.attackClips[selectedAudioClip]);
         }
     }
 
-    public void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
     {
         SFXManager.instance.PlayAudio(audSrc, audClip);
     }
