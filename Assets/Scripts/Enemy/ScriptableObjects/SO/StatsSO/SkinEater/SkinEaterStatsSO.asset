@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68c2a75d19a1a6e4fb5a79b2edfabb65, type: 3}
+  m_Name: SkinEaterStatsSO
+  m_EditorClassIdentifier: 
+  defaultSpeed: 3.5
+  defaultAccel: 60
+  chaseSpeed: 5
+  chaseAccel: 120
+  minDistToAttack: 3.25
+  mainDmg: 15
+  mainDmgKnckBck: 0
+  mainDmgRange: 3.25
+  secDmg: 0
+  secDmgKnckBck: 0
+  secDmgRange: 0
+  thirdDmg: 0
+  thirdDmgKnckBck: 0
+  thirdDmgRange: 0
+  fourthDmg: 0
+  fourthDmgKnckBck: 0
+  fourthDmgRange: 0
+  hearingModifier: 2
+  centerBody: {x: 0, y: 0, z: 0}

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a96d94bd91fd2a34d93cb2db33a5c9c5, type: 3}
+  m_Name: PlayerAudioClipsSO
+  m_EditorClassIdentifier: 
+  attackAudios: []
+  footStepsClips:
+  - {fileID: 8300000, guid: 1db81fc30b0513045b05e0e8b20dc8f2, type: 3}
+  - {fileID: 8300000, guid: ba48202c0d6e79942a61e703696aa5e3, type: 3}
+  idleClips: []
+  chaseClips: []
+  pickupClips:
+  - {fileID: 8300000, guid: bda1320a94077704a9eb9ef396c826eb, type: 3}
+  hurtClips: []
+  deathClips: []

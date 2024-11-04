@@ -1,8 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
-public class HandlerSection3: BaseHandler
+public class HandlerSection3 : BaseHandler, IInitializeScript
 {
     [SerializeField] Transform plrStart;
     [SerializeField] Transform[] levers;
@@ -11,95 +14,214 @@ public class HandlerSection3: BaseHandler
     [SerializeField] int amountOfLevers;
     [SerializeField] int activatedLevers;
     [SerializeField] Door_Section doorSection;
+    [SerializeField] GameObject skinEater;
+    [SerializeField] NavMeshAgent seAgent;
+    [SerializeField] Vector3 skinEaterPos;
+
+    [Header("Script References")]
+    [SerializeField] SectionEventComms sectionEventComms;
+
+
+    public void InitializeScript()
+    {
+        sectionEventComms.OnObjActivatedEvent += OnObjActivatedReceiver;
+        sectionEventComms.OnObjDoneEvent += OnObjDoneEventReceiver;
+        ambianceClips = new int[2];
+        chaseClips = 1000;
+        ambianceClips[0] = (int)AmbianceSO.AmbianceClips.AMBIANCE_SECT3_1;
+        ambianceClips[1] = (int)AmbianceSO.AmbianceClips.AMBIANCE_SECT3_2;
+    }
+
+
+    public void DeInitializeScript()
+    {
+        sectionEventComms.OnObjActivatedEvent -= OnObjActivatedReceiver;
+        sectionEventComms.OnObjDoneEvent -= OnObjDoneEventReceiver;
+    }
+
+
+    private void OnEnable()
+    {
+        InitializeScript();
+    }
+    private void OnDisable()
+    {
+        DeInitializeScript();
+    }
+    private void OnDestroy()
+    {
+        DeInitializeScript();
+    }
+
+    private void SkinEaterSpawn()
+    {
+        skinEater.SetActive(true);
+    }
+
+    public override void StartLevel()
+    {
+        currentObj = 0;
+        player.transform.position = plrStart.position;
+        for (int i = 0; i < objectives.Length; i++)
+        {
+            if (objectives[i].TryGetComponent(out IObjectiveSection objective))
+            {
+                objective.ResetObj();
+            }
+        }
+        if (scriptedEvents.Length > 0)
+        {
+            for (int i = 0; i < scriptedEvents.Length; i++)
+            {
+                if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+                {
+                    events.ResetTrigger();
+                }
+            }
+        }
+        IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
+        newObj.Unlocked();
+        ObjectiveTextManager.instance.UpdateText(newObj.GetObjText());
+        seAgent.Warp(skinEaterPos);
+        skinEater.SetActive(false);
+        AmbianceManager.instance.RequestPlay(ambianceClips);
+        ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
+    }
 
     public override void Restart()
     {
+        currentObj = 0;
         player.transform.position = plrStart.position;
-        SetLevers();
-    }
-
-    float minDistance = 18;
-
-    private void SetLevers()
-    {
-        for (int i = 0; i < amountOfLevers; i++)
+        for (int i = 0; i < objectives.Length; i++)
         {
-            var selectedLever = levers[Random.Range(0, levers.Length - 1)].transform;
-            if(activeLevers.Count > 0)
+            if (objectives[i].TryGetComponent(out IObjectiveSection objective))
             {
-                for(int j = 0; j < activeLevers.Count; j++)
-                {
-                    var dist = Vector3.Distance(activeLevers[j].position, selectedLever.position);
-                    if(dist < minDistance || activeLevers[j].transform == selectedLever.transform)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        if(j == activeLevers.Count - 1)
-                        {
-                            selectedLever.gameObject.SetActive(true);
-                            activeLevers.Add(selectedLever);
-                        }
-                    }
-                }
-            }
-            else if(activeLevers.Count == 0)
-            {
-                selectedLever.gameObject.SetActive(true);
-                activeLevers.Add(selectedLever);
+                objective.ResetObj();
             }
         }
-        if(activeLevers.Count > amountOfLevers)
+        if (scriptedEvents.Length > 0)
         {
-            activeLevers.RemoveAt(activeLevers.Count - 1);
+            for (int i = 0; i < scriptedEvents.Length; i++)
+            {
+                if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
+                {
+                    events.ResetTrigger();
+                }
+            }
         }
-        LeverChecker();
-        //DeactivateNonActiveLevers();
+        IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
+        newObj.Unlocked();
+        ObjectiveTextManager.instance.UpdateText(newObj.GetObjText());
+        seAgent.Warp(skinEaterPos);
+        skinEater.SetActive(false);
+        ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
     }
 
-    private void LeverChecker()
+
+
+    private void OnObjDoneEventReceiver(object sender, SectionEventComms.OnObjDoneEventArgs e)
     {
-        if(activeLevers.Count < amountOfLevers)
+        UpdateObjective(e.obj);
+    }
+
+    private void OnObjActivatedReceiver(object sender, SectionEventComms.OnObjActivatedEventArgs e)
+    {
+        skinEater.SetActive(true);
+    }
+
+    protected override void UpdateObjective(GameObject gameObject)
+    {
+        for (int i = 0; i < objectives.Length; i++)
         {
-            for(int i = 0; i < levers.Length; i++)
+            if (objectives[i] == gameObject && i < objectives.Length - 1 && i == currentObj)
             {
-
-                for(int j = 0; j < activeLevers.Count; j++)
-                {
-                    float distance = Vector3.Distance(activeLevers[j].position, levers[i].position);
-                    if (distance < minDistance || activeLevers[j].transform == levers[i].transform)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        if(j == activeLevers.Count - 1)
-                        {
-                            activeLevers.Add(levers[i].transform);
-                            levers[i].gameObject.SetActive(true);
-                        }
-                    }
-                }
-                if(activeLevers.Count == amountOfLevers)
-                {
-                    break;
-                }
-                else
-                {
-
-                }
+                currentObj = i;
+                UnlockNextObjective();
+                ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
+                return;
+            }
+            else if (objectives[i] == gameObject && i < objectives.Length - 1 && i > currentObj)
+            {
+                currentObj = i;
+                IObjectiveSection pastCurrentObj = objectives[currentObj].TryGetComponent(out IObjectiveSection objSelect) ? objSelect : null;
+                FinishObjectivesBetween(currentObj, i);
+                pastCurrentObj.ForceDone();
+                UnlockNextObjective();
+                ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
+                return;
+            }
+            else if (objectives[i] == gameObject && i == objectives.Length - 1 && i > currentObj)
+            {
+                currentObj = i;
+                IObjectiveSection pastCurrentObj = objectives[currentObj].TryGetComponent(out IObjectiveSection objSelect) ? objSelect : null;
+                FinishObjectivesBetween(currentObj, i);
+                pastCurrentObj.ForceDone();
+                FinishLevel();
+                ObjIndicatorManager.instance.NullifyTargetObj();
+                return;
+            }
+            else if (objectives[i] == gameObject && i == objectives.Length - 1 && i == currentObj)
+            {
+                FinishLevel();
             }
         }
     }
 
-    public void InteractedLever()
+    protected override void UnlockNextObjective()
     {
-        activatedLevers++;
-        Debug.Log("Yo!");
-        if(activatedLevers == activeLevers.Count)
+        if (objectives[currentObj + 1].TryGetComponent(out IObjectiveSection objective))
         {
-            doorSection.canFinish = true;
+            currentObj += 1;
+            objective.Unlocked();
+            ObjectiveTextManager.instance.UpdateText(objective.GetObjText());
         }
     }
+
+    protected override void FinishObjectivesBetween(int currentObj, int skippedObj)
+    {
+        IObjectiveSection objectiveSection;
+        for (int i = skippedObj; currentObj < i; i--)
+        {
+            if (i < currentObj || i == currentObj)
+            {
+
+            }
+            if (objectives[i] == objectives[currentObj])
+            {
+
+            }
+            if (objectives[i] != objectives[currentObj] && objectives[i] != objectives[skippedObj])
+            {
+                if (objectives[i].TryGetComponent(out objectiveSection))
+                {
+                    objectiveSection.ForceDone();
+                }
+            }
+        }
+    }
+
+    IEnumerator IsFinishLevelDebounce;
+    IEnumerator FinishLevelDebounce()
+    {
+        var debTime = 0f;
+        var debRate = 0.1f;
+        while (debTime < debRate)
+        {
+            debTime += Time.deltaTime;
+            yield return null;
+        }
+        IsFinishLevelDebounce = null;
+    }
+    protected override void FinishLevel()
+    {
+        if (IsFinishLevelDebounce == null)
+        {
+            IsFinishLevelDebounce = FinishLevelDebounce();
+            StartCoroutine(IsFinishLevelDebounce);
+            GameManagers.instance.NextLevel();
+            ObjectiveTextManager.instance.EmptyText();
+        }
+
+    }
+
 }
