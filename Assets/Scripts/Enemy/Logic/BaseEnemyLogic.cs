@@ -380,6 +380,11 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
     {
         if(target != null)
         {
+            PlayerLogic lgcPlr = target.transform.TryGetComponent(out PlayerLogic plrLgc) ? plrLgc : null;
+            if(lgcPlr == null) { SendInfoToAlertBar(0f); StopMove(); currentState = EnemyStates.ChaseLastKnownPosition; return; }
+            if (lgcPlr.plrState == PlayerLogic.PlayerStates.InVent)
+            { SendInfoToAlertBar(0f); StopMove(); currentState = EnemyStates.LookAroundSearching; ; return; }
+
             AddEnemyToAlertList();
             SendInfoToAlertBar(20f);
             RunToPos(target.position);
@@ -884,7 +889,10 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         var trackCount = 0;
         if(target != null)
         {
-            while(target != null)
+            PlayerLogic lgcPlr = target.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
+            if (lgcPlr == null) { IsTrackingTrails = null; yield break; }
+            if (lgcPlr.plrState == PlayerLogic.PlayerStates.InVent) { IsTrackingTrails = null; yield break; }
+            while (target != null)
             {
                 trackTime = 0f;
                 while(trackTime < trackRate)

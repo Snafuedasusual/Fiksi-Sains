@@ -64,9 +64,19 @@ public class EntityHealthController : MonoBehaviour, IHealthInterface
         }
     }
 
+
+
     public void ResetHealth()
     {
         health = baseHealth.health;
+        HealthBarToUI?.Invoke(this, new HealthBarToUIArgs { healthBarValue = health });
+    }
+
+
+
+    public virtual void SetHealth(float hlth)
+    {
+        health = hlth;
         HealthBarToUI?.Invoke(this, new HealthBarToUIArgs { healthBarValue = health });
     }
 }
