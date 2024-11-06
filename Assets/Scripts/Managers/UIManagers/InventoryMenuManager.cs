@@ -297,7 +297,7 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
     {
         itemName.text = name;
         itemDesc.text = desc;
-        equipText.text = "Press Mouse1 to equip " + name;
+        equipText.text = "Press E to equip " + name;
     }
 
     private void DeleteText()
@@ -372,6 +372,17 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
             var calculateAlpha = (healthAlpha / 100) * 150;
             var calculateRelativeToMaxAlpha = calculateAlpha / 225;
             healthStatus.color = new Color(healthStatus.color.r, healthStatus.color.g, healthStatus.color.b, calculateRelativeToMaxAlpha);
+        }
+    }
+
+
+
+    public void ClearItems()
+    {
+        for (int i = 0; i < inventorySlots.transform.childCount; i++)
+        {
+            if (!inventorySlots.transform.GetChild(i).transform.TryGetComponent(out ItemSlot slot)) return;
+            slot.DeleteItem();
         }
     }
 }

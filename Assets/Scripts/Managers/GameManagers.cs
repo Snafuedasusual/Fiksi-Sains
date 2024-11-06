@@ -19,6 +19,8 @@ public class GameManagers : MonoBehaviour
     [SerializeField] private BaseHandler currentHandler;
     private List<AsyncOperation> sceneToLoad = new List<AsyncOperation>();
 
+    public List<GameObject> savedItems = new List<GameObject>();
+
     public enum GameState
     {
         MainMenu,
@@ -500,10 +502,12 @@ public class GameManagers : MonoBehaviour
         if (currentLevel < sectionNames.Length)
         {
             currentLevel++;
+            SaveItems();
             LoadScenes();
         }
         else
         {
+            ClearItems();
             CreditsManager.instance.ActivateCredits();
             currentLevel = 1;
         }
@@ -512,6 +516,7 @@ public class GameManagers : MonoBehaviour
     public void RestartSection()
     {
         if (currentHandler == null) { Debug.Log("Null!"); return; }
+        LoadItems();
         LoadingScreenManager.instance.DeactivateLoading();
         UIManager.instance.CloseAllMenus();
         ChaseMusicManager.instance.StopMusic();
@@ -528,4 +533,54 @@ public class GameManagers : MonoBehaviour
         UIManager.instance.DeactivateGameOver();
         PlayerUIManager.instance.ActivateUI();
     }
+
+
+
+
+    private void SaveItems()
+    {
+        if (plr == null) return;
+        InventorySystem inventory = plr.GetComponentInChildren<InventorySystem>();
+        if (inventory == null) return;
+        savedItems.Clear();
+        if (inventory.GetInventory().transform.childCount < 1) return;
+        for (int i = 0; i < inventory.GetInventory().transform.childCount; i++)
+        {
+            var duplicateItem = Instantiate(inventory.GetInventory().transform.GetChild(i).gameObject, transform);
+            duplicateItem.SetActive(false);
+            savedItems.Add(duplicateItem);
+        }
+    }
+
+
+
+    private void LoadItems()
+    {
+        if (plr == null) return;
+        InventorySystem inventory = plr.GetComponentInChildren<InventorySystem>();
+        if (inventory == null) return;
+        if (inventory.GetInventory().transform.childCount < 1) return;
+        InventoryMenuManager.instance.ClearItems();
+        if (savedItems.Count < 1) return;
+        for (int i = 0; i < savedItems.Count; i++)
+        {
+            var item = Instantiate(savedItems[i].gameObject);
+            inventory.AddItem(item);
+        }
+    }
+
+
+
+    private void ClearItems()
+    {
+        savedItems.Clear();
+        if (plr == null) return;
+        InventorySystem inventory = plr.GetComponentInChildren<InventorySystem>();
+        if (inventory == null) return;
+        for (int i = 0; i < inventory.GetInventory().transform.childCount; i++)
+        {
+            Destroy(inventory.GetInventory().transform.GetChild(i).gameObject);
+        }
+    }
+
 }
