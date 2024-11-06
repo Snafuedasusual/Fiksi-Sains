@@ -14,6 +14,7 @@ public class UIInputDetectir : MonoBehaviour, IInitializeScript
     {
         plrInp.EscInputEvent -= EscInputEventReceiver;
         plrInp.OnTabInput -= OnTabInputReceiver;
+        plrInp.OnEInputEvent -= OnEInputEventReceiver;
     }
 
     public void InitializeScript()

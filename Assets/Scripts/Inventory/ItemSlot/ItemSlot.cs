@@ -75,6 +75,7 @@ public class ItemSlot : MonoBehaviour
 
     public void DeleteItem()
     {
+        Destroy(itemHeld);
         itemHeld = null;
         if(itemUI != null) Destroy(itemUI.gameObject);
         itemEnum = 0;
