@@ -21,6 +21,8 @@ public class GameManagers : MonoBehaviour
 
     public List<GameObject> savedItems = new List<GameObject>();
 
+    private float currentHealth;
+
     public enum GameState
     {
         MainMenu,
@@ -503,11 +505,13 @@ public class GameManagers : MonoBehaviour
         {
             currentLevel++;
             SaveItems();
+            SaveHealth();
             LoadScenes();
         }
         else
         {
             ClearItems();
+            ResetHealth();
             CreditsManager.instance.ActivateCredits();
             currentLevel = 1;
         }
@@ -517,6 +521,7 @@ public class GameManagers : MonoBehaviour
     {
         if (currentHandler == null) { Debug.Log("Null!"); return; }
         LoadItems();
+        LoadHealth();
         LoadingScreenManager.instance.DeactivateLoading();
         UIManager.instance.CloseAllMenus();
         ChaseMusicManager.instance.StopMusic();
@@ -581,6 +586,39 @@ public class GameManagers : MonoBehaviour
         {
             Destroy(inventory.GetInventory().transform.GetChild(i).gameObject);
         }
+    }
+
+
+
+
+    private void SaveHealth()
+    {
+        if (plr == null) return;
+        EntityHealthController healthController = plr.TryGetComponent(out EntityHealthController health) ? health : null;
+        if (healthController == null) return;
+        currentHealth = healthController.GetCurrentHealth();
+    }
+
+
+
+
+    private void LoadHealth()
+    {
+        if (plr == null) return;
+        EntityHealthController healthController = plr.TryGetComponent(out EntityHealthController health) ? health : null;
+        if (healthController == null) return;
+        if (currentHealth < 1) { healthController.SetHealth(healthController.GetCurrentMaxHealth()); return; }
+        healthController.SetHealth(currentHealth);
+    }
+
+
+
+    private void ResetHealth()
+    {
+        if (plr == null) return;
+        EntityHealthController healthController = plr.TryGetComponent(out EntityHealthController health) ? health : null;
+        if (healthController == null) return;
+        healthController.ResetHealth();
     }
 
 }
