@@ -384,5 +384,9 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
             if (!inventorySlots.transform.GetChild(i).transform.TryGetComponent(out ItemSlot slot)) return;
             slot.DeleteItem();
         }
+        if (currentItem != null) Destroy(currentItem.gameObject);
+        if (currentItemUI != null) Destroy(currentItemUI.gameObject);
+        currentItem = null;
+        currentItemUI = null;
     }
 }
