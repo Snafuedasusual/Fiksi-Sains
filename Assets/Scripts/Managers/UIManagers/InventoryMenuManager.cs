@@ -382,11 +382,11 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
         for (int i = 0; i < inventorySlots.transform.childCount; i++)
         {
             if (!inventorySlots.transform.GetChild(i).transform.TryGetComponent(out ItemSlot slot)) return;
-            slot.DeleteItem();
+            slot.DestroyItem();
         }
         if (currentItem != null) Destroy(currentItem.gameObject);
-        if (currentItemUI != null) Destroy(currentItemUI.gameObject);
         currentItem = null;
-        currentItemUI = null;
+        ItemSlot currentItemUISlot = currentItemUI.TryGetComponent(out ItemSlot currentslot) ? currentslot : null;
+        currentItemUISlot.DestroyItem();
     }
 }
