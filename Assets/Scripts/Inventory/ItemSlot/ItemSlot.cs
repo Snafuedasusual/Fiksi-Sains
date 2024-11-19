@@ -75,7 +75,6 @@ public class ItemSlot : MonoBehaviour
 
     public void DeleteItem()
     {
-        Destroy(itemHeld);
         itemHeld = null;
         if(itemUI != null) Destroy(itemUI.gameObject);
         itemEnum = 0;
@@ -92,5 +91,17 @@ public class ItemSlot : MonoBehaviour
     public void OnExitItem()
     {
         invComms.ExitItemUI();
+    }
+
+
+    public void DestroyItem()
+    {
+        Destroy(itemHeld);
+        itemHeld = null;
+        if (itemUI != null) Destroy(itemUI.gameObject);
+        itemEnum = 0;
+        itemUI = null;
+        itemDesc = null;
+        ammo = 0;
     }
 }
