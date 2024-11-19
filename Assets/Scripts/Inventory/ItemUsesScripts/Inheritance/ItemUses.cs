@@ -5,7 +5,8 @@ using UnityEngine.UIElements;
 
 public class ItemUses : MonoBehaviour
 {
-
+    [Header("AudioSource")]
+    [SerializeField] protected AudioSource audSrc;
 
     [Header("Variables")]
     [SerializeField] protected string itemName;
@@ -19,6 +20,7 @@ public class ItemUses : MonoBehaviour
     [SerializeField] protected string itemDesc;
     [SerializeField] protected GameObject itemUI;
     [SerializeField] protected bool oneTimeActivation = false;
+    [SerializeField] protected float soundRange;
 
     [Header("LayerMasks")]
     [SerializeField] protected LayerMask placesToDrop;
@@ -32,6 +34,9 @@ public class ItemUses : MonoBehaviour
     public virtual ItemSO.ItemList GetItemEnum() { return itemEnum; }
     public virtual string GetItemDesc() { return itemDesc; }
     public virtual GameObject GetItemUI() { return itemUI; }
+    public virtual int GetAmmo() { return ammo; }
+
+    protected PlayerLogic playerLogic;
 
     public virtual void MainUse(bool isClicked, Transform source, float heightPos)
     {
@@ -51,5 +56,10 @@ public class ItemUses : MonoBehaviour
     public virtual void SetAmmo(int newAmmo)
     {
         ammo = newAmmo;
+    }
+
+    public virtual void AttackSound()
+    {
+
     }
 }

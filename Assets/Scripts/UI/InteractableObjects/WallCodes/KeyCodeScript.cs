@@ -7,7 +7,7 @@ public class KeyCodeScript : MonoBehaviour, IInitializeScript
 {
 
     [SerializeField] private int thisKeyCodeValue;
-    [SerializeField] private EventCommsWallCodes eventComms;
+    [SerializeField] private EventCommsUI eventComms;
 
     [SerializeField] private bool canInput = false;
 
@@ -61,6 +61,7 @@ public class KeyCodeScript : MonoBehaviour, IInitializeScript
             if(sender.transform == transform.GetChild(i) && canInput == true)
             {
                 eventComms.CodeInput(thisKeyCodeValue);
+                eventComms.PlayAudioButtonPress();
             }
         }
     }

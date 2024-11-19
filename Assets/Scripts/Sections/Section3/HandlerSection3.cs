@@ -21,13 +21,13 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
     [Header("Script References")]
     [SerializeField] SectionEventComms sectionEventComms;
 
-    private int[] ambianceClips;
 
     public void InitializeScript()
     {
         sectionEventComms.OnObjActivatedEvent += OnObjActivatedReceiver;
         sectionEventComms.OnObjDoneEvent += OnObjDoneEventReceiver;
         ambianceClips = new int[2];
+        chaseClips = 1000;
         ambianceClips[0] = (int)AmbianceSO.AmbianceClips.AMBIANCE_SECT3_1;
         ambianceClips[1] = (int)AmbianceSO.AmbianceClips.AMBIANCE_SECT3_2;
     }
@@ -85,6 +85,7 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
         seAgent.Warp(skinEaterPos);
         skinEater.SetActive(false);
         AmbianceManager.instance.RequestPlay(ambianceClips);
+        ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
     }
 
     public override void Restart()
@@ -113,6 +114,7 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
         ObjectiveTextManager.instance.UpdateText(newObj.GetObjText());
         seAgent.Warp(skinEaterPos);
         skinEater.SetActive(false);
+        ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
     }
 
 
@@ -135,6 +137,7 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
             {
                 currentObj = i;
                 UnlockNextObjective();
+                ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
                 return;
             }
             else if (objectives[i] == gameObject && i < objectives.Length - 1 && i > currentObj)
@@ -144,6 +147,7 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
                 FinishObjectivesBetween(currentObj, i);
                 pastCurrentObj.ForceDone();
                 UnlockNextObjective();
+                ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
                 return;
             }
             else if (objectives[i] == gameObject && i == objectives.Length - 1 && i > currentObj)
@@ -153,6 +157,7 @@ public class HandlerSection3 : BaseHandler, IInitializeScript
                 FinishObjectivesBetween(currentObj, i);
                 pastCurrentObj.ForceDone();
                 FinishLevel();
+                ObjIndicatorManager.instance.NullifyTargetObj();
                 return;
             }
             else if (objectives[i] == gameObject && i == objectives.Length - 1 && i == currentObj)

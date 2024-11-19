@@ -16,12 +16,12 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
     [SerializeField] Activation_Object activator;
     [SerializeField] Door_Section doorSection;
 
-    private int[] ambianceClips;
 
     public void InitializeScript()
     {
         sectEventComms.OnObjDoneEvent += OnObjDoneEventReceiver;
         ambianceClips = new int[2];
+        chaseClips = 1000;
         ambianceClips[0] = (int)AmbianceSO.AmbianceClips.AMBIANCE_SECT1_1;
         ambianceClips[1] = (int)AmbianceSO.AmbianceClips.AMBIANCE_SECT1_2;
     }
@@ -73,6 +73,7 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
         newObj.Unlocked();
         ObjectiveTextManager.instance.UpdateText(newObj.GetObjText());
         AmbianceManager.instance.RequestPlay(ambianceClips);
+        ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
     }
 
     public override void Restart()
@@ -99,6 +100,7 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
         IObjectiveSection newObj = objectives[currentObj].TryGetComponent(out IObjectiveSection newObjective) ? newObj = newObjective : null;
         newObj.Unlocked();
         ObjectiveTextManager.instance.UpdateText(newObj.GetObjText());
+        ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
     }
 
     private void OnObjDoneEventReceiver(object sender, SectionEventComms.OnObjDoneEventArgs e)
@@ -114,6 +116,7 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
             {
                 currentObj = i;
                 UnlockNextObjective();
+                //ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
                 return;
             }
             else if (objectives[i] == gameObject && i < objectives.Length - 1 && i > currentObj)
@@ -123,6 +126,7 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
                 FinishObjectivesBetween(currentObj, i);
                 pastCurrentObj.ForceDone();
                 UnlockNextObjective();
+                //ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
                 return;
             }
             else if (objectives[i] == gameObject && i == objectives.Length - 1 && i > currentObj)
@@ -148,6 +152,7 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
             currentObj += 1;
             objective.Unlocked();
             ObjectiveTextManager.instance.UpdateText(objective.GetObjText());
+            ObjIndicatorManager.instance.SetTargetObj(objectives[currentObj].transform);
         }
     }
 
@@ -195,6 +200,7 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
             StartCoroutine(IsFinishLevelDebounce);
             GameManagers.instance.NextLevel();
             ObjectiveTextManager.instance.EmptyText();
+            ObjIndicatorManager.instance.NullifyTargetObj();
         }
         
     }

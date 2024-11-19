@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19271a5b993f158498caf9b8019e8257, type: 3}
+  m_Name: MedkitSO
+  m_EditorClassIdentifier: 
+  currentItemEnum: 3
+  inventoryPrefab: {fileID: 758554172293813017, guid: 41e29f45980d55845bcc1a20dd6e9622, type: 3}
+  uiIcon: {fileID: 3274152564065024651, guid: d0fb1c8880e069743a0222f92ecd73e8, type: 3}
+  itemName: Medkit
+  itemDescription: A red cross first aid kit.
+  amountAmmo: 50
+  notif: Grab medkit

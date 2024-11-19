@@ -3,19 +3,25 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class WallCodeController : MonoBehaviour, IUIObjectives, IInitializeScript
+public class WallCodeController : MonoBehaviour, IUIObjectives, IInitializeScript, IMakeSounds
 {
     [SerializeField] private int[] codePattern;
     [SerializeField] private GameObject listener;
-    [SerializeField] private EventCommsWallCodes eventComms;
+    [SerializeField] private EventCommsUI eventComms;
     [SerializeField] private List<int> playerCodePattern;
     [SerializeField] private TextMeshProUGUI textScreen;
     [SerializeField] private TextMeshProUGUI codeClue;
+    [SerializeField] AudioSource audSrc;
+    [SerializeField] AudioClip enter;
+    [SerializeField] AudioClip correct;
+    [SerializeField] AudioClip error;
+    [SerializeField] AudioClip buttonpress;
 
 
     public void InitializeScript()
     {
         eventComms.SendCodeInputEvent += SendCodeInputReceiver;
+        eventComms.ButtonPressAudioEvent += ButtonPressAudioEventReceiver;
     }
 
 
@@ -27,7 +33,7 @@ public class WallCodeController : MonoBehaviour, IUIObjectives, IInitializeScrip
 
     private void InitializeCodePattern()
     {
-        var minCodeKeyValue = 1;
+        var minCodeKeyValue = 0;
         var maxCodeKeyValue = 10;
         codePattern = new int[6];
         playerCodePattern = new List<int>();
@@ -40,6 +46,7 @@ public class WallCodeController : MonoBehaviour, IUIObjectives, IInitializeScrip
 
     private void OnEnable()
     {
+        PlayOnEnter();
         DisableKeyCodeInput();
         InitializeCodePattern();
         InitializeScript();
@@ -59,7 +66,7 @@ public class WallCodeController : MonoBehaviour, IUIObjectives, IInitializeScrip
 
 
 
-    private void SendCodeInputReceiver(object sender, EventCommsWallCodes.SendCodeInputArgs e)
+    private void SendCodeInputReceiver(object sender, EventCommsUI.SendCodeInputArgs e)
     {
         InputDetector(e.inputVal);
     }
@@ -86,15 +93,58 @@ public class WallCodeController : MonoBehaviour, IUIObjectives, IInitializeScrip
         if (playerCodePattern.Count == codePattern.Length)
         {
             DisableKeyCodeInput();
-            CheckKeyCodes();
+            DelayCheckCode();
         }
+    }
+
+    Coroutine ErrorPlay;
+    IEnumerator StartErrorPlay()
+    {
+        OnErrorPlaySound();
+        textScreen.text = "Error";
+        var timer = 0f;
+        var maxTimer = 1.1f;
+        while(timer < maxTimer)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        textScreen.text = string.Empty;
+        EnableKeyCodeInput();
+        ErrorPlay = null;
+    }
+
+    private void PlayError()
+    {
+        if (ErrorPlay != null) return;
+        ErrorPlay = StartCoroutine(StartErrorPlay());
+    }
+
+    Coroutine DelayCheck;
+    IEnumerator StartDelayCheck()
+    {
+        var timer = 0f;
+        var maxTimer = 0.15f;
+        while(timer < maxTimer)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        DelayCheck = null;
+        CheckKeyCodes();
+    }
+
+    private void DelayCheckCode()
+    {
+        if (DelayCheck != null) return;
+        DelayCheck = StartCoroutine(StartDelayCheck());
     }
 
     private void CheckKeyCodes()
     {
         for (int i = 0; i < codePattern.Length; i++)
         {
-            if (codePattern[i] != playerCodePattern[i]) { playerCodePattern.Clear(); EnableKeyCodeInput(); textScreen.text = string.Empty; return; }
+            if (codePattern[i] != playerCodePattern[i]) { playerCodePattern.Clear(); PlayError(); return; }
             if (codePattern[i] == playerCodePattern[i]) { }
         }
         Completed();
@@ -145,6 +195,7 @@ public class WallCodeController : MonoBehaviour, IUIObjectives, IInitializeScrip
             if ( i == codePattern.Length - 1) { codeClue.text = string.Empty; IsCodeClueStarted = null; EnableKeyCodeInput(); yield break; }
         }
     }
+
     private void CodeClue()
     {
         if (IsCodeClueStarted != null) return;
@@ -180,6 +231,7 @@ public class WallCodeController : MonoBehaviour, IUIObjectives, IInitializeScrip
     private void Completed()
     {
         if (!listener.TryGetComponent(out IObjectiveSection objSection)) return;
+        OnCompletePlaySound();
         objSection.OnDone();
         DoneVisual();
     }
@@ -189,4 +241,28 @@ public class WallCodeController : MonoBehaviour, IUIObjectives, IInitializeScrip
         this.listener = listener;
     }
 
+    private void PlayOnEnter()
+    {
+        RequestPlaySFXAudioClip(audSrc, enter);
+    }
+
+    private void ButtonPressAudioEventReceiver(object sender, System.EventArgs e)
+    {
+        RequestPlaySFXAudioClip(audSrc, buttonpress);
+    }
+
+    private void OnErrorPlaySound()
+    {
+        RequestPlaySFXAudioClip(audSrc, error);
+    }
+
+    private void OnCompletePlaySound()
+    {
+        RequestPlaySFXAudioClip(audSrc, correct);
+    }
+
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
+    {
+        SFXManager.instance.PlayAudio(audSrc, audClip);
+    }
 }

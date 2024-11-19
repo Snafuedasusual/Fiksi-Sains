@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class UIInputDetectir : MonoBehaviour, IInitializeScript
 {
+    public static UIInputDetectir instance;
     [Header("ScriptReferences")]
     [SerializeField] PlayerInput plrInp;
 
@@ -13,6 +14,7 @@ public class UIInputDetectir : MonoBehaviour, IInitializeScript
     {
         plrInp.EscInputEvent -= EscInputEventReceiver;
         plrInp.OnTabInput -= OnTabInputReceiver;
+        plrInp.OnEInputEvent -= OnEInputEventReceiver;
     }
 
     public void InitializeScript()
@@ -22,11 +24,12 @@ public class UIInputDetectir : MonoBehaviour, IInitializeScript
         plrInp.OnEInputEvent += OnEInputEventReceiver;
     }
 
-
-    private void Start()
+    private void Awake()
     {
-        InitializeScript();
+        if (instance != this && instance != this) return;
+        if (instance == null) instance = this;
     }
+
     private void OnEnable()
     {
         InitializeScript();

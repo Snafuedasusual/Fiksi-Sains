@@ -22,6 +22,7 @@ public class PlayerToUI : MonoBehaviour, IInitializeScript
         visibilityController.VisBarToUI += VisBarToUIReceiver;
         plrLogic.InteractNotif += InteractNotifReceiver;
         inventoryMenuManager.EquipItemEvent += EquipItemEventReceiver;
+        plrLogic.HideUIEvent += HideUIEventReceiver;
     }
 
 
@@ -31,7 +32,7 @@ public class PlayerToUI : MonoBehaviour, IInitializeScript
         healthController.HealthBarToUI -= HealthBarToUIReceiver;
         visibilityController.VisBarToUI -= VisBarToUIReceiver;
         plrLogic.InteractNotif -= InteractNotifReceiver;
-
+        plrLogic.HideUIEvent -= HideUIEventReceiver;
     }
 
 
@@ -60,6 +61,8 @@ public class PlayerToUI : MonoBehaviour, IInitializeScript
 
 
     //Send Player Events
+    public event EventHandler<SendNullifyStateEventArgs> SendNullifyStateEvent;
+    public class SendNullifyStateEventArgs : EventArgs { public bool nullifyState; }
     public event EventHandler<SendStaminaInfoToPlayerUIArgs> SendStaminaInfoToPlayerUI;
     public class SendStaminaInfoToPlayerUIArgs : EventArgs {public float plrStamina;}
     
@@ -73,6 +76,12 @@ public class PlayerToUI : MonoBehaviour, IInitializeScript
     public class SendInteractionInfoToPlayerUIArgs : EventArgs { public Transform target; public string notif; }
     
     public event EventHandler OpenInventoryScreen;
+
+
+    private void HideUIEventReceiver(object sender, PlayerLogic.HideUIEventArgs e)
+    {
+        SendNullifyStateEvent?.Invoke(this, new SendNullifyStateEventArgs { nullifyState = e.hideornot });
+    }
 
 
     private void StaminaBarToUIReceiver(object sender, PlayerLogic.StaminaBarToUIArgs e)

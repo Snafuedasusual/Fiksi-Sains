@@ -26,6 +26,7 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
     [SerializeField] GameObject inventorySlots;
     [SerializeField] TextMeshProUGUI itemName;
     [SerializeField] TextMeshProUGUI itemDesc;
+    [SerializeField] TextMeshProUGUI equipText;
     [SerializeField] Image healthStatus;
     [SerializeField] GameObject currentDraggingItem;
     [SerializeField] GameObject hoveredItem;
@@ -197,7 +198,7 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
             {
                 if (inventorySlots.transform.GetChild(i).transform.TryGetComponent(out slot) && slot.GetItemHeld() == null)
                 {
-                    slot.AddItem(e.item);
+                    slot.AddItemInteractable(e.item);
                     break;
                 }
             }
@@ -228,6 +229,8 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
     private void RefreshInventory()
     {
         ItemUses itemUses;
+        ItemSlot slot;
+        ItemSlot currentItemUISlot = currentItemUI.TryGetComponent(out slot) ? slot : null;
         if (inventorySystem.GetInventory().transform.childCount == 0)
         {
             for (int i = 0; i < inventorySlots.transform.childCount; i++)
@@ -235,31 +238,39 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
                 var itemSlot = inventorySlots.transform.GetChild(i).TryGetComponent(out ItemSlot invSlot) ? invSlot : null;
                 if (invSlot != null) invSlot.DeleteItem();
             }
-            if (currentItem == null)
-            {
-                if (currentItemUI.transform.childCount == 0) return;
-                for (int f = 0; f < currentItemUI.transform.childCount; f++)
-                {
-                    Destroy(currentItemUI.transform.GetChild(f).gameObject);
-                }
-            }
+            if (currentItemUISlot == null) return;
+            currentItemUISlot.DeleteItem();
+            currentItem = null;
             return;
         }
         for (int i = 0; i < inventorySlots.transform.childCount; i++)
         {
-            if (inventorySlots.transform.GetChild(i).TryGetComponent(out ItemSlot slot) && slot.GetItemHeld() == null) return;
+            if (inventorySlots.transform.GetChild(i).TryGetComponent(out slot) && slot.GetItemHeld() == null) 
+            { 
+                if((int)slot.GetItemEnum() == (int)currentItemUISlot.GetItemEnum() && (int)slot.GetItemEnum() + (int)currentItemUISlot.GetItemEnum() != 0)
+                {
+                    currentItemUISlot.DeleteItem();
+                    currentItem = null;
+                }
+                slot.DeleteItem(); 
+            }
             for(int j = 0; j < inventorySystem.GetInventory().transform.childCount; j++)
             {
-                if (inventorySystem.GetInventory().transform.GetChild(j).TryGetComponent( out itemUses) && itemUses.GetDisplayName() == slot.GetItemName()) break;
-                if (j == inventorySystem.GetInventory().transform.childCount && inventorySystem.GetInventory().transform.GetChild(j).TryGetComponent(out itemUses) && itemUses.GetDisplayName() != slot.GetItemName())
+                if (inventorySystem.GetInventory().transform.GetChild(j).TryGetComponent( out itemUses) && (int)itemUses.GetItemEnum() == (int)slot.GetItemEnum() && (int)slot.GetItemEnum() != 0) 
                 {
-                    if(currentItem == null)
+                    if ((int)slot.GetItemEnum() == (int)currentItemUISlot.GetItemEnum() && (int)slot.GetItemEnum() + (int)currentItemUISlot.GetItemEnum() != 0)
                     {
-                        if (currentItemUI.transform.childCount == 0) return;
-                        for(int f = 0; f < currentItemUI.transform.childCount; f++)
-                        {
-                            Destroy(currentItemUI.transform.GetChild(f).gameObject);
-                        }
+                        currentItemUISlot.UpdateItem();
+                    }
+                    slot.UpdateItem(); 
+                    break; 
+                }
+                if (j == inventorySystem.GetInventory().transform.childCount - 1 && inventorySystem.GetInventory().transform.GetChild(j).TryGetComponent(out itemUses) && (int)itemUses.GetItemEnum() != (int)slot.GetItemEnum())
+                {
+                    if ((int)slot.GetItemEnum() == (int)currentItemUISlot.GetItemEnum() && (int)slot.GetItemEnum() + (int)currentItemUISlot.GetItemEnum() != 0)
+                    {
+                        currentItemUISlot.DeleteItem();
+                        currentItem = null;
                     }
                     slot.DeleteItem();
                 }
@@ -279,17 +290,24 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
         hoveredItem = null;
     }
 
+
+
+
     private void ChangeText(string name, string desc)
     {
         itemName.text = name;
         itemDesc.text = desc;
+        equipText.text = "Press E to equip " + name;
     }
 
     private void DeleteText()
     {
         itemName.text = string.Empty;
         itemDesc.text = string.Empty;
+        equipText.text = string.Empty;
     }
+
+
 
     private void ChangeHoveredItem(GameObject item)
     {
@@ -300,22 +318,43 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
         hoveredItem = null;
     }
 
+
+
+
+
     private void OnEInputEventSenderReceiver(object sender, EventArgs e)
     {
         E_Equip();
+    }
+    Coroutine EquipDebouce;
+    IEnumerator StartEquipDebounce()
+    {
+        var timer = 0f;
+        var maxTimer = 0.1f;
+        while(timer < maxTimer)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        EquipDebouce = null;
     }
     public event EventHandler<EquipItemEventArgs> EquipItemEvent;
     public class EquipItemEventArgs : EventArgs { public GameObject item; }
     private void E_Equip()
     {
+        ItemSlot currentItemUISlot = currentItemUI.TryGetComponent(out ItemSlot slot) ? slot : null;
+        if (EquipDebouce != null) return;
         if (hoveredItem != null)
         {
             EquipItemEvent?.Invoke(this, new EquipItemEventArgs { item = hoveredItem });
-            var itemUsesScr = hoveredItem.TryGetComponent(out ItemUses itemUses) ? itemUses : null;
-            var itemUI = Instantiate(itemUsesScr.GetItemUI(), currentItemUI.transform);
-            itemUI.GetComponent<RectTransform>().position = currentItemUI.GetComponent<RectTransform>().position;
-            var itemUIScr = itemUI.TryGetComponent(out ItemIcon itemIcon) ? itemIcon : null;
-            itemUIScr.SetUnInteractable();
+            EquipDebouce = StartCoroutine(StartEquipDebounce());
+            if (currentItem != null)
+            {
+                currentItemUISlot.DeleteItem();
+            }
+            currentItem = hoveredItem;
+            if (slot == null) return;
+            slot.AddItemUnInteractable(hoveredItem);
         }
     }
 
@@ -334,5 +373,20 @@ public class InventoryMenuManager : MonoBehaviour, IInitializeScript, ICloseAllM
             var calculateRelativeToMaxAlpha = calculateAlpha / 225;
             healthStatus.color = new Color(healthStatus.color.r, healthStatus.color.g, healthStatus.color.b, calculateRelativeToMaxAlpha);
         }
+    }
+
+
+
+    public void ClearItems()
+    {
+        for (int i = 0; i < inventorySlots.transform.childCount; i++)
+        {
+            if (!inventorySlots.transform.GetChild(i).transform.TryGetComponent(out ItemSlot slot)) return;
+            slot.DestroyItem();
+        }
+        if (currentItem != null) Destroy(currentItem.gameObject);
+        currentItem = null;
+        ItemSlot currentItemUISlot = currentItemUI.TryGetComponent(out ItemSlot currentslot) ? currentslot : null;
+        currentItemUISlot.DestroyItem();
     }
 }

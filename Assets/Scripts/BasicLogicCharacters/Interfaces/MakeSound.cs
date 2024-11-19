@@ -15,7 +15,19 @@ public interface IMakeSounds
 
     }
 
-    void RequestPlayAudioClip(AudioSource audSrc, AudioClip audClip)
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip);
+
+    public void RequestStopAudioSource(AudioSource audSrc)
+    {
+
+    }
+
+    public void RequestPlayGenericMusicAudioClip(AudioClip audClip)
+    {
+
+    }
+
+     public void RequestStopGenericMusicAudioClip()
     {
 
     }

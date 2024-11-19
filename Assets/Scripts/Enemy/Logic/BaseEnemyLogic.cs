@@ -27,6 +27,10 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
     [Header("Visuals")]
     [SerializeField] GameObject visuals;
     [SerializeField] float centerBody;
+    [SerializeField] GameObject specialActor;
+
+    [SerializeField] RuntimeAnimatorController defaultSAController;
+    [SerializeField] RuntimeAnimatorController overrideSAController;
 
     [Header("Components")]
     [SerializeField] Rigidbody rb;
@@ -165,6 +169,14 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         if(currentState == EnemyStates.FR_Patrol)
         {
             Patrol();
+        }
+        if(currentState == EnemyStates.FR_Wandering)
+        {
+            FR_WanderingAround(RandomPointToSearch());
+        }
+        if(currentState == EnemyStates.FR_LookAround)
+        {
+            FR_LookAround();
         }
         if(currentState == EnemyStates.ChaseTarget)
         {
@@ -368,6 +380,12 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
     {
         if(target != null)
         {
+            PlayerLogic lgcPlr = target.transform.TryGetComponent(out PlayerLogic plrLgc) ? plrLgc : null;
+            if(lgcPlr == null) { SendInfoToAlertBar(0f); StopMove(); currentState = EnemyStates.ChaseLastKnownPosition; return; }
+            if (lgcPlr.plrState == PlayerLogic.PlayerStates.InVent)
+            { SendInfoToAlertBar(0f); StopMove(); currentState = EnemyStates.LookAroundSearching; ; return; }
+
+            AddEnemyToAlertList();
             SendInfoToAlertBar(20f);
             RunToPos(target.position);
             transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z));
@@ -438,10 +456,12 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
     }
     //Attacking script ends---------------------------------------
 
-    //public event EventHandler 
+    //public event EventHandler
+    public event EventHandler<PlayAttackAnimEventArgs> PlayAttackAnimEvent;
+    public class PlayAttackAnimEventArgs : EventArgs { public EnemyAnimations anim; }
     public void PlayAttackAnim()
     {
-
+        PlayAttackAnimEvent?.Invoke(this, new PlayAttackAnimEventArgs { anim = EnemyAnimations.ATTACK });
     }
 
 
@@ -508,7 +528,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
                     IsLookingAroundSearching = null;
                     lookCount = 0;
                 }
-                else if(lookCount >= amountOfLooks)
+                if(lookCount >= amountOfLooks)
                 {
                     StopCoroutine(IsLookingAroundSearching);
                     IsLookingAroundSearching = null;
@@ -520,6 +540,46 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
     }
     //Looking around while searching state script ends-------------------
 
+
+    protected virtual void FR_LookAround()
+    {
+        if (LookAround != null) return;
+        LookAround = StartCoroutine(StartLookAround());
+    }
+
+    protected Coroutine LookAround;
+    protected IEnumerator StartLookAround()
+    {
+        var amountOfLooks = 3;
+        var lookCount = 0;
+        var lookTime = 0f;
+        var lookRate = 2f;
+        if (currentState != EnemyStates.FR_LookAround) { LookAround = null; yield break; }
+        while(currentState == EnemyStates.FR_LookAround && lookCount < amountOfLooks)
+        {
+            var randomDirX = Random.Range(-1f, 1f);
+            var randomDirZ = Random.Range(-1f, 1f);
+            var lookSpeed = Random.Range(2f, 10f);
+            var direction = new Vector3(randomDirX + transform.position.x, transform.position.y, randomDirZ + transform.position.z);
+            var lookDir = Quaternion.LookRotation(direction - transform.position);
+            Debug.Log(lookCount);
+            while (lookTime < lookRate)
+            {
+                if (currentState != EnemyStates.FR_LookAround) { LookAround = null; yield break; }
+                else if (currentState == EnemyStates.FR_LookAround)
+                {
+                    transform.rotation = Quaternion.Slerp(transform.rotation, lookDir, lookSpeed * Time.deltaTime);
+                    lookTime += Time.deltaTime;
+                }
+                yield return null;
+            }
+            lookTime = 0f;
+            if(lookCount < amountOfLooks) { Debug.Log("NotYetEnd"); lookCount++; lookTime = 0f; }
+            if (currentState != EnemyStates.FR_LookAround) { Debug.Log("AbruptEnd"); LookAround = null; yield break; }
+            if(lookCount >= amountOfLooks) { Debug.Log("End"); LookAround = null; currentState = EnemyStates.FR_Wandering; yield break; }
+            yield return null;
+        }
+    }
 
 
     //Handles Searching while alert state.
@@ -533,6 +593,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
             {
                 IsSearchingAlert = StartSearchingAlert(point);
                 StartCoroutine(IsSearchingAlert);
+                
             }
             else
             {
@@ -560,13 +621,16 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         }
         return targetPos;
     }
+
+
     protected IEnumerator IsSearchingAlert;
     public virtual IEnumerator StartSearchingAlert(Vector3 point)
     {
         
         if(currentState != EnemyStates.SearchingAlert)
         {
-
+            IsSearchingAlert = null;
+            yield break;
         }
         else
         {
@@ -600,6 +664,40 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         }
     }
     //Searching target while alert script ends-----------------------
+
+
+    public virtual void FR_WanderingAround(Vector3 hitpoint)
+    {
+        var minDist = 10f;
+        var point = hitpoint;
+        var distance = Vector3.Distance(point, transform.position);
+        if (distance < minDist) return;
+        if (WanderingAround != null) return;
+        WanderingAround = StartCoroutine(StartWanderingAround(point));
+
+    }
+    protected Coroutine WanderingAround;
+    protected IEnumerator StartWanderingAround(Vector3 point)
+    {
+        if (currentState != EnemyStates.FR_Wandering) { WanderingAround = null; yield break; }
+        while (currentState == EnemyStates.FR_Wandering)
+        {
+            var distance = Vector3.Distance(point, transform.position);
+            WalkToPos(point);
+            destinasion = agent.destination;
+            transform.LookAt(agent.velocity + transform.position);
+            if(distance < agent.stoppingDistance)
+            {
+                currentState = EnemyStates.FR_LookAround;
+                WanderingAround = null;
+                StopMove();
+                yield break;
+            }
+            if(currentState != EnemyStates.FR_Wandering) { WanderingAround = null; yield break; }
+            yield return null;
+        }
+    }
+
 
     protected int indexPatrol = 0;
     public virtual void Patrol()
@@ -666,7 +764,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
     {
         if(location == Vector3.zero)
         {
-
+            currentState = defaultState;
         }
         else
         {
@@ -754,7 +852,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
     {
         if (location == Vector3.zero)
         {
-
+            currentState = defaultState;
         }
         else
         {
@@ -791,7 +889,10 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         var trackCount = 0;
         if(target != null)
         {
-            while(target != null)
+            PlayerLogic lgcPlr = target.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
+            if (lgcPlr == null) { IsTrackingTrails = null; yield break; }
+            if (lgcPlr.plrState == PlayerLogic.PlayerStates.InVent) { IsTrackingTrails = null; yield break; }
+            while (target != null)
             {
                 trackTime = 0f;
                 while(trackTime < trackRate)
@@ -927,6 +1028,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         lastCharToHitMe = null;
         currentState = defaultState;
         target = null;
+        RemoveEnemyFromAlertList();
     }
     //Alert bar communication script ends-----------------------------
 
@@ -954,6 +1056,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
             else if(alertLevel == highAlertLevel)
             {
                 SendInfoToAlertBar(30f);
+                AddEnemyToAlertList();
                 currentState = EnemyStates.SuspiciousRunTowards;
                 location = new Vector3(target.x, transform.position.y, target.z);
             }
@@ -973,8 +1076,37 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
     {
         if(health <= 0)
         {
-            gameObject.SetActive(false);
+            PlaySpecialActor(null);
         }
+    }
+
+    public void PlaySpecialActor(RuntimeAnimatorController overrideController)
+    {
+        var animator = specialActor.TryGetComponent(out Animator anim) ? anim : null;
+        if (animator == null) return;
+        if (overrideController == overrideSAController && overrideSAController != null && specialActor.activeSelf == true) return;
+        if (overrideController == null && overrideSAController == null && specialActor.activeSelf == true) return;
+        overrideSAController = overrideController;
+        specialActor.transform.position = transform.position;
+        if (overrideSAController == null)
+        {
+            animator.runtimeAnimatorController = defaultSAController;
+            specialActor.SetActive(true);
+            visuals.SetActive(false);
+        }
+        else
+        {
+            animator.runtimeAnimatorController = overrideSAController;
+            specialActor.SetActive(true);
+            visuals.SetActive(false);
+        }
+    }
+
+    public void DisableSpecialActor()
+    {
+        visuals.SetActive(true);
+        specialActor.SetActive(false);
+        specialActor.transform.position = transform.position;
     }
 
     IEnumerator IsKBCooldown;
@@ -984,6 +1116,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         var cooldownRate = 0.5f;
         while (cooldownTime < cooldownRate)
         {
+            StopMove();
             cooldownTime += Time.deltaTime;
             yield return 0;
         }
@@ -1027,7 +1160,6 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
             timeCount += Time.deltaTime;
             yield return null;
         }
-        Debug.Log("Play Sound");
         DelayAudioPlay = null;
         PlayIdleAudioOnUpdateEvent?.Invoke(this, EventArgs.Empty);
     }
@@ -1037,6 +1169,15 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         DelayAudioPlay = StartCoroutine(StartDelayAudio(Random.Range(10, 15)));
     }
 
+    private void AddEnemyToAlertList()
+    {
+        ChaseMusicManager.instance.AddEnemyAlert(gameObject);
+    }
+
+    private void RemoveEnemyFromAlertList()
+    {
+        ChaseMusicManager.instance.RemoveEnemyAlert(gameObject);
+    }
 
     private void Update()
     {

@@ -11,6 +11,7 @@ public class Ending : MonoBehaviour, IObjectiveSection
     [SerializeField] TextAsset ifLockedText;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
+    [SerializeField] IObjectiveSection.HasIndicator canIndicate;
 
     public void Unlocked()
     {
@@ -71,9 +72,14 @@ public class Ending : MonoBehaviour, IObjectiveSection
             if (currentLockStatus == IsLocked.Locked) return;
             if (currentStatus == IsFinished.IsDone) return;
             PlayScriptedEvent = StartCoroutine(StartPlayScriptedEvent());
-            sectionEventComms.StartScriptedEventNoArgs();
+            sectionEventComms.StartScriptedEventPlayer(other.gameObject);
             plrLgc.NullifyState();
             plrLgc.HidePlayer();
         }
+    }
+
+    public HasIndicator CanHaveIndicator()
+    {
+        return canIndicate;
     }
 }

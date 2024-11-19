@@ -19,6 +19,10 @@ public class GameManagers : MonoBehaviour
     [SerializeField] private BaseHandler currentHandler;
     private List<AsyncOperation> sceneToLoad = new List<AsyncOperation>();
 
+    public List<GameObject> savedItems = new List<GameObject>();
+
+    private float currentHealth;
+
     public enum GameState
     {
         MainMenu,
@@ -38,6 +42,8 @@ public class GameManagers : MonoBehaviour
     {
         return isPaused;
     }
+    public GameObject GetPlayer() { return plr; }
+
 
     public void OnPlayerDeathRestart()
     {
@@ -177,18 +183,27 @@ public class GameManagers : MonoBehaviour
                 IsEscDebounce = EscDebounce();
                 StartCoroutine(IsEscDebounce);
                 PauseMenuManager.instance.PauseMenuController();
+                var plrLgc = plr.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
+                if (plrLgc == null) return;
+                plrLgc.HideUI(true);
             }
             else if (currentState == GameState.OnMenu && IsEscDebounce == null)
             {
                 IsEscDebounce = EscDebounce();
                 StartCoroutine(IsEscDebounce);
                 UIManager.instance.CloseAllMenus();
+                var plrLgc = plr.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
+                if (plrLgc == null) return;
+                plrLgc.HideUI(false);
             }
             else if (currentState == GameState.OnUI && IsEscDebounce == null)
             {
                 IsEscDebounce = EscDebounce();
                 StartCoroutine(IsEscDebounce);
                 UIManager.instance.CloseAllMenus();
+                var plrLgc = plr.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
+                if (plrLgc == null) return;
+                plrLgc.HideUI(false);
             }
         }
     }
@@ -197,12 +212,14 @@ public class GameManagers : MonoBehaviour
     {
         isPaused = true;
         Time.timeScale = 0f;
+        var plrLgc = plr.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
     }
 
     public void UnpauseGame()
     {
         isPaused = false;
         Time.timeScale = 1f;
+        var plrLgc = plr.TryGetComponent(out PlayerLogic lgc) ? lgc : null;
     }
 
     public void SetStateToOnMenu()
@@ -229,7 +246,6 @@ public class GameManagers : MonoBehaviour
     {
         currentState = GameState.MainMenu;
     }
-
 
     public void OnLevelChange(Transform plr)
     {
@@ -335,6 +351,7 @@ public class GameManagers : MonoBehaviour
         instance = this;
         UnpauseGame();
         plr = GameObject.FindGameObjectWithTag("Player");
+        plr.GetComponent<PlayerLogic>().NullifyState();
         Screen.SetResolution(640, 360, true);
         SetStateToMainMenu();
         MainMenuManager.instance.ActivateMenu();
@@ -344,10 +361,42 @@ public class GameManagers : MonoBehaviour
         //StartCoroutine(IsStartingLevel(plr.transform));
     }
 
-    Coroutine LoadingScene;
+    Coroutine PlayDebounce;
+    IEnumerator StartPlayDebounce()
+    {
+        var timer = 0f;
+        var maxTimer = 0.1f;
+        while (timer < maxTimer)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        PlayDebounce = null;
+    }
     public void PlayGame()
     {
+        if (PlayDebounce != null) return;
+        PlayDebounce = StartCoroutine(StartPlayDebounce());
         LoadScenes();
+    }
+
+    Coroutine RestartDebounce;
+    IEnumerator StartRestartDebounce()
+    {
+        var timer = 0f;
+        var maxTimer = 0.1f;
+        while(timer < maxTimer)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        RestartDebounce = null;
+    }
+    public void RestartGame()
+    {
+        if (RestartDebounce != null) return;
+        RestartDebounce = StartCoroutine(StartRestartDebounce());
+        LoadSceneRestart();
     }
 
     private void LoadScenes()
@@ -355,6 +404,7 @@ public class GameManagers : MonoBehaviour
         AmbianceManager.instance.RefreshAudio();
         if (currentHandler != null) { currentHandler.player = null; }
         currentHandler = null;
+        LoadingScreenManager.instance.ActivateLoading();
         for(int i = 0; i < SceneManager.sceneCount; i++)
         {
             Scene loadedScene = SceneManager.GetSceneAt(i);
@@ -365,14 +415,30 @@ public class GameManagers : MonoBehaviour
             }
         }
         sceneToLoad.Add(SceneManager.LoadSceneAsync(sectionNames[currentLevel - 1], LoadSceneMode.Additive));
-        StartCoroutine(StartLoadingScene());
+        StartCoroutine(StartLoadingScene(false));
     }
 
-    IEnumerator StartLoadingScene()
+    private void LoadSceneRestart()
+    {
+        if (currentHandler != null) { currentHandler.player = null; }
+        currentHandler = null;
+        LoadingScreenManager.instance.ActivateLoading();
+        for (int i = 0; i < SceneManager.sceneCount; i++)
+        {
+            Scene loadedScene = SceneManager.GetSceneAt(i);
+            if (loadedScene.name == mainSceneName) { }
+            if (loadedScene.name != sectionNames[currentLevel - 1] && loadedScene.name != mainSceneName) SceneManager.UnloadSceneAsync(loadedScene);
+            if (loadedScene.name == sectionNames[currentLevel - 1] && loadedScene.name != mainSceneName) SceneManager.UnloadSceneAsync(loadedScene);
+        }
+        sceneToLoad.Add(SceneManager.LoadSceneAsync(sectionNames[currentLevel - 1], LoadSceneMode.Additive));
+        StartCoroutine(StartLoadingScene(true));
+    }
+
+    IEnumerator StartLoadingScene(bool restart)
     {
         plr.transform.position = loadingSpot.position;
         plr.transform.GetComponent<PlayerLogic>().NullifyState();
-        CheckifSceneLoaded();
+        CheckifSceneLoaded(restart);
         Debug.Log("StartLoadingSceneFunc");
         for (int i = 0; i < sceneToLoad.Count; i++)
         {
@@ -384,13 +450,13 @@ public class GameManagers : MonoBehaviour
         sceneToLoad.Clear();
     }
 
-    private void CheckifSceneLoaded()
+    private void CheckifSceneLoaded(bool restart)
     {
         if (CheckSceneLoaded != null) return;
-        StartCoroutine(StartCheckSceneLoaded());
+        StartCoroutine(StartCheckSceneLoaded(restart));
     }
     Coroutine CheckSceneLoaded;
-    IEnumerator StartCheckSceneLoaded()
+    IEnumerator StartCheckSceneLoaded(bool restart)
     {
         var timer = 0f;
         var maxTimer = 3.5f;
@@ -405,9 +471,10 @@ public class GameManagers : MonoBehaviour
                     while(currentHandler == null)
                     {
                         currentHandler = FindObjectOfType<BaseHandler>();
-                        StartSection();
                         yield return null;
                     }
+                    if (restart == true) RestartSection();
+                    else StartSection();
                     CheckSceneLoaded = null;
                     yield break;
                 }
@@ -419,12 +486,15 @@ public class GameManagers : MonoBehaviour
     public void StartSection()
     {
         if (currentHandler == null) { Debug.Log("Null!"); return; }
+        LoadingScreenManager.instance.DeactivateLoading();
+        UIManager.instance.CloseAllMenus();
+        ChaseMusicManager.instance.StopMusic();
+        GenericMusicManager.instance.StopMusic();
         currentHandler.player = plr;
         currentHandler.StartLevel();
         plr.transform.GetComponent<PlayerLogic>().UnNullifyState();
         SetStateToPlaying();
         PlayerLogic plrLgc = plr.TryGetComponent(out PlayerLogic logic) ? logic : null;
-        logic.ResetPlayer();
         logic.UnHidePlayer();
         logic.UnNullifyState();
     }
@@ -434,10 +504,14 @@ public class GameManagers : MonoBehaviour
         if (currentLevel < sectionNames.Length)
         {
             currentLevel++;
+            SaveItems();
+            SaveHealth();
             LoadScenes();
         }
         else
         {
+            ClearItems();
+            ResetHealth();
             CreditsManager.instance.ActivateCredits();
             currentLevel = 1;
         }
@@ -445,7 +519,14 @@ public class GameManagers : MonoBehaviour
 
     public void RestartSection()
     {
-        if (currentHandler == null) return;
+        if (currentHandler == null) { Debug.Log("Null!"); return; }
+        LoadItems();
+        LoadHealth();
+        LoadingScreenManager.instance.DeactivateLoading();
+        UIManager.instance.CloseAllMenus();
+        ChaseMusicManager.instance.StopMusic();
+        GenericMusicManager.instance.StopMusic();
+        currentHandler.player = plr;
         currentHandler.Restart();
         SetStateToPlaying();
         UnpauseGame();
@@ -457,4 +538,87 @@ public class GameManagers : MonoBehaviour
         UIManager.instance.DeactivateGameOver();
         PlayerUIManager.instance.ActivateUI();
     }
+
+
+
+
+    private void SaveItems()
+    {
+        if (plr == null) return;
+        InventorySystem inventory = plr.GetComponentInChildren<InventorySystem>();
+        if (inventory == null) return;
+        savedItems.Clear();
+        if (inventory.GetInventory().transform.childCount < 1) return;
+        for (int i = 0; i < inventory.GetInventory().transform.childCount; i++)
+        {
+            var duplicateItem = Instantiate(inventory.GetInventory().transform.GetChild(i).gameObject, transform);
+            duplicateItem.SetActive(false);
+            savedItems.Add(duplicateItem);
+        }
+    }
+
+
+
+    private void LoadItems()
+    {
+        if (plr == null) return;
+        InventorySystem inventory = plr.GetComponentInChildren<InventorySystem>();
+        if (inventory == null) return;
+        if (inventory.GetInventory().transform.childCount < 1) return;
+        InventoryMenuManager.instance.ClearItems();
+        if (savedItems.Count < 1) return;
+        for (int i = 0; i < savedItems.Count; i++)
+        {
+            var item = Instantiate(savedItems[i].gameObject);
+            inventory.AddItem(item);
+        }
+    }
+
+
+
+    private void ClearItems()
+    {
+        savedItems.Clear();
+        if (plr == null) return;
+        InventorySystem inventory = plr.GetComponentInChildren<InventorySystem>();
+        if (inventory == null) return;
+        for (int i = 0; i < inventory.GetInventory().transform.childCount; i++)
+        {
+            Destroy(inventory.GetInventory().transform.GetChild(i).gameObject);
+        }
+    }
+
+
+
+
+    private void SaveHealth()
+    {
+        if (plr == null) return;
+        EntityHealthController healthController = plr.TryGetComponent(out EntityHealthController health) ? health : null;
+        if (healthController == null) return;
+        currentHealth = healthController.GetCurrentHealth();
+    }
+
+
+
+
+    private void LoadHealth()
+    {
+        if (plr == null) return;
+        EntityHealthController healthController = plr.TryGetComponent(out EntityHealthController health) ? health : null;
+        if (healthController == null) return;
+        if (currentHealth < 1) { healthController.SetHealth(healthController.GetCurrentMaxHealth()); return; }
+        healthController.SetHealth(currentHealth);
+    }
+
+
+
+    private void ResetHealth()
+    {
+        if (plr == null) return;
+        EntityHealthController healthController = plr.TryGetComponent(out EntityHealthController health) ? health : null;
+        if (healthController == null) return;
+        healthController.ResetHealth();
+    }
+
 }

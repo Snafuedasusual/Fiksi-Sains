@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a96d94bd91fd2a34d93cb2db33a5c9c5, type: 3}
+  m_Name: SkinEater
+  m_EditorClassIdentifier: 
+  attackAudios: []
+  footStepsClips:
+  - {fileID: 8300000, guid: 39b345b75bb14bf459eb3c60b2a7b885, type: 3}
+  - {fileID: 8300000, guid: db3d82811c6b0d44baceed24e24566b8, type: 3}
+  idleClips: []
+  chaseClips: []
+  pickupClips: []
+  hurtClips: []
+  deathClips: []

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55551ee4ca827514390315f43146f33b, type: 3}
+  m_Name: MedkitUsesSO
+  m_EditorClassIdentifier: 
+  itemWorldPrefab: {fileID: 8770542737727519437, guid: 65a05b08701c8014ea94cd5dc1727483, type: 3}
+  attackClips:
+  - {fileID: 8300000, guid: 3cf744aa28482db409ac0b14a00b158f, type: 3}
+  soundRange: 0
+  ammo: 50
+  healRate: 0.075
+  controller: {fileID: 22100000, guid: 5f60e0e27b0b861449dfeca64c9bc217, type: 2}

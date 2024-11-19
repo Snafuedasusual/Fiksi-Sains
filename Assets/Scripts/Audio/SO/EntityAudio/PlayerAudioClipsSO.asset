@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackAudios: []
   footStepsClips:
-  - {fileID: 8300000, guid: 92794e15d51ff044cb3e60c136941d5c, type: 3}
-  - {fileID: 8300000, guid: c992da07ae5a3764dbbbb96891a39c7c, type: 3}
+  - {fileID: 8300000, guid: 1db81fc30b0513045b05e0e8b20dc8f2, type: 3}
+  - {fileID: 8300000, guid: ba48202c0d6e79942a61e703696aa5e3, type: 3}
   idleClips: []
   chaseClips: []
+  pickupClips:
+  - {fileID: 8300000, guid: bda1320a94077704a9eb9ef396c826eb, type: 3}
   hurtClips: []
   deathClips: []

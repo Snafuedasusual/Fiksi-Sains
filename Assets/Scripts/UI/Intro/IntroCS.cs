@@ -5,7 +5,7 @@ using Ink.Runtime;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class IntroCS : MonoBehaviour
+public class IntroCS : MonoBehaviour, IMakeSounds
 {
     [SerializeField] TextMeshProUGUI[] textsMain = new TextMeshProUGUI[5];
     [SerializeField] TextMeshProUGUI textIntro;
@@ -16,6 +16,12 @@ public class IntroCS : MonoBehaviour
     [SerializeField] RawImage blackImageHalf;
     [SerializeField] RawImage panel;
     [SerializeField] GameObject controlsUI;
+    
+    [SerializeField] AudioSource audSrc;
+    [SerializeField] AudioClip radioTrans;
+    [SerializeField] AudioClip typing;
+
+    [SerializeField] AudioClip music;
 
     private Story storyMain;
     private Story storyIntro;
@@ -23,11 +29,11 @@ public class IntroCS : MonoBehaviour
     Coroutine TypeProcess;
     IEnumerator StartTypeProcess(string text, Story story)
     {
-        Debug.Log("Wrtiting");
         var typeTime = 0f;
         var typeRate = 0.75f;
         if(story == storyMain)
         {
+            RequestPlaySFXAudioClip(audSrc, radioTrans);
             for (int i = 0; i < text.ToCharArray().Length; i++)
             {
                 textsMain[currentIndex].text += text.ToCharArray()[i];
@@ -35,13 +41,14 @@ public class IntroCS : MonoBehaviour
                 typeTime = 0f;
                 while (typeTime < typeRate)
                 {
-                    typeTime += Time.deltaTime * 10f;
+                    typeTime += Time.deltaTime * 20f;
                     yield return null;
                 }
             }
         }
         else
         {
+            RequestPlaySFXAudioClip(audSrc, typing);
             for (int i = 0; i < text.ToCharArray().Length; i++)
             {
                 textIntro.text += text.ToCharArray()[i];
@@ -49,10 +56,11 @@ public class IntroCS : MonoBehaviour
                 typeTime = 0f;
                 while (typeTime < typeRate)
                 {
-                    typeTime += Time.deltaTime * 10f;
+                    typeTime += Time.deltaTime * 20f;
                     yield return null;
                 }
             }
+            RequestStopAudioSource(audSrc);
         }
         TypeProcess = null;
         DelayAndFadeout = StartCoroutine(StartDelayAndFadeout(story));
@@ -61,10 +69,9 @@ public class IntroCS : MonoBehaviour
     Coroutine DelayAndFadeout;
     IEnumerator StartDelayAndFadeout(Story story)
     {
-        Debug.Log("Fading");
         var timer = 0f;
-        var maxTimerMain = 4.5f;
-        var maxTimerIntro = 2.5f;
+        var maxTimerMain = 2.5f;
+        var maxTimerIntro = 1.25f;
         if(story == storyMain)
         {
             if (currentIndex == textsMain.Length - 1)
@@ -114,7 +121,6 @@ public class IntroCS : MonoBehaviour
     Coroutine FinalDelayAndFadeout;
     IEnumerator StartFinalDelayAndFadeOut(Story story)
     {
-        Debug.Log("FinalFade");
         var timer = 0f;
         var maxTimer0 = 2.5f;
         var maxTimer1 = 2f;
@@ -163,6 +169,7 @@ public class IntroCS : MonoBehaviour
             }
             FinalDelayAndFadeout = null;
             ShowControls();
+            RequestStopGenericMusicAudioClip();
         }
     }
 
@@ -171,7 +178,7 @@ public class IntroCS : MonoBehaviour
     IEnumerator StartControlShow()
     {
         var timer = 0f;
-        var maxTimer = 8f;
+        var maxTimer = 10f;
         controlsUI.gameObject.SetActive(true);
         while(timer < maxTimer)
         {
@@ -194,6 +201,7 @@ public class IntroCS : MonoBehaviour
     {
         storyMain = new Story(textAssetMain.text);
         storyIntro = new Story(textAssetIntro.text);
+        RequestPlayGenericMusicAudioClip(music);
         ContinueStoryIntro();   
     }
 
@@ -221,6 +229,7 @@ public class IntroCS : MonoBehaviour
         }
         else
         {
+            RequestStopAudioSource(audSrc);
             FinalDelayAndFadeout = StartCoroutine(StartFinalDelayAndFadeOut(storyMain));
         }
     }
@@ -240,5 +249,25 @@ public class IntroCS : MonoBehaviour
         TypeProcess = null;
         DelayAndFadeout = null;
         StartTheProcess();
+    }
+
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
+    {
+        SFXManager.instance.PlayAudio(audSrc, audClip);
+    }
+
+    public void RequestStopAudioSource(AudioSource audSrc)
+    {
+        SFXManager.instance.StopAudio(audSrc);
+    }
+
+    public void RequestPlayGenericMusicAudioClip(AudioClip audClip)
+    {
+        GenericMusicManager.instance.PlayGenericMusic(audClip);
+    }
+
+    public void RequestStopGenericMusicAudioClip()
+    {
+        GenericMusicManager.instance.StopMusic();
     }
 }

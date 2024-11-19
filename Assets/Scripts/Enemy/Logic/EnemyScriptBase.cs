@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
@@ -547,5 +546,10 @@ public class EnemyScriptBase : MonoBehaviour, IHealthInterface, IMakeSounds
     {
         m_Material.color = Color.red;
         state = defaultState;
+    }
+
+    public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
+    {
+        throw new System.NotImplementedException();
     }
 }

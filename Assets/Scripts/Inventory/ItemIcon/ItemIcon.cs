@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -13,13 +14,13 @@ public class ItemIcon : MonoBehaviour, IInitializeScript, IPointerEnterHandler, 
     [SerializeField] string itemName;
     [SerializeField] string itemDesc;
     [SerializeField] int ammo;
+    [SerializeField] TextMeshProUGUI ammoUI;
     [SerializeField] bool isInteractable;
 
     public void InitializeScript()
     {
         itemName = itemSO.name;
         itemDesc = itemSO.itemDescription;
-        ammo = itemSO.amountAmmo;
     }
 
     public void DeInitializeScript()
@@ -27,10 +28,6 @@ public class ItemIcon : MonoBehaviour, IInitializeScript, IPointerEnterHandler, 
         throw new System.NotImplementedException();
     }
 
-    private void Start()
-    {
-        InitializeScript();
-    }
 
     private void OnEnable()
     {
@@ -45,6 +42,18 @@ public class ItemIcon : MonoBehaviour, IInitializeScript, IPointerEnterHandler, 
     public void ItemHolderAdder(GameObject itemHold)
     {
         itemHolder = itemHold;
+    }
+
+    public void SetAmmoForUI(GameObject itemHolder)
+    {
+        Debug.Log("Played!");
+        if(itemHolder.TryGetComponent(out ItemSlot slot))
+        {
+            if (slot.GetItemEnum() != ItemSO.ItemList.Pistol) { ammoUI.gameObject.SetActive(false); return; }
+            ammoUI.gameObject.SetActive(true);
+            ammo = slot.GetAmmoForUI();
+            ammoUI.text = ammo.ToString();
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)

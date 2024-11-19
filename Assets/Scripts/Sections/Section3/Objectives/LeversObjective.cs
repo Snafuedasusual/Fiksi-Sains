@@ -18,6 +18,7 @@ public class LeverObjective : MonoBehaviour, IObjectiveSection
     [SerializeField] string objText;
     [SerializeField] IObjectiveSection.IsFinished currentStatus;
     [SerializeField] IObjectiveSection.IsLocked currentLockStatus;
+    [SerializeField] IObjectiveSection.HasIndicator canIndicate;
 
     float minDistance = 18;
 
@@ -156,5 +157,10 @@ public class LeverObjective : MonoBehaviour, IObjectiveSection
         {
             ObjectiveTextManager.instance.UpdateText(GetObjText());
         }
+    }
+
+    public HasIndicator CanHaveIndicator()
+    {
+        return canIndicate;
     }
 }

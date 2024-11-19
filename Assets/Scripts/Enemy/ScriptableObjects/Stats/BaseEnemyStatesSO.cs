@@ -16,6 +16,7 @@ public class BaseEnemyStatsSO : ScriptableObject
     public float mainDmg;
     public float mainDmgKnckBck;
     public float mainDmgRange;
+    public float mainDmgCooldown;
     public float secDmg;
     public float secDmgKnckBck;
     public float secDmgRange;

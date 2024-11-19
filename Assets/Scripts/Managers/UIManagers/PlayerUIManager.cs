@@ -13,6 +13,7 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] GameObject uiElement;
 
     [Header("Health Components")]
+    [SerializeField] GameObject healthComponent;
     [SerializeField] RawImage bloodEdges;
     [SerializeField] RawImage bloodOverlay;
     [SerializeField] float bloodEdgesMaxAlpha;
@@ -21,14 +22,23 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private float currentHealth;
 
     [Header("Visibility Components")]
-    [SerializeField] TextMeshProUGUI visibility;
+    [SerializeField] GameObject visibiltyComponent;
+    [SerializeField] Slider sliderVis;
 
     [Header("StaminaComponents")]
+    [SerializeField] GameObject staminaComponent;
     [SerializeField] Slider bar1;
     [SerializeField] Slider bar2;
     [SerializeField] Image bar1Image;
     [SerializeField] Image bar2Image;
     [SerializeField] Image circle;
+
+    [Header("ObjectiveText")]
+    [SerializeField] GameObject objText;
+
+    [Header("ObjIndicator")]
+    [SerializeField] GameObject arrow;
+
     private float bar1ImageAlpha;
     private float bar2ImageAlpha;
     private float circleImageAlpha;
@@ -50,8 +60,8 @@ public class PlayerUIManager : MonoBehaviour
     private float currentStamina;
     private float GetCurrentStamina() { return currentStamina; }
 
-
     [Header("Interaction Notification")]
+    [SerializeField] GameObject interactionNotifObj;
     [SerializeField] TextMeshProUGUI interactionNotif;
 
     private void Awake()
@@ -72,6 +82,7 @@ public class PlayerUIManager : MonoBehaviour
         plrToUI.SendStaminaInfoToPlayerUI += SendStaminaInfoToPlayerUIReceiver;
         plrToUI.SendVisibilityInfoToPlayerUI += SendVisibilityInfoToPlayerUIReceiver;
         plrToUI.SendInteractionInfoToPlayerUI += SendInteractionInfoToPlayerUIReceiver;
+        plrToUI.SendNullifyStateEvent += SendNullifyStateEventReceiver;
     }
 
 
@@ -81,6 +92,7 @@ public class PlayerUIManager : MonoBehaviour
         plrToUI.SendStaminaInfoToPlayerUI -= SendStaminaInfoToPlayerUIReceiver;
         plrToUI.SendVisibilityInfoToPlayerUI -= SendVisibilityInfoToPlayerUIReceiver;
         plrToUI.SendInteractionInfoToPlayerUI -= SendInteractionInfoToPlayerUIReceiver;
+        plrToUI.SendNullifyStateEvent -= SendNullifyStateEventReceiver;
     }
 
     public void ActivateUI()
@@ -108,6 +120,29 @@ public class PlayerUIManager : MonoBehaviour
     {
         DeInitializeScript();
     }
+
+    private void SendNullifyStateEventReceiver(object sender, PlayerToUI.SendNullifyStateEventArgs e)
+    {
+        if(e.nullifyState == true)
+        {
+            healthComponent.gameObject.SetActive(false);
+            visibiltyComponent.gameObject.SetActive(false);
+            staminaComponent.gameObject.SetActive(false);
+            objText.gameObject.SetActive(false);
+            interactionNotifObj.gameObject.SetActive(false);
+            arrow.gameObject.SetActive(false);
+        }
+        else
+        {
+            healthComponent.gameObject.SetActive(true);
+            visibiltyComponent.gameObject.SetActive(true);
+            staminaComponent.gameObject.SetActive(true);
+            objText.gameObject.SetActive(true);
+            interactionNotifObj.gameObject.SetActive(true);
+            arrow.gameObject.SetActive(true);
+        }
+    }
+
 
     private void SendHealthInfoToPlayerUIReceiver(object sender, PlayerToUI.SendHealthInfoToPlayerUIArgs e)
     {
@@ -146,6 +181,10 @@ public class PlayerUIManager : MonoBehaviour
         var calculateRelativeToMaxAlpha = calculatedAlpha / 225;
         bloodOverlay.color = new Color(bloodOverlay.color.r, bloodOverlay.color.g, bloodOverlay.color.b, calculateRelativeToMaxAlpha);
     }
+
+
+
+
 
     private void SendStaminaInfoToPlayerUIReceiver(object sender, PlayerToUI.SendStaminaInfoToPlayerUIArgs e)
     {
@@ -231,18 +270,22 @@ public class PlayerUIManager : MonoBehaviour
     private void SendVisibilityInfoToPlayerUIReceiver(object sender, PlayerToUI.SendVisibiltiyInfoToPlayerUIArgs e)
     {
         var newVis = Mathf.RoundToInt(e.plrVis);
-        visibility.text = newVis.ToString();
+        sliderVis.value = e.plrVis;
     }
+
+
+
+
 
     private void SendInteractionInfoToPlayerUIReceiver(object sender, PlayerToUI.SendInteractionInfoToPlayerUIArgs e)
     {
         if(e.target == null)
         {
-            interactionNotif.transform.gameObject.gameObject.SetActive(false);
+            interactionNotifObj.SetActive(false);
         }
         else
         {
-            interactionNotif.transform.gameObject.gameObject.SetActive(true);
+            interactionNotifObj.SetActive(true);
             if (e.notif == string.Empty) return;
             interactionNotif.text = e.notif;
         }

@@ -9,6 +9,9 @@ public class S1_EngConv : MonoBehaviour, IScriptedEvents
     [SerializeField] TextAsset dialogue;
     [SerializeField] CinemachineVirtualCamera vCam;
     [SerializeField] Transform actor;
+    [SerializeField] Animator animator;
+    [SerializeField] RuntimeAnimatorController SA_idleController;
+    [SerializeField] RuntimeAnimatorController SA_suicideController;
 
     private Transform player;
     private PlayerLogic playerLogic;
@@ -31,14 +34,36 @@ public class S1_EngConv : MonoBehaviour, IScriptedEvents
         while(SubtitleManager.instance.GetIfDialogueFinished() == false)
         {
             if (SubtitleManager.instance.GetIfDialogueFinished() == true) { break; }
-            Debug.Log("Testing");
             yield return null;
         }
         CheckIfDialogueFinished = null;
+        AnimationPlay();
+    }
+
+
+    private void AnimationPlay()
+    {
+        if (AnimationPlayOut != null) return;
+        AnimationPlayOut = StartCoroutine(StartAnimationPlayOut());
+    }
+    Coroutine AnimationPlayOut;
+    IEnumerator StartAnimationPlayOut()
+    {
+        animator.runtimeAnimatorController = SA_suicideController;
+        actor.gameObject.SetActive(false);
+        actor.gameObject.SetActive(true);
+        var timer = 0f;
+        var maxTimer = 2.5f;
+        while (timer < maxTimer)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        AnimationPlayOut = null;
         vCam.Priority = 1;
-        Debug.Log("Finished");
         playerLogic.UnNullifyState();
     }
+
     public void Trigger()
     {
         if (isTriggered == IScriptedEvents.Triggered.HasTriggered) return;

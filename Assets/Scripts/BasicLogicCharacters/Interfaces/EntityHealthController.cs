@@ -10,7 +10,14 @@ public class EntityHealthController : MonoBehaviour, IHealthInterface
 
     [Header("Variables")]
     [SerializeField] protected float health;
-
+    public float GetCurrentHealth()
+    {
+        return health;
+    }
+    public float GetCurrentMaxHealth()
+    {
+        return baseHealth.maxHealth;
+    }
 
     private void OnEnable()
     {
@@ -57,9 +64,19 @@ public class EntityHealthController : MonoBehaviour, IHealthInterface
         }
     }
 
+
+
     public void ResetHealth()
     {
         health = baseHealth.health;
+        HealthBarToUI?.Invoke(this, new HealthBarToUIArgs { healthBarValue = health });
+    }
+
+
+
+    public virtual void SetHealth(float hlth)
+    {
+        health = hlth;
         HealthBarToUI?.Invoke(this, new HealthBarToUIArgs { healthBarValue = health });
     }
 }

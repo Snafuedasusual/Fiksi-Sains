@@ -65,7 +65,8 @@ public class BrainVent : MonoBehaviour
     bool vent_dbounce = false;
     private void ChangeVents()
     {
-        vect2 = playerInput.GetInputDir();
+        //vect2 = playerInput.GetInputDir();
+        vect2 = plrLogic.GetPlayerMovement();
         //Debug.Log(vent_dbounce);
         //Debug.Log(plrLogic.GetPlayerMovement());
         if (playerInput.GetInputDir().x > 0)
@@ -90,9 +91,8 @@ public class BrainVent : MonoBehaviour
                 vent_dbounce = true;
             }
         }
-        else if(plrLogic.GetPlayerMovement().x < 0)
+        else if(playerInput.GetInputDir().x < 0)
         {
-            Debug.Log("Play!");
             if (vent_dbounce == false)
             {
                 vent_dbounce = true;

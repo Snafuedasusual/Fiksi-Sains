@@ -11,6 +11,10 @@ public class AmbianceManager : MonoBehaviour
     private AudioClip[] ambianceClips;
     private int[] selectedClips;
 
+    float fadeTime = 5f;
+
+    float originalVolume = 0.2f;
+
     private void Awake()
     {
         if(instance != null && instance != this)
@@ -26,6 +30,7 @@ public class AmbianceManager : MonoBehaviour
     private void Start()
     {
         ambianceClips = ambianceSO.audioClips;
+        audioSrc.volume = originalVolume;
     }
 
     public void RequestPlay(int[] clips)
@@ -54,10 +59,26 @@ public class AmbianceManager : MonoBehaviour
     public void PauseAudio()
     {
         audioSrc.Pause();
+        audioSrc.volume = 0f;
     }
 
+    Coroutine FadeIn;
+    IEnumerator StartFadeIn()
+    {
+
+        while(audioSrc.volume < originalVolume)
+        {
+            audioSrc.volume += Time.deltaTime / fadeTime;
+            yield return null;
+        }
+        audioSrc.volume = originalVolume;
+        audioSrc.UnPause();
+        FadeIn = null;
+    }
     public void UnPauseAudio()
     {
-        audioSrc.UnPause();
+        if (FadeIn != null) return;
+        audioSrc.volume = 0f;
+        FadeIn = StartCoroutine(StartFadeIn());
     }
 }
