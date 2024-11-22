@@ -297,9 +297,6 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         else if (e.target == null)
         {
             currentState = EnemyStates.ChaseLastKnownPosition;
-            if (target == null) return;
-            if (!target.TryGetComponent(out PlayerLogic lgc)) return;
-            lgc.ChangeSeenStatus(false);
         }
     }
 
@@ -431,6 +428,9 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
                 currentState = EnemyStates.LookAroundSearching;
             }
         }
+        if (target == null) return;
+        if (!target.TryGetComponent(out PlayerLogic lgc)) return;
+        lgc.ChangeSeenStatus(false);
     }
     // Chase last known position script ends-----------------
 
