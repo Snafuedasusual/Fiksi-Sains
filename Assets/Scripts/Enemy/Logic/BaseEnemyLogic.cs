@@ -289,6 +289,7 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
                     {
                         target = e.target;
                         currentState = EnemyStates.ChaseTarget;
+                        plr.ChangeSeenStatus(true);
                     }
                }
             }
@@ -296,6 +297,9 @@ public class BaseEnemyLogic : MonoBehaviour, IInitializeScript, IKnockBack
         else if (e.target == null)
         {
             currentState = EnemyStates.ChaseLastKnownPosition;
+            if (target == null) return;
+            if (!target.TryGetComponent(out PlayerLogic lgc)) return;
+            lgc.ChangeSeenStatus(false);
         }
     }
 
