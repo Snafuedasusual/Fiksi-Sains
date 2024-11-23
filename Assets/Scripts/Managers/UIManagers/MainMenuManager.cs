@@ -75,6 +75,23 @@ public class MainMenuManager : MonoBehaviour, IMakeSounds
         DelayBeforeShow = null;
     }
 
+
+    
+
+    public void OpenControls()
+    {
+
+    }
+
+
+    public void CloseControls()
+    {
+
+    }
+
+
+
+
     public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
     {
         

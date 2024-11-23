@@ -77,6 +77,9 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
     public PlayerStates plrState;
 
 
+    private EntitySeenStatus seenStatus = EntitySeenStatus.NotSeen;
+    public EntitySeenStatus GetSeenStatus() { return seenStatus; }
+
 
     public void InitializeScript()
     {
@@ -789,6 +792,10 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         PlayThisAttackAnim?.Invoke(this, new PlayThisAttackAnimArgs { controller = currentController, anim = PlrAnimations.ATTACK1});
     }
 
+
+
+
+
     public void ResetPlayer()
     {
         healthController.ResetHealth();
@@ -798,6 +805,18 @@ public class PlayerLogic : MonoBehaviour, IHealthInterface
         DisableSpecialActor();
         UnHidePlayer();
     }
+
+
+
+
+
+    public void ChangeSeenStatus(bool isSeen)
+    {
+        if (isSeen) { seenStatus = EntitySeenStatus.Seen; return; }
+        else { seenStatus = EntitySeenStatus.NotSeen; return; }
+    }
+
+
 
 
     void Update()
