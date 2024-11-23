@@ -9,13 +9,19 @@ public class Hide_Spots : MonoBehaviour, IInteraction, IMakeSounds
     [SerializeField] string notif;
     [SerializeField] AudioSource audSrc;
     [SerializeField] AudioClip[] audClips;
+    [SerializeField] TextAsset subtitle;
 
     public event EventHandler OnInteractActive;
     public event EventHandler OnInteractDeactive;
     private bool entered = false;
     public void OnInteract(Transform plr)
     {
-        if(IsDebounce == null)
+        if (!plr.TryGetComponent(out PlayerLogic lgc)) return;
+        if (lgc.GetSeenStatus() == EntitySeenStatus.Seen) { SubtitleManager.instance.ActivateSubtitle(subtitle); return; }
+        {
+            
+        }
+        if (IsDebounce == null)
         {
             IsDebounce = Debounce();
             StartCoroutine(IsDebounce);
@@ -47,6 +53,7 @@ public class Hide_Spots : MonoBehaviour, IInteraction, IMakeSounds
     }
 
     IEnumerator IsDebounce;
+
 
 
     IEnumerator Debounce()
