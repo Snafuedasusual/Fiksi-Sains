@@ -1815,6 +1815,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7868734140393589230, guid: 2fb40e7f390f3e14ba2cbb24d9b31c53, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -15
+      objectReference: {fileID: 0}
     - target: {fileID: 8449994394167299301, guid: 2fb40e7f390f3e14ba2cbb24d9b31c53, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -6862,6 +6866,10 @@ PrefabInstance:
       propertyPath: canvas
       value: 
       objectReference: {fileID: 605604058}
+    - target: {fileID: 2461243294466249912, guid: 6278179254d32a24b99fcad97be283ca, type: 3}
+      propertyPath: pauseMenu
+      value: 
+      objectReference: {fileID: 1011701695221003354, guid: 93a8bbe8389bf184a924bd0a202c3908, type: 3}
     - target: {fileID: 2528467805476675612, guid: 6278179254d32a24b99fcad97be283ca, type: 3}
       propertyPath: objectiveText
       value: 
@@ -12445,7 +12453,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  currentLevel: 1
+  currentLevel: 2
   plr: {fileID: 1181818918}
   isPaused: 0
   sectionNames:
