@@ -89,7 +89,7 @@ public class HandlerSection1 : BaseHandler, IInitializeScript
         }
         if (scriptedEvents.Length > 0)
         {
-            for (int i = 0; i < scriptedEvents.Length; i++)
+            for (int i = 1; i < scriptedEvents.Length; i++)
             {
                 if (scriptedEvents[i].TryGetComponent(out IScriptedEvents events))
                 {

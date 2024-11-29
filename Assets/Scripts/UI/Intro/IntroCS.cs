@@ -4,6 +4,8 @@ using TMPro;
 using Ink.Runtime;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Windows;
+using Input = UnityEngine.Input;
 
 public class IntroCS : MonoBehaviour, IMakeSounds
 {
@@ -16,6 +18,7 @@ public class IntroCS : MonoBehaviour, IMakeSounds
     [SerializeField] RawImage blackImageHalf;
     [SerializeField] RawImage panel;
     [SerializeField] GameObject controlsUI;
+    [SerializeField] GameObject[] listOfControlsUI;
     
     [SerializeField] AudioSource audSrc;
     [SerializeField] AudioClip radioTrans;
@@ -250,6 +253,25 @@ public class IntroCS : MonoBehaviour, IMakeSounds
         DelayAndFadeout = null;
         StartTheProcess();
     }
+
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (ControlsShow != null) return;
+            StopAllCoroutines();
+            TypeProcess = null;
+            DelayAndFadeout = null;
+            EmptyTexts();
+            blackImageFull.color = new Color(blackImageFull.color.r, blackImageFull.color.g, blackImageFull.color.b, 0f);
+            blackImageHalf.color = new Color(blackImageHalf.color.r, blackImageHalf.color.g, blackImageHalf.color.b, 0f);
+            panel.color = new Color(panel.color.r, panel.color.g, panel.color.b, 0f);
+            RequestStopAudioSource(audSrc);
+            ShowControls();
+        }
+    }
+
 
     public void RequestPlaySFXAudioClip(AudioSource audSrc, AudioClip audClip)
     {
